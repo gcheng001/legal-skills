@@ -108,113 +108,42 @@ https://zxfw.court.gov.cn/zxfw/#/pagesAjkj/app/wssd/index?qdbh=xxx&sdbh=xxx&sdsi
 
 ### 第三步：文书下载
 
-> **平台判断**：根据第一步识别的链接域名，选择下载策略。
-> - `zxfw.court.gov.cn` → 方案一（API 直连）→ 方案二 → 方案三
-> - `sd.gdems.com` 或 `jysd.10102368.com` → 跳过方案一，直接方案二 → 方案三
-> - 未知域名 → 提示用户提供链接信息
->
-> **⛔ 降级铁律**：严格串行，禁止并行。当前方案成功即停止，绝不降级。禁止"双保险"并行尝试多个方案。
+> **直接调用 `wenshu-downloader` 的 Python 脚本**，单次进程调用，30 秒内完成全部下载。不逐步调 curl。
 
-#### 依赖
-
-| 依赖 | 用途 | 适用方案 | 安装方式 |
-|------|------|----------|----------|
-| `curl` | API 下载 | 方案一 | macOS/Linux 预装 |
-| `jq` | JSON 解析（可选） | 方案一 | `brew install jq` |
-| Playwright | 浏览器自动化 | 方案二/三 | 见下方 |
-
-**Playwright 安装指引**（仅方案二/三需要）：
+#### 执行命令
 
 ```bash
-# 方案二: Playwright CLI
-npm install -g playwright
-npx playwright install chromium
-
-# 方案三: Playwright MCP（需在 Claude Code 设置中配置）
-# 在 settings.json 的 mcpServers 中添加：
-# "playwright": { "command": "npx", "args": ["@anthropic-ai/mcp-playwright"] }
+python3 ~/.claude/skills/wenshu-downloader/scripts/download_sms_docs.py "<完整短信原文>"
 ```
 
-> **⛔ 大多数情况下不需要 Playwright**：zxfw 平台方案一直接 curl 调用 API，无需浏览器。仅 gdems/jysd 平台或**方案一失败后**才需要方案二/三。禁止在方案一执行期间同时打开浏览器。
+脚本自动完成：解析 URL → 提取参数 → 调用 API → 批量下载 → 输出 JSON 结果。
 
-#### 方案一 — API 直连（优先）
+**输出 JSON 包含**：`output_dir`（下载目录）、`files`（文件列表）、`case_number`（案号）、`court`（法院）、`document_types`（文书类型列表）。
 
-完全无头，无需浏览器。直接调用 zxfw 后端 API 获取文书下载链接，再用 curl 下载 PDF。
+#### ⚠️ 同名文件覆盖问题
 
-**API 信息**：
-
-- 端点：`POST https://zxfw.court.gov.cn/yzw/yzw-zxfw-sdfw/api/v1/sdfw/getWsListBySdbhNew`
-- Content-Type：`application/json`
-- 请求体：`{ "qdbh": "xxx", "sdbh": "xxx", "sdsin": "xxx" }`（从短信 URL 提取）
-- 响应字段：`data[].c_wsmc`（文书名称）、`data[].wjlj`（OSS 签名下载链接）、`data[].c_fymc`（法院名称）
-- 无需认证、无需浏览器
-
-```bash
-# 1. 从短信 URL 提取参数（示例）
-qdbh="DEMO_qdbh_value"
-sdbh="DEMO_sdbh_value"
-sdsin="DEMO_sdsin_value"
-
-# 2. 调用 API 获取文书列表
-mkdir -p /tmp/court-sms-staging/
-resp=$(curl -s -X POST "https://zxfw.court.gov.cn/yzw/yzw-zxfw-sdfw/api/v1/sdfw/getWsListBySdbhNew" \
-  -H "Content-Type: application/json" \
-  -d "{\"qdbh\":\"$qdbh\",\"sdbh\":\"$sdbh\",\"sdsin\":\"$sdsin\"}")
-
-# 3. 解析文书列表，逐个下载 PDF
-echo "$resp" | jq -r '.data[] | "\(.c_wsmc)\t\(.wjlj)"' | while IFS=$'\t' read -r name url; do
-  curl -sL -o "/tmp/court-sms-staging/${name}.pdf" "$url"
-done
-
-# 4. 验证下载结果
-ls -lh /tmp/court-sms-staging/*.pdf
-```
-
-#### 方案二 — 无头浏览器（Playwright CLI）
-
-当方案一 API 不可用或链接过期时，用 Playwright CLI 无头模式打开页面，拦截网络请求获取下载链接。
-
-```bash
-# 需要先安装 playwright
-npx playwright install chromium 2>/dev/null
-
-# 无头模式运行（脚本需自行编写，拦截 getWsListBySdbhNew API 响应）
-node scripts/download_court_docs.mjs --url "{短信链接}" --output /tmp/court-sms-staging/
-```
-
-#### 方案三 — 交互式浏览器（Playwright MCP）
-
-当方案二不可用时（需要已配置 Playwright MCP）：
-
-```text
-1. browser_navigate → 打开短信中的 zxfw URL
-2. 等待页面加载
-3. browser_evaluate → 直接调用 fetch API 获取文书列表
-4. browser_run_code → 下载 PDF 文件到 /tmp/court-sms-staging/
-```
-
-如 API 调用未成功，改用页面交互：
-
-```text
-1. browser_snapshot → 查看当前页面结构
-2. 找到文书列表或 PDF 预览区域
-3. 定位下载按钮（可能在 iframe 内）
-4. browser_click → 点击下载
-5. 等待下载完成，保存到临时目录
-```
+脚本使用 API 返回的原始文件名保存。如同名文件存在会被覆盖。脚本执行后需检查：对比 `len(files)` 和 `len(os.listdir(output_dir))`，若文件数不一致说明有同名覆盖，需手动补下载被覆盖的文件（用 API 重新获取，给同名文件加 `_2` 后缀）。
 
 #### 失败兜底
 
-当三级均失败时：
+脚本失败时（网络问题/API 不可用），降级方案：
 
-```text
-⚠️ 自动下载失败，请手动访问以下链接下载：
-{原始链接}
-
-下载后请将文件放到对应案件目录中。
-
-我将为您创建待处理记录。
-```
+```bash
+# 手动调用 API
+qdbh="<从URL提取>"; sdbh="<从URL提取>"; sdsin="<从URL提取>"
+resp=$(curl -s -X POST "https://zxfw.court.gov.cn/yzw/yzw-zxfw-sdfw/api/v1/sdfw/getWsListBySdbhNew" \
+  -H "Content-Type: application/json" \
+  -d "{\"qdbh\":\"$qdbh\",\"sdbh\":\"$sdbh\",\"sdsin\":\"$sdsin\"}")
+echo "$resp" | python3 -c "
+import json, sys, os, urllib.request
+data = json.loads(sys.stdin.read())
+outdir = os.path.expanduser('~/Desktop/文书下载/') + data['data'][0].get('c_fymc','')[:6] if data.get('data') else 'temp'
+os.makedirs(outdir, exist_ok=True)
+for d in data['data']:
+    name = d['c_wsmc'] + '.' + d['c_wjgs']
+    urllib.request.urlretrieve(d['wjlj'], outdir + '/' + name)
+    print(f'OK: {name}')
+"
 
 ### 第四步：保存到桌面
 
