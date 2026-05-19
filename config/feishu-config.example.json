@@ -1,0 +1,21 @@
+{
+  "app_token": "your_app_token_here",
+  "table_id": "your_table_id_here",
+  "table_name": "案件日程",
+  "field_mappings": {
+    "案号": "field_xxxxx",
+    "时间": "field_yyyyy",
+    "事项": "field_zzzzz",
+    "地点": "field_wwwww",
+    "法院": "field_vvvvv",
+    "当事人": "field_uuuuu",
+    "备注": "field_ttttt"
+  },
+  "notes": [
+    "配置说明：",
+    "1. 将此文件复制为 feishu-config.json 并填入真实值",
+    "2. app_token 和 table_id 从飞书多维表格 URL 中获取",
+    "3. field_xxxxx 等为飞书表格字段的 ID，需从表格设置中查看",
+    "4. 飞书 CLI 认证通过 Keychain 持久化，首次使用需登录"
+  ]
+}
