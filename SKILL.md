@@ -113,7 +113,7 @@ https://zxfw.court.gov.cn/zxfw/#/pagesAjkj/app/wssd/index?qdbh=xxx&sdbh=xxx&sdsi
 #### 执行命令
 
 ```bash
-python3 ~/.claude/skills/wenshu-downloader/scripts/download_sms_docs.py "<完整短信原文>"
+python3 ~/.claude/skills/court-sms/scripts/download_sms_docs.py "<完整短信原文>"
 ```
 
 脚本自动完成：解析 URL → 提取参数 → 调用 API → 批量下载 → 输出 JSON 结果。
