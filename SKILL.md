@@ -1,10 +1,10 @@
 ---
 name: court-sms
-homepage: https://github.com/cat-xierluo/legal-skills
+homepage: https://github.com/goacheng001/legal-skills
 author: 高澄（微信cheng715)
-version: "1.4.0"
+version: "1.5.0"
 license: MIT
-description: 本技能应在用户收到法院短信（文书送达、立案通知、开庭提醒等）时使用，自动提取案号、当事人、下载链接，下载文书并归档到对应案件目录，**自动总结文件内容、提取关键日期信息并写入飞书多维表格**。
+description: 本技能应在用户收到法院短信（文书送达、立案通知、开庭提醒等）时使用，自动提取案号、当事人、下载链接，下载文书并归档到对应案件目录，**自动总结文件内容、提取关键日期信息并写入飞书多维表格**。**唯一版本，已整合 case-court-sms 功能**。
 ---
 
 # 法院短信识别与文书下载
