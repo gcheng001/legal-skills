@@ -23,7 +23,7 @@ except ImportError:
 # ==================== 配置 ====================
 SMS_DB_PATH = Path.home() / "Library" / "SMS" / "sms.db"
 SCAN_ROOTS = [
-    Path.home() / "Documents" / "Documents" / "cases",
+    Path.home() / "Documents" / Documents / cases / "案件",
 ]
 ARCHIVE_DIR = "_archive"
 COURT_SMS_FILE = "court-sms.json"

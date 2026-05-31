@@ -493,7 +493,7 @@ def convert_markdown_to_word(md_path, output_docx_path):
         # 使用pandoc转换
         result = subprocess.run(
             ['pandoc', str(md_path), '-o', str(output_docx_path),
-             '--reference-doc', '~/templates/参考模板.docx'],
+             '--reference-doc', '~/Codex/文件中转站/模板/参考模板.docx'],
             capture_output=True,
             text=True
         )

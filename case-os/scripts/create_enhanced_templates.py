@@ -427,7 +427,7 @@ def create_enhanced_legal_representative_template():
     return doc
 
 if __name__ == '__main__':
-    base_path = '~/templates/civil'
+    base_path = '~/Codex/文件中转站/模板/民事案件'
 
     # 创建增强版起诉状模板
     complaint_doc = create_enhanced_complaint_template()

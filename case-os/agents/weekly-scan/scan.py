@@ -15,7 +15,7 @@ from typing import Dict, List, Any
 
 # ==================== 配置 ====================
 SCAN_ROOTS = [
-    Path.home() / "Documents" / "Documents" / "cases",
+    Path.home() / "Documents" / Documents / cases / "案件",
 ]
 
 STATE_DIR = Path.home() / ".claude" / "skills" / "case-os" / "data"

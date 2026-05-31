@@ -402,7 +402,7 @@ def create_evidence_list_template():
     return doc
 
 if __name__ == '__main__':
-    base_path = '~/templates/civil'
+    base_path = '~/Codex/文件中转站/模板/民事案件'
 
     # 更新起诉状模板（不含证据清单）
     complaint_doc = create_complaint_template_without_evidence()

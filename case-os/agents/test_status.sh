@@ -1,7 +1,7 @@
 #!/bin/bash
 # 测试get_agent_status函数
 
-HOME_PATH="$HOME"
+HOME_PATH="/Users/Apple"
 
 get_agent_status() {
     local agent_name=$1

@@ -4,7 +4,7 @@
 set -e
 
 AGENTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-HOME_PATH="$HOME"  # 使用绝对路径
+HOME_PATH="/Users/Apple"  # 使用绝对路径
 AGENT_LIST=(
     "weekly-scan:case-os.weekly-scan:案件周度扫描Agent:每周一早上8点"
     "court-sms-monitor:caseos.sms-monitor:法院短信实时监控Agent:实时监控"

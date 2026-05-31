@@ -93,7 +93,7 @@ permissions:
 
 ```yaml
 扫描根目录:
-  - ~/cases
+  - ~/Documents/百度网盘/高澄/案件
 
 状态文件:
   扫描记录: ~/.claude/skills/case-os/data/last-scan-result.txt

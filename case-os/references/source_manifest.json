@@ -7,7 +7,7 @@
     {
       "file_id": "src_001",
       "file_name": "要件审判九步法_附件整理版.md",
-      "file_path": "~/Desktop/九步法/要件审判九步法_附件整理版.md",
+      "file_path": "/Users/Apple/Desktop/九步法/要件审判九步法_附件整理版.md",
       "type": "appendix_compilation",
       "size_lines": 1076,
       "encoding": "utf-8",
@@ -50,7 +50,7 @@
     {
       "file_id": "src_002",
       "file_name": "附件一_请求权抗辩基础备考表_按PDF页抽取.csv",
-      "file_path": "~/Desktop/九步法/附件一_请求权抗辩基础备考表_按PDF页抽取.csv",
+      "file_path": "/Users/Apple/Desktop/九步法/附件一_请求权抗辩基础备考表_按PDF页抽取.csv",
       "type": "reference_table",
       "size_lines": 530,
       "header_rows": 1,
@@ -88,7 +88,7 @@
     {
       "file_id": "src_003",
       "file_name": "附件二_九步法分解备考表_结构化.json",
-      "file_path": "~/Desktop/九步法/附件二_九步法分解备考表_结构化.json",
+      "file_path": "/Users/Apple/Desktop/九步法/附件二_九步法分解备考表_结构化.json",
       "type": "structured_checklist",
       "size_lines": 188,
       "encoding": "utf-8",
@@ -111,7 +111,7 @@
     {
       "file_id": "src_004",
       "file_name": "要件审判九步法_附件PDF整理版.md",
-      "file_path": "~/Desktop/九步法/要件审判九步法_附件PDF整理版.md",
+      "file_path": "/Users/Apple/Desktop/九步法/要件审判九步法_附件PDF整理版.md",
       "type": "pdf_page_organized_markdown",
       "size_lines": 2109,
       "encoding": "utf-8",
@@ -192,7 +192,7 @@
   "pdf_page_catalog": {
     "total_images": 97,
     "image_range": "page-247.png to page-343.png",
-    "directory_path": "~/Desktop/九步法/附件PDF页面图/",
+    "directory_path": "/Users/Apple/Desktop/九步法/附件PDF页面图/",
     "actual_pages": {
       "start": 247,
       "end": 343,

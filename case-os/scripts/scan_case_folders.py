@@ -8,7 +8,7 @@ from pathlib import Path
 from datetime import datetime
 
 SCAN_ROOTS = [
-    Path.home() / "Documents" / "Documents" / "cases",
+    Path.home() / "Documents" / Documents / cases / "案件",
     # 根据实际情况添加更多扫描根目录
 ]
 

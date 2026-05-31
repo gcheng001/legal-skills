@@ -559,5 +559,5 @@ criminal-case-visualization/
 
 ---
 
-**作者**：Legal Skills Project
+**作者**：高澄（微信cheng715）
 **最后更新**：2026-05-30

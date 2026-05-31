@@ -406,7 +406,7 @@ def create_entrust_template_with_placeholders():
     return doc
 
 if __name__ == '__main__':
-    base_path = '~/templates/civil'
+    base_path = '~/Codex/文件中转站/模板/民事案件'
 
     # 创建委托手续模板（使用固定律师信息）
     doc = create_entrust_template_with_placeholders()

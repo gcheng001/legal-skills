@@ -330,7 +330,7 @@ author: Legal Skills Project
 **错误示例（禁止）**：
 ```bash
 # ❌ 错误：直接硬编码文件路径
-mineru-pro ~/Desktop/input.pdf --upload --ocr --model vlm
+mineru-pro ~/Desktop/TestOCR.pdf --upload --ocr --model vlm
 
 # ❌ 错误：使用不存在的占位符
 mineru-pro <PDF文件1> --upload --ocr --model vlm

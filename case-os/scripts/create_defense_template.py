@@ -13,7 +13,7 @@ from docx.shared import Pt, Cm
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml.ns import qn
 
-TEMPLATE_DIR = "~/templates/civil/答辩状"
+TEMPLATE_DIR = "~/Codex/文件中转站/模板/民事案件/答辩状"
 TARGET_FILE = os.path.join(TEMPLATE_DIR, "民事答辩状-通用模板.docx")
 
 

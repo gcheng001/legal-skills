@@ -247,7 +247,7 @@ def generate_filing_materials(project_path, case_data):
     print(f"[*] 门禁检查通过: {gate_msg}")
 
     # 模板基础路径
-    template_base = Path('~/templates/civil')
+    template_base = Path('~/Codex/文件中转站/模板/民事案件')
 
     # 创建立案材料文件夹
     output_dir = Path(project_path) / '立案材料-Word'
@@ -445,7 +445,7 @@ def generate_defense_materials(project_path, case_data):
         }
     print(f"[*] 门禁检查通过: {gate_msg}")
 
-    template_base = Path('~/templates/civil')
+    template_base = Path('~/Codex/文件中转站/模板/民事案件')
 
     output_dir = Path(project_path) / '答辩材料-Word'
     output_dir.mkdir(exist_ok=True)

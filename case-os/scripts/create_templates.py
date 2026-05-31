@@ -342,7 +342,7 @@ def create_legal_representative_template():
 if __name__ == '__main__':
     import os
 
-    base_path = '~/templates/civil'
+    base_path = '~/Codex/文件中转站/模板/民事案件'
 
     # 创建起诉状模板
     complaint_doc = create_complaint_template()
