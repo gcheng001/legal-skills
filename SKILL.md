@@ -102,7 +102,7 @@ https://zxfw.court.gov.cn/zxfw/#/pagesAjkj/app/wssd/index?qdbh=xxx&sdbh=xxx&sdsi
 
 固定下载到桌面：`~/Desktop/文书下载/{案号}/`
 
-- `{案号}` 使用短信中提取的案号，示例：`（2026）苏0692民初552号`
+- `{案号}` 使用短信中提取的案号，示例：`（2025）苏0102民初5678号`
 - 目录不存在则自动创建
 - **不扫描案件目录，不询问用户，直接使用此固定路径**
 
@@ -170,9 +170,9 @@ for d in data['data']:
 
 ```json
 {
-  "app_token": "LLyLbvBSMaN3VJslA4Dcd9dCnSb",
+  "app_token": "<YOUR_APP_TOKEN>",
   "table_name": "日程任务中枢",
-  "table_id": "tblVEFh7rLdakiSS"
+  "table_id": "<YOUR_TABLE_ID>"
 }
 ```
 
@@ -201,8 +201,8 @@ for d in data['data']:
 #### 写入飞书多维表格
 
 ```bash
-APP_TOKEN="LLyLbvBSMaN3VJslA4Dcd9dCnSb"
-TABLE_ID="tblVEFh7rLdakiSS"
+APP_TOKEN="<YOUR_APP_TOKEN>"
+TABLE_ID="<YOUR_TABLE_ID>"
 
 timestamp=$(date -j -f "%Y-%m-%d %H:%M" "2026-06-04 14:00" "+%s")000
 
@@ -210,8 +210,8 @@ lark-cli api POST "/open-apis/bitable/v1/apps/${APP_TOKEN}/tables/${TABLE_ID}/re
   --as user \
   --data '{
     "fields": {
-      "事项": "开庭审理（2026）苏0692民初552号",
-      "任务内容": "南通通州湾江海联动开发示范区人民法院 - 万邦-季军劳务合同纠纷",
+      "事项": "开庭审理（2025）苏0102民初5678号",
+      "任务内容": "某市某区人民法院 - 原告张三与被告李四劳务合同纠纷",
       "开始时间": '"$timestamp"',
       "地点": "第四法庭",
       "来源": "法院短信",
@@ -226,8 +226,8 @@ lark-cli api POST "/open-apis/bitable/v1/apps/${APP_TOKEN}/tables/${TABLE_ID}/re
 
 ```bash
 # 读取配置（实际项目中从 config/feishu-config.json 读取）
-APP_TOKEN="LLyLbvBSMaN3VJslA4Dcd9dCnSb"
-TABLE_ID="tblVEFh7rLdakiSS"
+APP_TOKEN="<YOUR_APP_TOKEN>"
+TABLE_ID="<YOUR_TABLE_ID>"
 
 # 将日期时间转换为毫秒时间戳（macOS date 命令）
 timestamp=$(date -j -f "%Y-%m-%d %H:%M" "2026-05-22 14:40" "+%s")000
@@ -238,8 +238,8 @@ lark-cli api POST "/open-apis/bitable/v1/apps/${APP_TOKEN}/tables/${TABLE_ID}/re
   --as user \
   --data '{
     "fields": {
-      "事项": "公开宣判（2026）浙0304刑初347号",
-      "任务内容": "温州市瓯海区人民法院 - 尚家进、张紫源开设赌场罪",
+      "事项": "公开宣判（2025）浙0105刑初789号",
+      "任务内容": "某市某区人民法院 - 王某某开设赌场罪",
       "开始时间": '"$timestamp"',
       "地点": "第四审判庭",
       "来源": "法院短信",
@@ -250,16 +250,16 @@ lark-cli api POST "/open-apis/bitable/v1/apps/${APP_TOKEN}/tables/${TABLE_ID}/re
 
 **字段映射参考（日程任务中枢）**：
 
-| 字段名 | 字段ID | 类型 | 说明 |
-|--------|--------|------|------|
-| 事项 | fldSAKBW7G | Text | 主要标题 |
-| 任务内容 | fldXQrmu9c | Text | 详细描述 |
-| 开始时间 | fld08Jn28a | DateTime | 开始时间（含时分） |
-| 截止时间 | fld9Oy0o4k | DateTime | 截止日期（仅日期） |
-| 地点 | fldBZxRkOG | Text | 地点/法庭 |
-| 备注 | fldrPV4xbx | Text | 备注信息 |
-| 来源 | fldlcmmODX | Text | 来源标识 |
-| 优先级 | fldp66GC1l | SingleSelect | 选项：高/中/低 |
+| 字段名 | 类型 | 说明 |
+|--------|------|------|
+| 事项 | Text | 主要标题 |
+| 任务内容 | Text | 详细描述 |
+| 开始时间 | DateTime | 开始时间（含时分） |
+| 截止时间 | DateTime | 截止日期（仅日期） |
+| 地点 | Text | 地点/法庭 |
+| 备注 | Text | 备注信息 |
+| 来源 | Text | 来源标识 |
+| 优先级 | SingleSelect | 选项：高/中/低 |
 
 > **实测经验（2026-05-19）**：
 > - ✅ 使用字段名（中文）写入成功
@@ -275,11 +275,11 @@ lark-cli api POST "/open-apis/bitable/v1/apps/${APP_TOKEN}/tables/${TABLE_ID}/re
 📅 关键日期信息已提取并写入飞书：
 
 ┌─────────────────────────────────────────────────────────────┐
-│ 案号：（2026）浙0304刑初347号                                │
-│ 法院：温州市瓯海区人民法院                                    │
-│ 当事人：尚家进、张紫源                                        │
+│ 案号：（2025）浙0105刑初789号                                   │
+│ 法院：某市某区人民法院                                          │
+│ 当事人：王某某                                                  │
 ├─────────────────────────────────────────────────────────────┤
-│ ⚠️  2026-05-22 14:40  —  开庭审理  —  第四审判庭            │
+│ ⚠️  2025-06-15 09:30  —  开庭审理  —  第三审判庭               │
 └─────────────────────────────────────────────────────────────┘
 
 ✅ 已写入飞书多维表格（表格：日程任务中枢）

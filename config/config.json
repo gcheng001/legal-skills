@@ -1,25 +1,15 @@
 {
-  "app_token": "LLyLbvBSMaN3VJslA4Dcd9dCnSb",
   "tables": {
-    "案件池": "tbl1T4h9yWZW2cKQ",
-    "日程任务中枢": "tblVEFh7rLdakiSS",
-    "客户池": "tblRSS2cjVuuXBAR",
-    "记忆池": "tblWCqQVeks8T4QE",
-    "证据池": "tblF3PMjj2zOA7iS"
+    "案件池": "your_table_id_here",
+    "日程任务中枢": "your_table_id_here",
+    "客户池": "your_table_id_here",
+    "记忆池": "your_table_id_here",
+    "证据池": "your_table_id_here"
   },
-  "案件池字段": {
-    "案件名称": "案件名称",
-    "开庭日期": "开庭日期",
-    "当前阶段": "当前阶段",
-    "备注": "备注",
-    "委托人|当事人": "委托人|当事人"
-  },
-  "日程任务中枢字段": {
-    "事项": "事项",
-    "任务内容": "任务内容",
-    "开始时间": "开始时间",
-    "结束时间": "结束时间",
-    "地点": "地点",
-    "案件池": "案件池"
-  }
+  "notes": [
+    "配置说明：",
+    "1. 将此文件中的 table_id 替换为飞书多维表格中的真实 ID",
+    "2. table_id 从飞书多维表格 URL 中获取",
+    "3. 飞书 CLI 认证通过 Keychain 持久化，首次使用需登录"
+  ]
 }
