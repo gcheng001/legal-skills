@@ -1,0 +1,47 @@
+%% 作战地图模板 - Mermaid 流程图
+%% 用途：主张→要件→证据→争点→预测，一棵树串联
+%% 生成时机：S9完成后自动生成
+%% 数据来源：S1请求权 + S2要件 + S4证据映射 + S6争点 + S9预测
+
+graph TD
+    ROOT["🏛️ 案件名称"] --> CLAIM["📋 诉讼请求"]
+
+    CLAIM --> R1["请求权1: {{请求权名称}}"]
+    CLAIM --> R2["请求权2: {{请求权名称}}"]
+
+    R1 --> E1_1["要件1: {{要件名称}}"]
+    R1 --> E1_2["要件2: {{要件名称}}"]
+    R1 --> E1_3["要件3: {{要件名称}}"]
+
+    E1_1 --> EV1_1["✅ 证据: {{证据编号}} {{证据摘要}}"]
+    E1_1 --> EV1_2["⚠️ 缺口: {{缺失证据描述}}"]
+
+    E1_2 --> EV2_1["✅ 证据: {{证据编号}} {{证据摘要}}"]
+
+    E1_3 --> EV3_1["✅ 证据: {{证据编号}} {{证据摘要}}"]
+    E1_3 --> EV3_2["⚠️ 弱证据: {{证据编号}} {{证据摘要}}"]
+
+    R1 --> D1["⚖️ 争点1: {{争点描述}}"]
+    R1 --> D2["⚖️ 争点2: {{争点描述}}"]
+
+    D1 --> P1["🔮 预测: {{有利/不利}} - {{理由}}"]
+    D2 --> P2["🔮 预测: {{有利/不利}} - {{理由}}"]
+
+    ROOT --> RESULT["🎯 裁判预测: {{胜诉概率}}%"]
+
+    classDef root fill:#1a1a2e,stroke:#e94560,color:#fff
+    classDef claim fill:#16213e,stroke:#0f3460,color:#fff
+    classDef element fill:#533483,stroke:#e94560,color:#fff
+    classDef evidence fill:#2b5e2b,stroke:#4caf50,color:#fff
+    classDef gap fill:#8b0000,stroke:#ff6b6b,color:#fff
+    classDef dispute fill:#e65100,stroke:#ff9800,color:#fff
+    classDef predict fill:#0277bd,stroke:#03a9f4,color:#fff
+
+    class ROOT root
+    class CLAIM claim
+    class E1_1,E1_2,E1_3 element
+    class EV1_1,EV2_1,EV3_1 evidence
+    class EV1_2 gap
+    class EV3_2 gap
+    class D1,D2 dispute
+    class P1,P2,RESULT predict

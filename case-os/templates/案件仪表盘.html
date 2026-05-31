@@ -1,0 +1,2157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>案件仪表盘</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ---- 主题变量 ---- */
+:root {
+  --bg: #0d0f14;
+  --surface: #151821;
+  --surface-alt: #1c2030;
+  --border: #2a2f3e;
+  --border-bright: #3d4560;
+  --text: #e8e4dc;
+  --text-dim: #6b7280;
+  --text-mid: #9ca3af;
+  --amber: #f59e0b;
+  --amber-dim: rgba(245,158,11,0.15);
+  --amber-glow: rgba(245,158,11,0.3);
+  --cyan: #22d3ee;
+  --cyan-dim: rgba(34,211,238,0.12);
+  --green: #10b981;
+  --green-dim: rgba(16,185,129,0.12);
+  --red: #ef4444;
+  --red-dim: rgba(239,68,68,0.12);
+  --purple: #a78bfa;
+  --purple-dim: rgba(167,139,250,0.12);
+}
+
+/* 浅色主题 */
+[data-theme="light"] {
+  --bg: #f5f5f0;
+  --surface: #ffffff;
+  --surface-alt: #f0f0eb;
+  --border: #d0d0c8;
+  --border-bright: #b0b0a8;
+  --text: #333333;
+  --text-dim: #666666;
+  --text-mid: #555555;
+  --amber: #c78000;
+  --amber-dim: rgba(199,128,0,0.15);
+  --amber-glow: rgba(199,128,0,0.2);
+  --cyan: #0088aa;
+  --cyan-dim: rgba(0,136,170,0.12);
+  --green: #059669;
+  --green-dim: rgba(5,150,105,0.12);
+  --red: #dc2626;
+  --red-dim: rgba(220,38,38,0.12);
+  --purple: #7c3aed;
+  --purple-dim: rgba(124,58,237,0.12);
+}
+
+/* 打印强制浅色 */
+@media print {
+  :root, [data-theme="dark"], [data-theme="light"] {
+    --bg: #ffffff;
+    --surface: #ffffff;
+    --surface-alt: #f8f8f8;
+    --border: #cccccc;
+    --border-bright: #aaaaaa;
+    --text: #333333;
+    --text-dim: #666666;
+    --text-mid: #555555;
+    --amber: #c78000;
+    --amber-dim: rgba(199,128,0,0.1);
+    --amber-glow: transparent;
+    --cyan: #0088aa;
+    --cyan-dim: rgba(0,136,170,0.1);
+    --green: #059669;
+    --green-dim: rgba(5,150,105,0.1);
+    --red: #dc2626;
+    --red-dim: rgba(220,38,38,0.1);
+    --purple: #7c3aed;
+    --purple-dim: rgba(124,58,237,0.1);
+  }
+  .theme-toggle-btn { display: none !important; }
+  body { background-image: none !important; }
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: "JetBrains Mono", "Noto Serif SC", monospace;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding-bottom: 60px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background-image:
+    radial-gradient(ellipse at 20% 0%, rgba(245,158,11,0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 100%, rgba(34,211,238,0.04) 0%, transparent 50%);
+}
+
+/* ---- 顶部 ---- */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(13,15,20,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 18px 28px 14px;
+}
+.topbar-inner { max-width: 1400px; margin: 0 auto; }
+
+/* 图表区容器 */
+.charts-area {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px 24px 0;
+}
+.topbar-row1 { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
+.case-title { font-family: "Noto Serif SC", serif; font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+.case-title span { color: var(--amber); }
+.topbar-right { display: flex; align-items: center; gap: 16px; }
+
+
+/* topbar meta */
+.topbar-meta {
+  display: grid; grid-template-columns: repeat(4, auto);
+  gap: 0; border: 1px solid var(--border);
+  border-radius: 10px; overflow: hidden;
+  width: fit-content;
+}
+.meta-cell {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 16px; border-right: 1px solid var(--border);
+  background: var(--surface);
+}
+.meta-cell:last-child { border-right: none; }
+.meta-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+.meta-value { font-size: 13px; color: var(--text-mid); font-weight: 600; }
+
+/* ---- 阶段进度条 ---- */
+.stage-bar { display: flex; align-items: center; gap: 0; margin-top: 12px; max-width: 800px; }
+.stage-node { display: flex; flex-direction: column; align-items: center; flex: 1; position: relative; }
+.stage-node:not(:last-child)::after {
+  content: ''; position: absolute; top: 13px;
+  left: calc(50% + 15px); right: calc(-50% + 15px);
+  height: 2px; background: var(--border); z-index: 0;
+}
+.stage-node.done:not(:last-child)::after { background: var(--green); }
+.stage-node.active:not(:last-child)::after { background: linear-gradient(to right, var(--amber) 0%, var(--border) 100%); }
+.stage-dot {
+  width: 26px; height: 26px; border-radius: 50%;
+  border: 2px solid var(--border); background: var(--surface);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; position: relative; z-index: 1;
+}
+.stage-node.done .stage-dot { background: var(--green); border-color: var(--green); color: #fff; }
+.stage-node.active .stage-dot { background: var(--amber); border-color: var(--amber); color: #000; box-shadow: 0 0 14px var(--amber-glow); animation: stage-pulse 2.5s infinite; }
+@keyframes stage-pulse { 0%,100%{box-shadow:0 0 10px var(--amber-glow)} 50%{box-shadow:0 0 22px var(--amber-glow)} }
+.stage-name { font-size: 10px; font-weight: 600; color: var(--text-dim); margin-top: 4px; text-align: center; }
+.stage-node.done .stage-name { color: var(--green); }
+.stage-node.active .stage-name { color: var(--amber); }
+
+/* ---- 主容器 ---- */
+.container { max-width: 1400px; margin: 0 auto; padding: 20px 24px; }
+
+/* ---- Topbar KPI 按钮 ---- */
+.topbar-kpi-btn {
+  font-family: "JetBrains Mono", monospace; font-size: 11px;
+  padding: 6px 14px; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text-mid); cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px; transition: all 0.15s;
+  text-decoration: none; white-space: nowrap;
+}
+.topbar-kpi-btn:hover { border-color: var(--border-bright); color: var(--text); }
+.topbar-kpi-btn.orange { border-color: rgba(245,158,11,0.3); color: var(--amber); }
+.topbar-kpi-btn.cyan { border-color: rgba(34,211,238,0.3); color: var(--cyan); }
+.topbar-kpi-btn.green { border-color: rgba(16,185,129,0.3); color: var(--green); }
+
+/* 主题切换按钮 */
+.theme-toggle-btn {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 16px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.theme-toggle-btn:hover { border-color: var(--amber); background: var(--amber-dim); }
+
+/* ---- 主布局 ---- */
+.top-trio { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; align-items: start; margin-bottom: 14px; }
+.top-trio > * { min-height: 340px; }
+.evidence-full { margin-bottom: 14px; }
+/* 兼容旧类名 */
+.main-layout { display: none; }
+.left-panel { display: none; }
+.right-panel { display: none; }
+
+/* 缺口、备忘录等内部滚动，但保持添加按钮可见 */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  transition: border-color 0.2s;
+  overflow-y: auto;
+  max-height: 400px;
+}
+.card::-webkit-scrollbar { width: 4px; }
+.card::-webkit-scrollbar-track { background: transparent; }
+.card::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.card:hover { border-color: var(--border-bright); }
+
+/* 缺口卡片特殊：添加按钮和输入框不能被裁剪 */
+.gap-card { overflow: visible; max-height: none; padding-bottom: 8px; }
+
+/* ---- 通用卡片 ---- */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  transition: border-color 0.2s;
+  overflow-y: auto;
+  max-height: 400px;
+}
+.card::-webkit-scrollbar { width: 4px; }
+.card::-webkit-scrollbar-track { background: transparent; }
+.card::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.card:hover { border-color: var(--border-bright); }
+.card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.card-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); display: flex; align-items: center; gap: 8px; }
+.card-title::before { content: ''; width: 3px; height: 12px; background: var(--amber); border-radius: 2px; }
+
+/* ---- 备忘录 ---- */
+.memo-card {
+  background: var(--surface-alt);
+  border: 1px solid var(--border); border-radius: 16px; padding: 18px 20px;
+  position: relative; overflow-y: auto; max-height: 400px;
+}
+.memo-card::-webkit-scrollbar { width: 4px; }
+.memo-card::-webkit-scrollbar-track { background: transparent; }
+.memo-card::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.memo-card::after { content: ''; position: absolute; top: 0; right: 0; width: 120px; height: 80px; background: radial-gradient(circle, var(--amber-dim) 0%, transparent 70%); pointer-events: none; }
+.memo-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.memo-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); display: flex; align-items: center; gap: 8px; }
+.memo-title::before { content: ''; width: 3px; height: 12px; background: var(--amber); border-radius: 2px; }
+.memo-add-btn { font-size: 10px; padding: 4px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text-dim); cursor: pointer; transition: all 0.15s; font-family: inherit; }
+.memo-add-btn:hover { background: var(--surface-alt); color: var(--text); }
+.memo-item { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.memo-item:last-child { border-bottom: none; }
+.memo-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--amber); margin-top: 7px; flex-shrink: 0; }
+.memo-text { font-size: 13px; color: var(--text-mid); line-height: 1.5; cursor: pointer; transition: color 0.15s; }
+.memo-text:hover { color: var(--text); }
+.memo-date { font-size: 10px; color: var(--text-dim); opacity: 0.6; margin-top: 3px; }
+.memo-empty { font-size: 12px; color: var(--text-dim); text-align: center; padding: 16px 0; }
+.memo-add-area { display: none; margin-top: 10px; }
+.memo-add-area.show { display: block; }
+.memo-add-input { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; font-size: 13px; color: var(--text); font-family: inherit; resize: vertical; min-height: 50px; }
+.memo-add-input::placeholder { color: var(--text-dim); }
+.memo-add-input:focus { outline: none; border-color: var(--amber); }
+.memo-add-actions { display: flex; gap: 8px; margin-top: 8px; }
+.memo-add-save { font-size: 11px; padding: 5px 16px; border-radius: 6px; border: none; background: var(--amber); color: #000; cursor: pointer; font-weight: 600; font-family: inherit; }
+.memo-add-cancel { font-size: 11px; padding: 5px 14px; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); cursor: pointer; font-family: inherit; }
+.memo-md-section { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; overflow: hidden; }
+.memo-md-header { display: flex; align-items: center; gap: 6px; padding: 8px 10px; cursor: pointer; background: rgba(255,255,255,0.02); }
+.memo-md-header:hover { background: rgba(255,255,255,0.05); }
+.memo-md-icon { font-size: 14px; }
+.memo-md-title { flex: 1; font-size: 13px; font-weight: 500; color: var(--text); }
+.memo-md-toggle { font-size: 11px; color: var(--text-dim); transition: transform 0.2s; }
+.memo-md-section.open .memo-md-toggle { transform: rotate(90deg); }
+.memo-md-content { display: none; padding: 8px 10px; font-size: 12px; color: var(--text-dim); line-height: 1.6; max-height: 200px; overflow-y: auto; }
+.memo-md-section.open .memo-md-content { display: block; }
+
+/* ---- 缺口 ---- */
+.gap-badge { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; font-size: 10px; font-weight: 700; flex-shrink: 0; }
+.gap-badge.critical { background: var(--red); color: #fff; }
+.gap-badge.warn { background: var(--amber); color: #000; }
+.gap-list-item { display: flex; align-items: flex-start; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--border); }
+.gap-list-item:last-child { border-bottom: none; }
+.gap-text { font-size: 12px; color: var(--text-mid); flex: 1; line-height: 1.5; }
+.gap-check { width: 20px; height: 20px; border: 2px solid var(--border); border-radius: 4px; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; transition: all 0.15s; background: transparent; color: transparent; font-family: inherit; }
+.gap-check:hover { border-color: var(--green); }
+.gap-check.done { background: var(--green); border-color: var(--green); color: #fff; }
+.gap-empty { font-size: 12px; color: var(--text-dim); text-align: center; padding: 16px 0; }
+.gap-add-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 8px; border: 1px dashed var(--border); background: transparent; color: var(--text-dim); font-size: 11px; cursor: pointer; margin-top: 10px; font-family: inherit; transition: all 0.15s; }
+.gap-add-btn:hover { border-color: var(--amber); color: var(--amber); }
+.gap-add-input { width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 12px; margin-top: 8px; display: none; background: var(--surface-alt); color: var(--text); font-family: inherit; }
+.gap-add-input.show { display: block; }
+.gap-add-input:focus { outline: none; border-color: var(--amber); }
+
+/* ---- 雷达图区 ---- */
+.radar-wrap { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.radar-canvas-wrap { position: relative; }
+.radar-legend { display: flex; flex-direction: column; gap: 4px; width: 100%; }
+.radar-legend-item { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--text-mid); }
+.radar-legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+/* ---- 证据地图 ---- */
+.evidence-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; overflow-y: auto; max-height: 500px; transition: max-height 0.3s ease; }
+.evidence-grid.view-expanded { max-height: none !important; overflow: visible !important; height: auto !important; }
+.evidence-grid.view-collapsed { max-height: none !important; overflow: visible !important; height: auto !important; }
+.evidence-full.view-expanded { overflow: visible !important; max-height: none !important; height: auto !important; }
+.evidence-full.view-expanded .card { overflow: visible !important; max-height: none !important; height: auto !important; }
+.evidence-view-btn { font-size: 10px; padding: 3px 10px; border-radius: 8px; border: 1px solid var(--border); color: var(--text-dim); cursor: pointer; background: transparent; font-family: inherit; transition: all 0.15s; }
+.evidence-view-btn:hover { border-color: var(--amber); color: var(--amber); }
+.evidence-grid::-webkit-scrollbar { width: 4px; }
+.evidence-grid::-webkit-scrollbar-track { background: transparent; }
+.evidence-grid::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.folder-group { background: var(--surface-alt); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; transition: border-color 0.2s; }
+.folder-group:hover { border-color: var(--border-bright); }
+.folder-header { padding: 11px 14px; display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none; transition: background 0.15s; }
+.folder-header:hover { background: rgba(255,255,255,0.02); }
+.folder-icon { font-size: 16px; }
+.folder-name { font-size: 13px; font-weight: 700; color: var(--text); flex: 1; }
+.folder-count { font-size: 10px; color: var(--text-dim); background: var(--border); padding: 2px 8px; border-radius: 10px; }
+.folder-toggle { font-size: 11px; color: var(--text-dim); transition: transform 0.2s; }
+.folder-group.open .folder-toggle { transform: rotate(90deg); }
+.folder-files { padding: 8px 14px 10px; display: none; }
+.folder-group.open .folder-files { display: block; }
+.file-item-wrap { position: relative; display: inline-block; }
+.file-badge-dot { position: absolute; top: -5px; right: -5px; width: 14px; height: 14px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 700; z-index: 2; border: 1.5px solid var(--surface); }
+.file-badge-dot.critical { background: var(--red); color: #fff; }
+.file-badge-dot.warn { background: var(--amber); color: #000; }
+.file-item { display: flex; align-items: flex-start; gap: 9px; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.file-item:last-child { border-bottom: none; }
+.file-proof { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; }
+.file-proof.ok { background: var(--green-dim); color: var(--green); }
+.file-proof.warn { background: var(--amber-dim); color: var(--amber); }
+.file-proof.bad { background: var(--red-dim); color: var(--red); }
+.file-proof.none { background: var(--surface); color: var(--text-dim); }
+.file-name { font-size: 12px; font-weight: 600; color: var(--text-mid); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; }
+.file-meta { font-size: 10px; color: var(--text-dim); margin-top: 2px; }
+.file-confirm-btn { font-size: 10px; padding: 2px 8px; border-radius: 5px; border: 1px solid var(--green); color: var(--green); cursor: pointer; background: transparent; transition: all 0.15s; white-space: nowrap; font-family: inherit; }
+.file-confirm-btn:hover { background: var(--green); color: #000; }
+.file-confirm-btn.confirmed { background: var(--green-dim); }
+.file-confirm-btn.confirmed:hover { background: var(--red-dim); border-color: var(--red); color: var(--red); }
+.move-dropdown { position: relative; }
+.file-move-btn { font-size: 10px; padding: 2px 8px; border-radius: 5px; border: 1px solid var(--border); color: var(--text-dim); cursor: pointer; background: transparent; transition: all 0.15s; white-space: nowrap; font-family: inherit; }
+.file-move-btn:hover { border-color: var(--amber); color: var(--amber); }
+.move-menu { display: none; position: absolute; right: 0; top: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.4); z-index: 100; min-width: 110px; overflow: hidden; }
+.move-menu.show { display: block; }
+.move-menu-item { padding: 8px 12px; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.1s; }
+.move-menu-item:hover { background: var(--surface-alt); }
+
+/* ---- S0 证据卡片库 ---- */
+.s0-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; }
+.s0-badge.pending { background: var(--surface-alt); color: var(--text-dim); }
+.s0-badge.review { background: var(--amber-dim); color: var(--amber); }
+.s0-badge.done { background: var(--green-dim); color: var(--green); }
+.s0-summary { display: flex; gap: 12px; flex-wrap: wrap; margin: 8px 0; }
+.s0-summary-item { background: var(--surface-alt); border: 1px solid var(--border); border-radius: 8px; padding: 8px 14px; min-width: 80px; text-align: center; }
+.s0-summary-num { font-size: 18px; font-weight: 700; }
+.s0-summary-label { font-size: 9px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+.s0-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.s0-table th { background: var(--surface-alt); color: var(--text-dim); font-weight: 600; padding: 6px 8px; text-align: left; border-bottom: 1px solid var(--border); font-size: 9px; text-transform: uppercase; letter-spacing: 1px; position: sticky; top: 0; z-index: 2; }
+.s0-table td { padding: 6px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.s0-table tr:hover td { background: var(--surface-alt); }
+.s0-table .s0-text { max-width: 280px; line-height: 1.5; }
+.s0-table .s0-pending { color: var(--amber); }
+.s0-table .s0-confirmed { color: var(--green); }
+.s0-table tr.s0-row-confirmed td { background: rgba(16,185,129,0.08); }
+.s0-table tr.s0-row-confirmed:hover td { background: rgba(16,185,129,0.12); }
+.s0-filter-bar { display: flex; gap: 8px; margin: 8px 0; flex-wrap: wrap; }
+.s0-filter-btn { font-size: 10px; padding: 3px 10px; border-radius: 8px; border: 1px solid var(--border); color: var(--text-dim); cursor: pointer; background: transparent; font-family: inherit; transition: all 0.15s; }
+.s0-filter-btn:hover { border-color: var(--amber); color: var(--amber); }
+.s0-filter-btn.active { background: var(--amber-dim); border-color: var(--amber); color: var(--amber); }
+.s0-action-bar { display: flex; gap: 8px; margin: 8px 0; }
+.s0-btn { font-size: 10px; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+.s0-btn-primary { background: var(--cyan); color: var(--bg); border: none; font-weight: 600; }
+.s0-btn-primary:hover { opacity: 0.85; }
+.s0-btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text-mid); }
+.s0-btn-ghost:hover { border-color: var(--text-dim); color: var(--text); }
+.s0-empty { text-align: center; padding: 30px; color: var(--text-dim); font-size: 12px; }
+
+/* ---- 图表面板 ---- */
+.charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+.chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px; overflow: hidden; }
+.chart-card-compact { padding: 14px 16px; }
+/* 主双栏 */
+.dashboard-split { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 4px; }
+.split-left, .split-right { display: flex; flex-direction: column; min-width: 0; }
+.chart-card-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.chart-card-title::before { content: ''; width: 3px; height: 12px; background: var(--amber); border-radius: 2px; }
+.chart-wide { grid-column: 1 / -1; }
+.tree-node { border-bottom: 1px solid var(--border); cursor: pointer; }
+.tree-node:last-child { border-bottom: none; }
+.tree-node.collapsed .tree-children { display: none; }
+.chart-card canvas { display: block; max-width: 100%; }
+
+/* ---- 操作记录时间线 ---- */
+.timeline-group { margin-bottom: 20px; }
+.timeline-group:last-child { margin-bottom: 0; }
+.timeline-group-header { display: flex; align-items: center; gap: 10px; padding: 6px 0 8px; cursor: pointer; border-bottom: 1px solid var(--border); margin-bottom: 8px; }
+.timeline-group-icon { font-size: 14px; }
+.timeline-group-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-dim); flex: 1; }
+.timeline-group-count { font-size: 10px; color: var(--text-dim); background: var(--surface-alt); padding: 2px 8px; border-radius: 10px; }
+.timeline-group-toggle { font-size: 11px; color: var(--text-dim); transition: transform 0.2s; }
+.timeline-group.collapsed .timeline-group-toggle { transform: rotate(-90deg); }
+.timeline-group.collapsed .timeline-items { display: none; }
+.timeline-item { display: flex; align-items: flex-start; gap: 10px; padding: 6px 0; }
+.timeline-time { font-size: 11px; color: var(--text-dim); font-family: "JetBrains Mono", monospace; flex-shrink: 0; width: 60px; padding-top: 1px; }
+.timeline-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+.timeline-dot.memo { background: var(--purple); box-shadow: 0 0 8px rgba(167,139,250,0.4); }
+.timeline-dot.gap { background: var(--amber); box-shadow: 0 0 8px var(--amber-glow); }
+.timeline-dot.file { background: var(--green); box-shadow: 0 0 8px rgba(16,185,129,0.3); }
+.timeline-dot.confirm { background: var(--cyan); box-shadow: 0 0 8px rgba(34,211,238,0.3); }
+.timeline-dot.other { background: var(--text-dim); }
+.timeline-content { font-size: 12px; color: var(--text-mid); flex: 1; }
+.timeline-content .action { font-weight: 600; color: var(--text); }
+.timeline-content .detail { color: var(--text-dim); font-size: 11px; margin-top: 2px; }
+.timeline-empty { text-align: center; padding: 40px 20px; color: var(--text-dim); font-size: 12px; }
+
+/* ---- 底部 ---- */
+.bottom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+.log-day { margin-bottom: 14px; }
+.log-day-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--amber); margin-bottom: 6px; }
+.log-entry { display: flex; align-items: center; gap: 10px; padding: 4px 0; font-size: 12px; }
+.log-time { font-size: 10px; color: var(--text-dim); font-family: "JetBrains Mono", monospace; width: 40px; flex-shrink: 0; }
+.log-action { color: var(--text-mid); flex: 1; }
+.log-action strong { color: var(--text); }
+.folder-summary-row { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--border); }
+.folder-summary-row:last-child { border-bottom: none; }
+.folder-summary-icon { font-size: 15px; }
+.folder-summary-name { font-size: 12px; color: var(--text-mid); flex: 1; }
+.folder-summary-count { font-size: 11px; color: var(--text-dim); }
+
+/* ---- 雷达图（主图表区版） ---- */
+.radar-wrap-topbar { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+#radarCanvasTop { display: block; max-width: 100%; }
+
+
+/* ---- Footer ---- */
+.footer { text-align: center; padding: 24px; font-size: 10px; color: var(--text-dim); letter-spacing: 1px; }
+.auth-btn { font-size: 11px; padding: 5px 14px; border-radius: 8px; border: 1px solid var(--amber); color: var(--amber); background: transparent; cursor: pointer; transition: all 0.15s; font-family: inherit; }
+.auth-btn:hover { background: var(--amber); color: #000; }
+.auth-btn.active { background: var(--amber-dim); border-color: var(--amber); color: var(--amber); cursor: default; }
+
+/* ---- 九步法热力图 ---- */
+.heatmap-wrap { margin-top: 14px; max-width: 900px; }
+.heatmap-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.heatmap-title::before { content: ''; width: 3px; height: 12px; background: var(--amber); border-radius: 2px; }
+.heatmap-title-right { font-size: 10px; color: var(--text-dim); font-weight: 400; text-transform: none; letter-spacing: 0; margin-left: auto; }
+.heatmap-grid { display: grid; grid-template-columns: 100px 1fr 1fr; gap: 4px; }
+.hm-header { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-dim); text-align: center; padding: 6px 0; background: transparent; }
+.hm-header.label { text-align: left; }
+.hm-label { font-size: 11px; color: var(--text-mid); display: flex; align-items: center; gap: 6px; padding: 8px 10px; background: var(--surface); border-radius: 6px; border: 1px solid var(--border); }
+.hm-label-emoji { font-size: 13px; }
+.hm-label-text { font-weight: 600; }
+.hm-cell { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; border: 1px solid transparent; transition: all 0.2s; }
+.hm-cell.pending { background: rgba(107,114,128,0.08); color: #6b7280; border-color: rgba(107,114,128,0.15); }
+.hm-cell.in_progress { background: rgba(34,211,238,0.12); color: #22d3ee; border-color: rgba(34,211,238,0.25); }
+.hm-cell.completed { background: rgba(16,185,129,0.12); color: #10b981; border-color: rgba(16,185,129,0.25); }
+.hm-cell.review_pending { background: rgba(245,158,11,0.12); color: #f59e0b; border-color: rgba(245,158,11,0.25); }
+.hm-cell.draft { background: rgba(245,158,11,0.08); color: #d97706; border-color: rgba(245,158,11,0.18); }
+.hm-cell.blocked { background: rgba(239,68,68,0.12); color: #ef4444; border-color: rgba(239,68,68,0.25); }
+.hm-cell.active_step { box-shadow: 0 0 10px rgba(34,211,238,0.2); }
+.hm-status-icon { font-size: 12px; }
+.hm-step-badge { font-size: 9px; color: var(--text-dim); background: var(--surface-alt); padding: 1px 6px; border-radius: 8px; margin-left: auto; }
+.hm-legend { display: flex; align-items: center; gap: 14px; margin-top: 8px; padding: 6px 0; }
+.hm-legend-item { display: flex; align-items: center; gap: 4px; font-size: 10px; color: var(--text-dim); }
+.hm-legend-dot { width: 8px; height: 8px; border-radius: 2px; }
+
+/* ---- 响应式 ---- */
+@media (max-width: 1100px) {
+  .charts-row, .dashboard-split { grid-template-columns: 1fr; }
+}
+@media (max-width: 1000px) {
+  .topbar-meta { grid-template-columns: repeat(2, auto); }
+  .topbar-meta .meta-cell:nth-child(2) { border-right: none; }
+}
+@media (max-width: 900px) {
+  .evidence-grid { grid-template-columns: 1fr; }
+  .bottom-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .topbar-meta { grid-template-columns: 1fr; }
+  .topbar-meta .meta-cell { border-right: none; border-bottom: 1px solid var(--border); }
+}
+</style>
+</head>
+<body>
+
+<!-- 顶部：仅元信息和授权按钮 sticky -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="topbar-row1">
+      <div class="case-title" id="caseName">案件名称</div>
+      <div class="topbar-right">
+        <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="切换主题">🌙</button>
+        <button class="auth-btn" id="authFolderBtn" onclick="grantFolderAccess()">📁 授权</button>
+      </div>
+    </div>
+    <div class="topbar-meta" id="topbarMeta"></div>
+    <!-- 阶段进度条 -->
+    <div class="stage-bar" id="stageBar"></div>
+    <!-- 确认表入口 + KPI 按钮 -->
+    <div style="margin-top:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <a href="九步法确认表.html" id="confirmTableLink" style="font-size:11px;padding:6px 14px;border-radius:8px;border:1px solid var(--amber);background:var(--amber-dim);color:var(--amber);text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all 0.15s;white-space:nowrap;" target="_blank">
+        📐 打开确认表
+      </a>
+      <button class="topbar-kpi-btn orange" id="kpiAmountBtn" onclick="this.querySelector('span').textContent=(document.getElementById('kpiAmountVal')||{}).textContent||'—'" title="诉讼标的">
+        💰 <span id="kpiAmountVal">—</span>
+      </button>
+      <button class="topbar-kpi-btn cyan" id="kpiDeadlineBtn" onclick="openDeadlineDialog()" title="点击设置截止日期">
+        ⏰ <span id="kpiDeadlineVal">—</span>天
+      </button>
+      <button class="topbar-kpi-btn green" id="kpiFilesBtn" title="文件总数">
+        📁 <span id="kpiFilesVal">—</span>个文件
+      </button>
+      <span style="font-size:10px;color:var(--text-dim);" id="confirmTableStatus">—</span>
+    </div>
+  </div>
+</div>
+
+<!-- 主布局 -->
+<div class="charts-area">
+
+  <!-- Row 0: 雷达图(左) + 当事人关系图(右) 并排 -->
+  <div class="dashboard-split" style="grid-template-columns: 2fr 3fr;">
+    <div class="chart-card chart-card-compact" id="radarSection">
+      <div class="chart-card-title">🎯 争议焦点</div>
+      <div class="radar-wrap-topbar">
+        <canvas id="radarCanvasTop" width="400" height="340"></canvas>
+        <div id="radarLegendTop"></div>
+      </div>
+    </div>
+    <div class="chart-card chart-card-compact" id="partyRelSection">
+      <div class="chart-card-title">👥 S1 当事人关系图</div>
+      <canvas id="partyRelationCanvas" width="500" height="280"></canvas>
+    </div>
+  </div>
+
+  <!-- Row 1: 九步法热力图(左) + 证据卡片库(右) -->
+  <div class="dashboard-split" style="margin-top:12px;">
+    <div class="chart-card chart-card-compact" id="heatmapCard">
+      <div class="chart-card-title">📐 九步法进度</div>
+      <div class="heatmap-wrap" id="heatmapWrap" style="margin-top:0;"></div>
+    </div>
+    <div class="chart-card chart-card-compact" id="s0Card">
+      <div class="chart-card-title">🔍 S0 证据卡片库 <span class="s0-badge pending" id="s0Badge" style="margin-left:8px;">待启动</span></div>
+      <div id="s0Panel"><div id="s0Content"><div class="s0-empty">暂无证据卡片数据</div></div></div>
+    </div>
+  </div>
+
+  <!-- Row 1: 金额流向图(左) | 法条-证据对照矩阵(右) -->
+  <div class="charts-row" style="margin-top:12px;">
+    <div class="chart-card chart-card-compact" id="moneyFlowSection">
+      <div class="chart-card-title">💰 S1 案件金额流向图</div>
+      <canvas id="moneyFlowCanvas" width="400" height="220"></canvas>
+    </div>
+    <div class="chart-card chart-card-compact" id="lawMatrixSection">
+      <div class="chart-card-title">🔬 S4 法条-证据对照矩阵</div>
+      <div id="lawEvidenceMatrix" style="max-height:260px;overflow-y:auto;"></div>
+    </div>
+  </div>
+
+  <!-- Row 2: 争议点-证据树状图(左) | 时间线图(右) -->
+  <div class="charts-row" style="margin-top:12px;">
+    <div class="chart-card chart-card-compact" id="disputeTreeSection">
+      <div class="chart-card-title">⚖ S6 争议点-证据树状图</div>
+      <div id="disputeEvidenceTree" style="max-height:260px;overflow-y:auto;"></div>
+    </div>
+    <div class="chart-card chart-card-compact" id="timelineSection">
+      <div class="chart-card-title">🧩 S8 案件时间线</div>
+      <canvas id="timelineCanvas" width="520" height="240"></canvas>
+    </div>
+  </div>
+
+</div>
+
+<div class="container">
+
+  <!-- 三列顶部：备忘录 | 缺口 | 操作记录 -->
+  <div class="top-trio">
+    <!-- 备忘录 -->
+    <div class="memo-card">
+      <div class="memo-header">
+        <div class="memo-title">案件备忘录</div>
+        <button class="memo-add-btn" onclick="showMemoAdd()">+ 添加</button>
+      </div>
+      <div id="memoList" style="overflow-y:auto;max-height:240px;"></div>
+      <div class="memo-add-area" id="memoAddArea">
+        <textarea class="memo-add-input" id="memoAddInput" rows="3" placeholder="输入备忘录内容..."></textarea>
+        <div class="memo-add-actions">
+          <button class="memo-add-save" onclick="saveMemo()">保存</button>
+          <button class="memo-add-cancel" onclick="hideMemoAdd()">取消</button>
+        </div>
+      </div>
+    </div>
+    <!-- 缺口 -->
+    <div class="card gap-card">
+      <div class="card-header"><div class="card-title">📌 当前缺口</div><span id="gapCountBadge"></span></div>
+      <div id="gapList" style="overflow-y:auto;max-height:220px;"></div>
+      <button class="gap-add-btn" onclick="toggleGapInput()">+ 添加缺口</button>
+      <input type="text" class="gap-add-input" id="gapAddInput" placeholder="输入缺口描述，按回车添加" onkeypress="if(event.key==='Enter')addGap()">
+      <div id="doneGapList"></div>
+    </div>
+    <!-- 操作记录 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">📋 操作记录</div>
+        <button onclick="syncOpsToFile()" style="font-size:10px;padding:3px 10px;border:1px solid var(--border);color:var(--text-dim);background:transparent;border-radius:6px;cursor:pointer;font-family:inherit;">下载</button>
+      </div>
+      <div id="opsTimeline" style="overflow-y:auto;max-height:270px;"></div>
+    </div>
+  </div>
+
+  <!-- 证据地图（全宽） -->
+  <div class="card evidence-full">
+    <div class="card-header">
+      <div class="card-title">📁 证据地图</div>
+      <button class="evidence-view-btn" id="evidenceViewBtn" onclick="cycleEvidenceView()">全部展开</button>
+    </div>
+    <div class="evidence-grid" id="evidenceGrid"></div>
+  </div>
+
+  <!-- 底部 -->
+  <div class="bottom-grid">
+    <div class="card">
+      <div class="card-title">最近动态</div>
+      <div id="changelog"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">文件夹总览</div>
+      <div id="folderSummary"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer" id="footer"></div>
+
+<script>
+// ========== 数据 & 状态 ==========
+var _folderHandle = null;
+var _D = null;
+
+function _getFolderKey() {
+  var D = window.CASE_DASHBOARD_DATA;
+  var name = D && D.meta && D.meta.caseName ? D.meta.caseName : 'default';
+  return 'folder_auth_' + name.replace(/\s+/g, '_');
+}
+
+async function grantFolderAccess() {
+  if (!window.showDirectoryPicker) { alert('请使用 Chrome/Edge'); return; }
+  var D = window.CASE_DASHBOARD_DATA;
+  var caseName = D && D.meta && D.meta.caseName ? D.meta.caseName : '案件';
+  if (!confirm('授权「' + caseName + '」文件夹')) return;
+  var handle;
+  try { handle = await window.showDirectoryPicker({ mode: 'readwrite' }); } catch(e) { return; }
+  if (!handle) return;
+  _folderHandle = handle;
+  try { localStorage.setItem(_getFolderKey(), '1'); } catch(e) {}
+  await _writeOpsToFile();
+  _updateAuthBtn();
+  alert('授权成功');
+}
+function _updateAuthBtn() {
+  var btn = document.getElementById('authFolderBtn');
+  if (!btn) return;
+  if (_folderHandle) {
+    btn.textContent = '✓ 已授权';
+    btn.classList.add('active');
+    btn.title = '已授权文件夹访问（刷新页面后需重新授权）';
+  } else {
+    // File System Access API 的句柄无法跨会话持久化，刷新后需重新授权
+    // 这是浏览器安全限制，不是Bug
+    btn.textContent = '📁 授权文件夹';
+    btn.classList.remove('active');
+    btn.title = '点击授权文件夹（刷新页面后需重新授权，这是浏览器安全限制）';
+  }
+}
+async function _writeOpsToFile() {
+  var D = window.CASE_DASHBOARD_DATA;
+  if (!D || !D.meta || !D.meta.caseName) return;
+  var opsData = { caseName: D.meta.caseName, syncedAt: new Date().toISOString(), operations: D.operations || [], memos: D.memos || [], gaps: D.gaps || [], doneGaps: D.doneGaps || [], manualCategories: D.manualCategories || {}, confirmedFiles: D.confirmedFiles || {}, stepConfirms: D.stepConfirms || {} };
+  if (_folderHandle) {
+    try {
+      var fh = await _folderHandle.getFileHandle('dashboard-ops.json', { create: true });
+      var w = await fh.createWritable();
+      await w.write(JSON.stringify(opsData, null, 2));
+      await w.close(); return;
+    } catch(e) { _folderHandle = null; }
+  }
+  try { localStorage.setItem('dashboard_ops_pending_' + D.meta.caseName.replace(/\s+/g, '_'), JSON.stringify(opsData)); } catch(e) {}
+}
+function syncOpsToFile() {
+  if (_folderHandle) { _writeOpsToFile().then(function() { alert('已同步'); }); return; }
+  var D = window.CASE_DASHBOARD_DATA;
+  if (!D || !D.meta) { alert('无数据'); return; }
+  var blob = new Blob([JSON.stringify({ caseName: D.meta.caseName, operations: D.operations || [], memos: D.memos || [], gaps: D.gaps || [], doneGaps: D.doneGaps || [], manualCategories: D.manualCategories || {}, confirmedFiles: D.confirmedFiles || {} }, null, 2)], { type: 'application/json' });
+  var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'dashboard-ops.json'; a.click();
+}
+function logOp(action, detail) {
+  var D = window.CASE_DASHBOARD_DATA;
+  if (!D.operations) D.operations = [];
+  var now = new Date();
+  D.operations.unshift({ ts: now.toISOString(), time: now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }), action: action, detail: detail });
+  if (D.operations.length > 50) D.operations = D.operations.slice(0, 50);
+  renderOpsTimeline(D);
+  _writeOpsToFile();
+}
+function loadSavedState(D) {
+  try {
+    var saved = localStorage.getItem('dashboard_state_' + (D.meta && D.meta.caseName ? D.meta.caseName.replace(/\s+/g, '_') : 'default'));
+    if (saved) {
+      var s = JSON.parse(saved);
+      if (s.memos) D.memos = s.memos;
+      if (s.gaps) D.gaps = s.gaps;
+      if (s.doneGaps) D.doneGaps = s.doneGaps;
+      if (s.manualCategories) D.manualCategories = s.manualCategories;
+      if (s.confirmedFiles) D.confirmedFiles = s.confirmedFiles;
+      if (s.stepConfirms) D.stepConfirms = s.stepConfirms;
+      if (s.operations) D.operations = s.operations;
+    }
+  } catch(e) {}
+
+  // 桥接：从确认表 localStorage 读取已确认步骤
+  try {
+    var nineKeys = ['九步法确认_' + D.meta.caseName];
+    for (var ki = 0; ki < nineKeys.length; ki++) {
+      var confirmData = localStorage.getItem(nineKeys[ki]);
+      if (confirmData) {
+        var cf = JSON.parse(confirmData);
+        if (!D.stepConfirms) D.stepConfirms = {};
+        Object.keys(cf).forEach(function(sid) {
+          if (cf[sid]) D.stepConfirms[sid] = { confirmed: true, confirmedAt: new Date().toISOString(), source: '确认表' };
+        });
+        break;
+      }
+    }
+  } catch(e) {}
+
+  _updateAuthBtn();
+}
+window.addEventListener('beforeunload', function() {
+  var D = window.CASE_DASHBOARD_DATA;
+  if (!D) return;
+  var state = { memos: D.memos || [], gaps: D.gaps || [], doneGaps: D.doneGaps || [], manualCategories: D.manualCategories || {}, confirmedFiles: D.confirmedFiles || {}, stepConfirms: D.stepConfirms || {}, operations: D.operations || [] };
+  try { localStorage.setItem('dashboard_state_' + (D.meta && D.meta.caseName ? D.meta.caseName.replace(/\s+/g, '_') : 'default'), JSON.stringify(state)); } catch(e) {}
+});
+
+// ========== 备忘录 ==========
+function showMemoAdd() { document.getElementById('memoAddArea').classList.add('show'); document.getElementById('memoAddInput').focus(); }
+function hideMemoAdd() { document.getElementById('memoAddArea').classList.remove('show'); document.getElementById('memoAddInput').value = ''; }
+function saveMemo() {
+  var input = document.getElementById('memoAddInput');
+  var text = input.value.trim();
+  if (!text) return;
+  var D = window.CASE_DASHBOARD_DATA;
+  if (!D.memos) D.memos = [];
+  var now = new Date();
+  D.memos.push({ id: 'm_' + Date.now(), text: text, date: now.toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' }) });
+  logOp('新增备忘录', text.length > 20 ? text.slice(0, 20) + '…' : text);
+  hideMemoAdd();
+  renderMemos(D);
+}
+function renderMemos(D) {
+  var memos = D.memos || [];
+  var memo_md = D.memo || {sections: [], raw: ''};
+  var el = document.getElementById('memoList');
+  var html = '';
+  // Part 1: Sections from 案件备忘录.md
+  if (memo_md.sections && memo_md.sections.length > 0) {
+    html += memo_md.sections.map(function(s) {
+      var contentPreview = s.content.trim().substring(0, 100);
+      if (s.content.trim().length > 100) contentPreview += '...';
+      return '<div class="memo-md-section">' +
+        '<div class="memo-md-header" onclick="this.parentElement.classList.toggle(\'open\')">' +
+          '<span class="memo-md-icon">📄</span>' +
+          '<span class="memo-md-title">' + s.title + '</span>' +
+          '<span class="memo-md-toggle">▸</span>' +
+        '</div>' +
+        '<div class="memo-md-content">' + s.content.trim().replace(/\n/g, '<br>') + '</div>' +
+      '</div>';
+    }).join('');
+  }
+  // Part 2: Dashboard-ops memos (existing)
+  if (memos.length > 0) {
+    html += memos.map(function(m) {
+      return '<div class="memo-item">' +
+        '<div class="memo-dot"></div>' +
+        '<div style="flex:1;min-width:0;">' +
+          '<div class="memo-text" title="点击编辑">' + m.text + '</div>' +
+          '<div class="memo-date">' + (m.date || '') + '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+  if (!html) {
+    el.innerHTML = '<div class="memo-empty">暂无备忘录</div>';
+    return;
+  }
+  el.innerHTML = html;
+}
+
+// ========== 证据地图视图切换（默认→展开→收起→默认...） ==========
+var _evidenceViewState = 'default'; // default | expanded | collapsed
+function cycleEvidenceView() {
+  var grid = document.getElementById('evidenceGrid');
+  var card = grid ? grid.closest('.evidence-full') : null;
+  var btn = document.getElementById('evidenceViewBtn');
+  var groups = grid ? grid.querySelectorAll('.folder-group') : [];
+
+  // 清除所有状态
+  grid.classList.remove('view-expanded', 'view-collapsed');
+  grid.style.cssText = '';
+  if (card) {
+    card.classList.remove('view-expanded');
+    card.style.cssText = '';
+  }
+
+  if (_evidenceViewState === 'default') {
+    // → 展开：全部打开，完全平铺，无滚动
+    groups.forEach(function(g) { g.classList.add('open'); });
+    grid.classList.add('view-expanded');
+    grid.style.cssText = 'max-height:none!important;overflow:visible!important;height:auto!important;';
+    if (card) {
+      card.classList.add('view-expanded');
+      card.style.cssText = 'overflow:visible!important;max-height:none!important;height:auto!important;';
+    }
+    btn.textContent = '全部收起';
+    _evidenceViewState = 'expanded';
+  } else if (_evidenceViewState === 'expanded') {
+    // → 收起：全部关闭，紧凑显示
+    groups.forEach(function(g) { g.classList.remove('open'); });
+    grid.classList.add('view-collapsed');
+    grid.style.cssText = 'max-height:none!important;overflow:visible!important;height:auto!important;';
+    if (card) {
+      card.style.cssText = 'overflow:visible!important;max-height:none!important;height:auto!important;';
+    }
+    btn.textContent = '恢复默认';
+    _evidenceViewState = 'collapsed';
+  } else {
+    // → 默认：恢复500px滚动，文件夹折叠
+    groups.forEach(function(g) { g.classList.remove('open'); });
+    // 清除所有内联样式，让CSS类的默认值生效
+    grid.style.cssText = '';
+    if (card) card.style.cssText = '';
+    btn.textContent = '全部展开';
+    _evidenceViewState = 'default';
+  }
+}
+
+// ========== 缺口 ==========
+function toggleGapInput() { var el = document.getElementById('gapAddInput'); el.classList.toggle('show'); if (el.classList.contains('show')) el.focus(); }
+function addGap() {
+  var input = document.getElementById('gapAddInput');
+  var text = input.value.trim();
+  if (!text) return;
+  var D = window.CASE_DASHBOARD_DATA;
+  if (!D.gaps) D.gaps = [];
+  D.gaps.push({ id: 'g_' + Date.now(), icon: '⚠', text: text, done: false });
+  logOp('新增缺口', text.length > 20 ? text.slice(0, 20) + '…' : text);
+  input.value = ''; input.classList.remove('show');
+  renderGaps(D);
+}
+function doneGap(id) {
+  var D = window.CASE_DASHBOARD_DATA;
+  if (!D.doneGaps) D.doneGaps = [];
+  var gap = findGap(D, id);
+  if (gap) D.doneGaps.push({ id: id, gap: gap, doneAt: new Date().toLocaleString('zh-CN') });
+  logOp('完成缺口', gap ? gap.text.slice(0, 20) : id);
+  renderGaps(D);
+  renderDoneGaps(D);
+}
+function undoDoneGap(id) {
+  var D = window.CASE_DASHBOARD_DATA;
+  if (!D.doneGaps) D.doneGaps = [];
+  D.doneGaps = D.doneGaps.filter(function(g) { return g.id !== id; });
+  logOp('复原缺口', id);
+  renderGaps(D);
+  renderDoneGaps(D);
+}
+function renderDoneGaps(D) {
+  var el = document.getElementById('doneGapList');
+  if (!el) return;
+  var doneGaps = D.doneGaps || [];
+  if (doneGaps.length === 0) { el.innerHTML = ''; return; }
+  el.innerHTML = '<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">' +
+    '<div style="font-size:10px;color:var(--text-dim);margin-bottom:6px;">已完成后可复原：</div>' +
+    doneGaps.map(function(g) {
+      var label = g.gap && g.gap.text ? g.gap.text.replace(/<[^>]+>/g,'') : g.id;
+      return '<div style="display:flex;align-items:center;gap:8px;padding:4px 0;">' +
+        '<span style="font-size:11px;color:var(--text-dim);text-decoration:line-through;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + label + '">' + label + '</span>' +
+        '<button onclick="undoDoneGap(\'' + g.id + '\')" style="font-size:10px;padding:2px 8px;border:1px solid var(--amber);color:var(--amber);background:transparent;border-radius:5px;cursor:pointer;font-family:inherit;flex-shrink:0;">复原</button>' +
+      '</div>';
+    }).join('') +
+    '</div>';
+}
+function findGap(D, id) {
+  var files = D.files || {};
+  for (var ci = 0; ci < (files.categories || []).length; ci++) {
+    var cat = files.categories[ci];
+    for (var fi = 0; fi < (cat.items || []).length; fi++) {
+      if ('f_' + cat.items[fi].name === id) return { icon: cat.items[fi].proof === 'bad' ? '✗' : '⚠', text: '<strong>' + cat.items[fi].name + '</strong> ' + (cat.items[fi].proof === 'bad' ? '证明力不足' : '证明力待加强') };
+    }
+  }
+  for (var gi = 0; gi < (D.gaps || []).length; gi++) { if (D.gaps[gi].id === id) return D.gaps[gi]; }
+  return null;
+}
+function renderGaps(D) {
+  var files = D.files || {};
+  var doneGaps = D.doneGaps || [];
+  var doneIds = doneGaps.map(function(d) { return d.id; });
+  var gaps = [];
+  (files.categories || []).forEach(function(cat) {
+    (cat.items || []).forEach(function(f) {
+      if (f.proof === 'bad') gaps.push({ id: 'f_' + f.name, icon: '✗', text: f.name, critical: true });
+      else if (f.proof === 'warn') gaps.push({ id: 'f_' + f.name, icon: '⚠', text: f.name, critical: false });
+    });
+  });
+  (D.gaps || []).forEach(function(g) { gaps.push(g); });
+  var visible = gaps.filter(function(g) { return doneIds.indexOf(g.id) === -1; });
+  var badge = document.getElementById('gapCountBadge');
+  if (badge) badge.textContent = visible.length > 0 ? visible.length + ' 项' : '';
+  var el = document.getElementById('gapList');
+  if (visible.length === 0) { el.innerHTML = '<div class="gap-empty">✓ 暂无缺口预警</div>'; return; }
+  el.innerHTML = visible.slice(0, 8).map(function(g) {
+    return '<div class="gap-list-item">' +
+      '<span style="font-size:12px;flex-shrink:0;" class="' + (g.critical ? 'critical' : 'warn') + '">' + g.icon + '</span>' +
+      '<span class="gap-text" style="font-size:12px;">' + g.text + '</span>' +
+      '<button class="gap-check" onclick="doneGap(\'' + g.id + '\')" title="标记完成">✓</button>' +
+    '</div>';
+  }).join('');
+}
+
+// 证据优势条已删除（v6.2 修复 F6）
+
+// ========== HiDPI Canvas 初始化函数 ==========
+function setupHiDPICanvas(canvasId, w, h) {
+  var canvas = document.getElementById(canvasId);
+  if (!canvas) return null;
+  var dpr = window.devicePixelRatio || 2;
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  canvas.style.width = w + 'px';
+  canvas.style.height = h + 'px';
+  var ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  return ctx;
+}
+
+// ========== 争议焦点雷达图 ==========
+function drawRadarTop(D) {
+  var ctx = setupHiDPICanvas('radarCanvasTop', 400, 340);
+  if (!ctx) return;
+  var W = 400, H = 340;
+  var disputes = D.keyInfo?.disputes || [];
+  if (disputes.length === 0) {
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#6b7280'; ctx.font = '13px JetBrains Mono'; ctx.textAlign = 'center';
+    ctx.fillText('暂无争议焦点', W/2, H/2);
+    return;
+  }
+  var cx = W / 2;
+  var cy = H / 2 - 10;
+  var maxR = Math.min(cx, cy) - 50;
+  var n = disputes.length;
+  var angleStep = (2 * Math.PI) / n;
+  var startAngle = -Math.PI / 2;
+  var assessments = D.disputeAssessments || [];
+  var focusScores = disputes.map(function(d, i) {
+    var hit = assessments.find(function(a) { return a.dispute === d; });
+    if (hit && typeof hit.score === 'number') return Math.min(1, Math.max(0, hit.score));
+    var files = D.files?.categories || [];
+    var totalScore = 0, fileCount = 0;
+    files.forEach(function(cat) { (cat.items || []).forEach(function(f) { totalScore += ({ 'ok': 3, 'warn': 1.5, 'bad': 0, 'none': 0.5 })[f.proof] || 0.5; fileCount++; }); });
+    var base = 0.35 + (i * 0.18) % 0.5;
+    return Math.min(1, base + (totalScore / (fileCount || 1)) / 6);
+  });
+  ctx.clearRect(0, 0, W, H);
+  [0.25, 0.5, 0.75, 1].forEach(function(level) {
+    ctx.beginPath();
+    for (var i = 0; i <= n; i++) {
+      var a = startAngle + (i % n) * angleStep; var r = maxR * level; var x = cx + Math.cos(a) * r; var y = cy + Math.sin(a) * r;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = 'rgba(42,47,62,0.8)'; ctx.lineWidth = 1.2; ctx.stroke();
+  });
+  disputes.forEach(function(d, i) {
+    var a = startAngle + i * angleStep;
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + Math.cos(a) * maxR, cy + Math.sin(a) * maxR);
+    ctx.strokeStyle = 'rgba(42,47,62,0.8)'; ctx.lineWidth = 1.2; ctx.stroke();
+    var labelR = maxR + 22; var lx = cx + Math.cos(a) * labelR; var ly = cy + Math.sin(a) * labelR;
+    ctx.fillStyle = '#d1d5db'; ctx.font = '11px JetBrains Mono';
+    ctx.textAlign = lx < cx - 8 ? 'right' : lx > cx + 8 ? 'left' : 'center';
+    ctx.fillText(d.length > 8 ? d.slice(0, 8) + '…' : d, lx, ly + 4);
+  });
+  ctx.beginPath();
+  focusScores.forEach(function(score, i) {
+    var a = startAngle + i * angleStep; var r = maxR * score;
+    if (i === 0) ctx.moveTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r);
+    else ctx.lineTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r);
+  });
+  ctx.closePath();
+  var grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, maxR);
+  grad.addColorStop(0, 'rgba(245,158,11,0.35)'); grad.addColorStop(1, 'rgba(245,158,11,0.06)');
+  ctx.fillStyle = grad; ctx.fill(); ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 2; ctx.stroke();
+  focusScores.forEach(function(score, i) {
+    var a = startAngle + i * angleStep; var r = maxR * score;
+    var x = cx + Math.cos(a) * r; var y = cy + Math.sin(a) * r;
+    ctx.beginPath(); ctx.arc(x, y, 5, 0, 2 * Math.PI);
+    ctx.fillStyle = '#f59e0b'; ctx.fill(); ctx.strokeStyle = '#0d0f14'; ctx.lineWidth = 1.5; ctx.stroke();
+  });
+  var legendEl = document.getElementById('radarLegendTop');
+  if (legendEl) {
+    var statusColor = { 'ok': '#22c55e', 'warn': '#f59e0b', 'bad': '#ef4444' };
+    legendEl.innerHTML = disputes.map(function(d, i) {
+      var hit = assessments.find(function(a) { return a.dispute === d; });
+      var dotColor = (hit && statusColor[hit.status]) || '#f59e0b';
+      return '<div style="display:flex;align-items:center;gap:6px;padding:2px 0;">' +
+        '<div style="width:8px;height:8px;border-radius:50%;background:' + dotColor + ';flex-shrink:0;"></div>' +
+        '<span style="font-size:11px;color:var(--text-dim);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;" title="' + d + '">' + d + '</span>' +
+        '<span style="font-size:11px;font-weight:700;color:' + dotColor + ';font-family:JetBrains Mono,monospace;">' + Math.round(focusScores[i]*100) + '%</span>' +
+      '</div>';
+    }).join('');
+  }
+}
+
+// ========== 证据地图 ==========
+function toggleMoveMenu(btn) {
+  var menu = btn.nextElementSibling;
+  if (menu && menu.classList.contains('move-menu')) {
+    document.querySelectorAll('.move-menu').forEach(function(m) { m.classList.remove('show'); });
+    menu.classList.toggle('show');
+  }
+  event.stopPropagation();
+}
+function moveFile(fileName, toCatId) {
+  var D = window.CASE_DASHBOARD_DATA;
+  if (!D.manualCategories) D.manualCategories = {};
+  var fromCatId = D.manualCategories[fileName];
+  var CATS = [
+    { id: 'plaintiff', label: '原告材料', icon: '📋' },
+    { id: 'defendant', label: '被告材料', icon: '📁' },
+    { id: 'analysis', label: '分析材料', icon: '📊' },
+    { id: 'final', label: '最终交付', icon: '✅' },
+    { id: 'clutter', label: '杂物箱', icon: '🗑️' }
+  ];
+  var catMap = {};
+  CATS.forEach(function(c) { catMap[c.id] = c.label; });
+  var fromLabel = fromCatId ? catMap[fromCatId] || fromCatId : '默认';
+  var toLabel = catMap[toCatId] || toCatId;
+  D.manualCategories[fileName] = toCatId;
+  logOp('移动文件', fileName + '：' + fromLabel + ' → ' + toLabel);
+  document.querySelectorAll('.move-menu').forEach(function(m) { m.classList.remove('show'); });
+  renderEvidenceMap(D);
+}
+function toggleConfirm(fileName) {
+  var D = window.CASE_DASHBOARD_DATA;
+  if (!D.confirmedFiles) D.confirmedFiles = {};
+  if (D.confirmedFiles[fileName]) {
+    delete D.confirmedFiles[fileName];
+    logOp('取消确认', fileName);
+  } else {
+    D.confirmedFiles[fileName] = true;
+    logOp('确认终版', fileName);
+  }
+  renderEvidenceMap(D);
+}
+function renderEvidenceMap(D) {
+  var files = D.files || {};
+  var mcat = D.manualCategories || {};
+  var conf = D.confirmedFiles || {};
+  var CATS = [
+    { id: 'plaintiff', label: '原告证据', icon: '📋' },
+    { id: 'defendant', label: '被告证据', icon: '🛡' },
+    { id: 'court',     label: '法院文书', icon: '🏛' },
+    { id: 'evidence',  label: '证据材料', icon: '🔍' },
+    { id: 'analysis',  label: '分析材料', icon: '📊' },
+    { id: 'final',     label: '最终交付', icon: '✅' },
+    { id: 'clutter',   label: '杂物箱',   icon: '🗑️' }
+  ];
+  var catFiles = {};
+  CATS.forEach(function(c) { catFiles[c.id] = []; });
+  (files.categories || []).forEach(function(cat) {
+    (cat.items || []).forEach(function(f) {
+      if (!f.userVisible) return;  // 跳过内部文件（markdown 转换件等）
+      // 优先用手动分类，其次用脚本识别的 legalCat，最后按技术分类兜底
+      var catId = mcat[f.name] || f.legalCat || (cat.id === 'final' ? 'final' : null);
+      if (catId && catFiles[catId]) catFiles[catId].push(f);
+    });
+  });
+  var evidenceEl = document.getElementById('evidenceGrid');
+  var html = '';
+  CATS.forEach(function(cat) {
+    if (cat.id === 'clutter') return;
+    var items = catFiles[cat.id] || [];
+    html += '<div class="folder-group open">' +
+      '<div class="folder-header" onclick="this.parentElement.classList.toggle(\'open\')">' +
+        '<span class="folder-icon">' + cat.icon + '</span>' +
+        '<span class="folder-name">' + cat.label + '</span>' +
+        '<span class="folder-count">' + items.length + '</span>' +
+        '<span class="folder-toggle">▶</span>' +
+      '</div>' +
+      '<div class="folder-files">';
+    items.slice(0, 8).forEach(function(f) {
+      var hasGap = f.proof === 'bad' || f.proof === 'warn';
+      var isConfirmed = conf[f.name];
+      var badgeClass = f.proof === 'bad' ? 'critical' : 'warn';
+      var confirmBtn = cat.id === 'final' ? (
+        isConfirmed
+          ? '<button class="file-confirm-btn confirmed" onclick="toggleConfirm(\'' + f.name + '\')">✓ 已确认</button>'
+          : '<button class="file-confirm-btn" onclick="toggleConfirm(\'' + f.name + '\')">✓ 确认</button>'
+      ) : '';
+      var moveOpts = CATS.filter(function(c) { return c.id !== cat.id; });
+      var moveHtml = '<div class="move-dropdown">' +
+        '<button class="file-move-btn" onclick="toggleMoveMenu(this)">移 ▶</button>' +
+        '<div class="move-menu">' +
+          moveOpts.map(function(c) { return '<div class="move-menu-item" onclick="moveFile(\'' + f.name + '\', \'' + c.id + '\')">' + c.icon + ' ' + c.label + '</div>'; }).join('') +
+        '</div>' +
+      '</div>';
+      html += '<div class="file-item-wrap">' +
+        (hasGap ? '<div class="file-badge-dot ' + badgeClass + '">' + (f.proof === 'bad' ? '!' : '?') + '</div>' : '') +
+        '<div class="file-item">' +
+          '<div class="file-proof ' + (f.proof || 'none') + '" title="' + (f.proof === 'ok' ? '证明力够' : f.proof === 'warn' ? '需补强' : f.proof === 'bad' ? '证明力不足' : '未分析') + '">' + (f.proof === 'ok' ? '✓' : f.proof === 'warn' ? '⚠' : f.proof === 'bad' ? '✗' : '—') + '</div>' +
+          '<div style="flex:1;min-width:0;">' +
+            '<div class="file-name" title="' + f.name + '">' + f.name + '</div>' +
+            (f.annotation ? '<div class="file-meta">' + f.annotation + '</div>' : '') +
+          '</div>' +
+          '<div style="display:flex;gap:6px;align-items:center;flex-shrink:0;">' + confirmBtn + moveHtml + '</div>' +
+        '</div></div>';
+    });
+    if (items.length > 8) html += '<div style="font-size:11px;color:var(--text-dim);padding:4px 0;">+ 还有 ' + (items.length - 8) + ' 个</div>';
+    html += '</div></div>';
+  });
+  evidenceEl.innerHTML = html || '<div style="text-align:center;padding:20px;color:var(--text-dim);font-size:12px;">暂无文件</div>';
+}
+document.addEventListener('click', function() { document.querySelectorAll('.move-menu').forEach(function(m) { m.classList.remove('show'); }); });
+
+// ========== 操作记录时间线 ==========
+function renderOpsTimeline(D) {
+  var ops = D.operations || [];
+  var el = document.getElementById('opsTimeline');
+  if (!el) return;
+  if (ops.length === 0) { el.innerHTML = '<div class="timeline-empty">暂无操作记录</div>'; return; }
+
+  var groups = { 'memo': { label: '📝 备忘录', icon: '📝' }, 'gap': { label: '📌 缺口', icon: '📌' }, 'file': { label: '📁 文件移动', icon: '📁' }, 'confirm': { label: '✓ 终版确认', icon: '✓' }, 'other': { label: '● 其他', icon: '●' } };
+  function getGroup(action) {
+    if (action.includes('备忘录')) return 'memo';
+    if (action.includes('缺口')) return 'gap';
+    if (action.includes('移动文件')) return 'file';
+    if (action.includes('确认') || action.includes('取消')) return 'confirm';
+    return 'other';
+  }
+  var grouped = {};
+  ops.forEach(function(op) { var g = getGroup(op.action); if (!grouped[g]) grouped[g] = []; grouped[g].push(op); });
+  var dotClass = { 'memo': 'memo', 'gap': 'gap', 'file': 'file', 'confirm': 'confirm', 'other': 'other' };
+  var order = ['memo', 'gap', 'file', 'confirm', 'other'];
+  var html = '';
+  order.forEach(function(gKey) {
+    var items = grouped[gKey];
+    if (!items || items.length === 0) return;
+    var g = groups[gKey];
+    html += '<div class="timeline-group" id="tg_' + gKey + '">' +
+      '<div class="timeline-group-header" onclick="this.parentElement.classList.toggle(\'collapsed\')">' +
+        '<span class="timeline-group-icon">' + g.icon + '</span>' +
+        '<span class="timeline-group-label">' + g.label + '</span>' +
+        '<span class="timeline-group-count">' + items.length + ' 条</span>' +
+        '<span class="timeline-group-toggle">▾</span>' +
+      '</div>' +
+      '<div class="timeline-items">';
+    items.forEach(function(op) {
+      html += '<div class="timeline-item">' +
+        '<span class="timeline-time">' + op.time + '</span>' +
+        '<span class="timeline-dot ' + dotClass[gKey] + '"></span>' +
+        '<div class="timeline-content"><div class="action">' + op.action + '</div>' + (op.detail ? '<div class="detail">' + op.detail + '</div>' : '') + '</div>' +
+      '</div>';
+    });
+    html += '</div></div>';
+  });
+  el.innerHTML = html;
+}
+
+// ========== 九步法热力图 ==========
+var STEP_NAMES = {
+  'S0': '证据卡片库',
+  'S1': '固定权利请求', 'S2': '请求权基础', 'S3': '抗辩规范',
+  'S4': '要件拆解', 'S5': '主张检索', 'S6': '争点矩阵',
+  'S7': '举证责任', 'S8': '事实认定', 'S9': '要件归入'
+};
+var STATUS_LABELS = {
+  'pending': '待启动', 'in_progress': '进行中', 'completed': '完成',
+  'review_pending': '待确认', 'blocked': '阻塞', 'draft': '草拟待审'
+};
+function renderHeatmap(D) {
+  var wrap = document.getElementById('heatmapWrap');
+  if (!wrap) return;
+  var ns = D.nineSteps || {};
+  var steps = ns.steps || [];
+  if (steps.length === 0) {
+    wrap.innerHTML = '<div class="heatmap-title">📐 九步法进度（9×2）' +
+      '<span class="heatmap-title-right">未初始化 — 运行案件OS后显示</span></div>';
+    return;
+  }
+  var currentStep = ns.currentStep || 'S1';
+  var sm = ns.summary || {};
+
+  var html = '<div class="heatmap-title">📐 九步法进度（9×2）' +
+    '<span class="heatmap-title-right">' +
+    '原告 ' + (sm.wCompleted || 0) + '/9  ·  被告 ' + (sm.tCompleted || 0) + '/9' +
+    '</span></div>';
+  html += '<div class="heatmap-grid">';
+  html += '<div class="hm-header label"></div>';
+  html += '<div class="hm-header">原告九步法（执行）</div>';
+  html += '<div class="hm-header">被告九步法（预判）</div>';
+
+  // 读取确认表桥接的已确认步骤
+  var stepConfirms = D.stepConfirms || {};
+  steps.forEach(function(s) {
+    var isActive = s.step === currentStep;
+    var wStatus = s['原告九步法'] || 'pending';
+    var tStatus = s['被告九步法'] || 'pending';
+    // 从确认表桥接：已确认的步骤覆盖状态
+    if (stepConfirms[s.step]) {
+      wStatus = 'completed';
+      if (tStatus === 'draft' || tStatus === 'pending') tStatus = 'completed';
+    }
+    var wCls = 'hm-cell ' + wStatus + (isActive ? ' active_step' : '');
+    var tCls = 'hm-cell ' + tStatus;
+    var wIcon = wStatus === 'completed' ? '✓' : wStatus === 'in_progress' ? '◐' : wStatus === 'review_pending' ? '⚠' : wStatus === 'blocked' ? '✗' : wStatus === 'draft' ? '📝' : '○';
+    var tIcon = tStatus === 'completed' ? '✓' : tStatus === 'in_progress' ? '◐' : tStatus === 'review_pending' ? '⚠' : tStatus === 'blocked' ? '✗' : tStatus === 'draft' ? '📝' : '○';
+    var wLabel = stepConfirms[s.step] && wStatus === 'completed' ? '✓已确认' : (STATUS_LABELS[wStatus] || '—');
+    var tLabel = stepConfirms[s.step] && tStatus === 'completed' ? '✓已确认' : (STATUS_LABELS[tStatus] || '—');
+    var stepName = STEP_NAMES[s.step] || s.step;
+    html += '<div class="hm-label"><span class="hm-label-emoji">' + s.emoji + '</span>' +
+      '<span class="hm-label-text">' + stepName + '</span></div>';
+    html += '<div class="' + wCls + '"><span class="hm-status-icon">' + wIcon + '</span>' +
+      '<span>' + wLabel + '</span></div>';
+    html += '<div class="' + tCls + '"><span class="hm-status-icon">' + tIcon + '</span>' +
+      '<span>' + tLabel + '</span></div>';
+  });
+  html += '</div>';
+
+  html += '<div class="hm-legend">' +
+    '<div class="hm-legend-item"><div class="hm-legend-dot" style="background:rgba(107,114,128,0.15);border:1px solid rgba(107,114,128,0.25);"></div>待启动</div>' +
+    '<div class="hm-legend-item"><div class="hm-legend-dot" style="background:rgba(34,211,238,0.15);border:1px solid rgba(34,211,238,0.25);"></div>进行中</div>' +
+    '<div class="hm-legend-item"><div class="hm-legend-dot" style="background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.25);"></div>完成</div>' +
+    '<div class="hm-legend-item"><div class="hm-legend-dot" style="background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.25);"></div>待律师确认</div>' +
+    '<div class="hm-legend-item"><div class="hm-legend-dot" style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.25);"></div>阻塞</div>' +
+    '</div>';
+
+  wrap.innerHTML = html;
+}
+
+// ========== 渲染主函数 ==========
+function render() {
+  var D = window.CASE_DASHBOARD_DATA;
+  if (!D) return;
+  _D = D;
+  loadSavedState(D);
+
+  var meta = D.meta || {};
+  var ki = D.keyInfo || {};
+  var stages = D.stages || {};
+  var files = D.files || {};
+
+  document.getElementById('caseName').innerHTML = (meta.caseName || '未命名案件');
+
+  // topbar meta
+  var metaEl = document.getElementById('topbarMeta');
+  var pl = ki.parties?.plaintiff || '';
+  var def = ki.parties?.defendant || '';
+  var cnum = meta.caseNumber || ki.caseNumber || '';
+  var court = meta.court || ki.court || '';
+  var rows = [];
+  if (pl) rows.push('<div class="meta-cell"><span class="meta-label">原告</span><span class="meta-value">' + pl + '</span></div>');
+  if (def) rows.push('<div class="meta-cell"><span class="meta-label">被告</span><span class="meta-value">' + def + '</span></div>');
+  if (cnum) rows.push('<div class="meta-cell"><span class="meta-label">案号</span><span class="meta-value" style="font-family:JetBrains Mono,monospace;font-size:12px;">' + cnum + '</span></div>');
+  if (court) rows.push('<div class="meta-cell"><span class="meta-label">法院</span><span class="meta-value">' + court + '</span></div>');
+  metaEl.innerHTML = rows.join('');
+
+  // KPI（顶部按钮）— 优先使用 localStorage 手动设置的截止日期
+  var dlDays = null, dlLabel = null;
+  var localDL = loadDeadlineData ? loadDeadlineData() : {};
+  if (localDL.date) {
+    dlDays = Math.max(0, Math.round((new Date(localDL.date + 'T00:00:00') - new Date()) / 86400000));
+    dlLabel = localDL.date + (localDL.task ? ' ' + localDL.task : '');
+  } else if (ki.deadline) {
+    var m = ki.deadline.match(/(\d{4})年(\d{1,2})月(\d{1,2})/);
+    if (m) dlDays = Math.max(0, Math.round((new Date(m[1],m[2]-1,m[3])-new Date())/86400000));
+    dlLabel = ki.deadline;
+  }
+  var dlColorClass = dlDays === null ? 'cyan' : dlDays <= 3 ? 'orange' : dlDays <= 7 ? 'cyan' : 'cyan';
+  var amountEl = document.getElementById('kpiAmountVal');
+  var deadlineEl = document.getElementById('kpiDeadlineVal');
+  var deadlineBtn = document.getElementById('kpiDeadlineBtn');
+  var filesEl = document.getElementById('kpiFilesVal');
+  if (amountEl) amountEl.textContent = ki.amount || '—';
+  if (deadlineEl) deadlineEl.textContent = dlDays === null ? '—' : dlDays;
+  if (deadlineBtn) { deadlineBtn.className = 'topbar-kpi-btn ' + dlColorClass; deadlineBtn.title = dlLabel || '点击设置截止日期'; }
+  if (filesEl) filesEl.textContent = files.summary?.totalFiles || 0;
+
+  renderHeatmap(D);
+  renderStageBar(D);
+  renderMemos(D);
+  renderGaps(D);
+  renderDoneGaps(D);
+  renderEvidenceMap(D);
+  renderS0Panel(D);
+  renderTimelineChart(D);
+  renderDisputeTree(D);
+  renderPartyRelation(D);
+  renderMoneyFlow(D);
+  renderLawMatrix(D);
+  renderOpsTimeline(D);
+  drawRadarTop(D);
+
+  // changelog
+  var logEl = document.getElementById('changelog');
+  var changelog = D.changelog || [];
+  if (changelog.length === 0) { logEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-dim);font-size:12px;">暂无动态</div>'; }
+  else {
+    logEl.innerHTML = changelog.slice(0, 3).map(function(day) {
+      return '<div class="log-day">' +
+        '<div class="log-day-label">' + day.date + '</div>' +
+        day.entries.slice(0, 4).map(function(e) { return '<div class="log-entry"><span class="log-time">' + e.time + '</span><span class="log-action"><strong>' + e.action + '</strong>' + (e.detail ? ' ' + e.detail : '') + '</span></div>'; }).join('') +
+      '</div>';
+    }).join('');
+  }
+
+  // folder summary — 优先使用文件 legalCat 字段（由扫描脚本从目录名推断），
+  // 其次 manualCategories 手动归类，最后按技术分类兜底
+  var LEGAL_CATS = [
+    { id: 'plaintiff', label: '原告材料', icon: '📋' },
+    { id: 'defendant', label: '被告材料', icon: '📁' },
+    { id: 'evidence', label: '证据材料', icon: '🔍' },
+    { id: 'analysis', label: '分析材料', icon: '📊' },
+    { id: 'court', label: '法院文书', icon: '⚖️' },
+    { id: 'final', label: '最终交付', icon: '✅' },
+    { id: 'other', label: '其他材料', icon: '📎' }
+  ];
+  var fsEl = document.getElementById('folderSummary');
+  var catCounts = {};
+  LEGAL_CATS.forEach(function(c) { catCounts[c.id] = 0; });
+  var VALID_IDS = LEGAL_CATS.map(function(c) { return c.id; });
+  var mcat = D.manualCategories || {};
+  (files.categories || []).forEach(function(cat) {
+    (cat.items || []).forEach(function(f) {
+      var rawId = mcat[f.name] || f.legalCat || cat.id;
+      var cid = VALID_IDS.indexOf(rawId) >= 0 ? rawId : 'other';
+      catCounts[cid]++;
+    });
+  });
+  fsEl.innerHTML = LEGAL_CATS.filter(function(c) { return catCounts[c.id] > 0; }).map(function(c) {
+    return '<div class="folder-summary-row"><span class="folder-summary-icon">' + c.icon + '</span><span class="folder-summary-name">' + c.label + '</span><span class="folder-summary-count">' + catCounts[c.id] + ' 个</span></div>';
+  }).join('');
+
+  var t = meta.generatedAt ? new Date(meta.generatedAt) : new Date();
+  document.getElementById('footer').textContent = '案件OS仪表盘  ·  更新于 ' + t.toLocaleString('zh-CN');
+}
+
+// ========== 阶段进度条渲染 ==========
+function renderStageBar(D) {
+  var bar = document.getElementById('stageBar');
+  if (!bar) return;
+  var stages = D.stages || {};
+  var items = stages.items || [];
+
+  // 三个案件阶段（非九步法步骤）
+  var STAGE_DEF = [
+    { id: 'filing', name: '立案准备', emoji: '📝', desc: '材料整理、起诉状/答辩状' },
+    { id: 'trial', name: '开庭准备', emoji: '⚖️', desc: '证据组织、庭审预案' },
+    { id: 'post', name: '判后跟踪', emoji: '📋', desc: '判决执行、上诉评估' }
+  ];
+
+  // 从nineSteps推断阶段状态
+  var ns = D.nineSteps || {};
+  var steps = ns.steps || [];
+  var s1s4 = steps.filter(function(s) { return s.step >= 'S1' && s.step <= 'S4'; });
+  var s5s8 = steps.filter(function(s) { return s.step >= 'S5' && s.step <= 'S8'; });
+  var s9 = steps.find(function(s) { return s.step === 'S9'; });
+
+  // 判断各阶段状态
+  var filingStatus = 'pending';
+  var trialStatus = 'pending';
+  var postStatus = 'pending';
+
+  // 立案准备：S1-S4任一完成则为进行中，全部完成则为完成
+  var s1s4Complete = s1s4.every(function(s) { return s['原告九步法'] === 'completed' && s['被告九步法'] === 'completed'; });
+  var s1s4Started = s1s4.some(function(s) { return s['原告九步法'] !== 'pending' || s['被告九步法'] !== 'pending'; });
+  if (s1s4Complete) filingStatus = 'completed';
+  else if (s1s4Started) filingStatus = 'in_progress';
+
+  // 开庭准备：S5-S8任一完成则为进行中，全部完成则为完成
+  var s5s8Complete = s5s8.every(function(s) { return s['原告九步法'] === 'completed' && s['被告九步法'] === 'completed'; });
+  var s5s8Started = s5s8.some(function(s) { return s['原告九步法'] !== 'pending' || s['被告九步法'] !== 'pending'; });
+  if (s5s8Complete) trialStatus = 'completed';
+  else if (s5s8Started || s1s4Complete) trialStatus = s1s4Complete ? 'in_progress' : 'pending';
+
+  // 判后跟踪：S9完成则为完成
+  if (s9 && s9['原告九步法'] === 'completed' && s9['被告九步法'] === 'completed') postStatus = 'completed';
+  else if (s5s8Complete) postStatus = 'in_progress';
+
+  // 也可以从stages.items覆盖
+  items.forEach(function(s) {
+    if (s.id === 'filing') filingStatus = s.status;
+    if (s.id === 'trial') trialStatus = s.status;
+    if (s.id === 'post') postStatus = s.status;
+  });
+
+  var html = '';
+  STAGE_DEF.forEach(function(def) {
+    var status = def.id === 'filing' ? filingStatus : def.id === 'trial' ? trialStatus : postStatus;
+    var cls = 'stage-node';
+    if (status === 'completed') cls += ' done';
+    else if (status === 'in_progress') cls += ' active';
+    html += '<div class="' + cls + '">' +
+      '<div class="stage-dot">' + def.emoji + '</div>' +
+      '<div class="stage-name">' + def.name + '</div>' +
+    '</div>';
+  });
+  bar.innerHTML = html || '';
+}
+
+document.addEventListener('DOMContentLoaded', render);
+
+// ========== S0 证据卡片库 ==========
+// 全局状态
+window._s0State = {
+  statusFilter: 'all',
+  confFilter: 'all',
+  purposeFilter: 'all',
+  edits: {}
+};
+
+function s0GetStorageKey() {
+  var title = window.CASE_DASHBOARD_DATA?.meta?.caseName || 'default';
+  return 's0-cards-' + title;
+}
+
+function s0LoadPersisted() {
+  try {
+    var key = s0GetStorageKey();
+    var data = localStorage.getItem(key);
+    return data ? JSON.parse(data) : {};
+  } catch(e) { return {}; }
+}
+
+function s0SavePersisted(id, updates) {
+  try {
+    var key = s0GetStorageKey();
+    var data = s0LoadPersisted();
+    data[id] = Object.assign(data[id] || {}, updates);
+    localStorage.setItem(key, JSON.stringify(data));
+  } catch(e) {}
+}
+
+function s0ConfirmCard(id, btn) {
+  var persisted = s0LoadPersisted();
+  var current = persisted[id] && persisted[id].status;
+  if (current === 'confirmed') {
+    s0SavePersisted(id, { status: undefined });
+  } else {
+    s0SavePersisted(id, { status: 'confirmed' });
+  }
+  renderS0Panel(window.CASE_DASHBOARD_DATA);
+  s0RefreshCounters();
+}
+
+function s0EditCard(id) {
+  var s0 = window.CASE_DASHBOARD_DATA?.s0Data;
+  var cards = s0?.cards || [];
+  var card = cards.find(function(c){return c.id===id;});
+  if (!card) return;
+  var persisted = s0LoadPersisted()[id] || {};
+  var currentText = persisted.edits?.text || card.text || '';
+  var currentPurpose = persisted.edits?.purpose_label || card.purpose_label || '';
+
+  var overlay = document.createElement('div');
+  overlay.id = 's0EditOverlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:1000;';
+  overlay.innerHTML = '<div style="background:var(--bg);padding:24px;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.3);width:500px;max-width:90%;">' +
+    '<h3 style="margin:0 0 16px 0;font-size:14px;">编辑证据卡片 #' + id + '</h3>' +
+    '<div style="margin-bottom:12px;"><label style="display:block;font-size:11px;color:var(--text-dim);margin-bottom:4px;">摘要</label>' +
+    '<textarea id="s0EditText" style="width:100%;min-height:80px;padding:8px;border:1px solid var(--border);border-radius:6px;background:var(--surface-alt);color:var(--text);resize:vertical;">' + currentText + '</textarea></div>' +
+    '<div style="margin-bottom:16px;"><label style="display:block;font-size:11px;color:var(--text-dim);margin-bottom:4px;">证明目的</label>' +
+    '<input type="text" id="s0EditPurpose" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;background:var(--surface-alt);color:var(--text);" value="' + currentPurpose + '"></div>' +
+    '<div style="display:flex;gap:8px;justify-content:flex-end;">' +
+    '<button onclick="document.getElementById(\'s0EditOverlay\').remove()" style="padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:transparent;color:var(--text);cursor:pointer;">取消</button>' +
+    '<button onclick="s0SaveEdit(\'' + id + '\')" style="padding:8px 16px;border:none;border-radius:6px;background:#10b981;color:white;cursor:pointer;">保存</button>' +
+    '</div></div>';
+  document.body.appendChild(overlay);
+}
+
+function s0SaveEdit(id) {
+  var text = document.getElementById('s0EditText').value;
+  var purpose = document.getElementById('s0EditPurpose').value;
+  s0SavePersisted(id, { edits: { text: text, purpose_label: purpose } });
+  document.getElementById('s0EditOverlay').remove();
+  renderS0Panel(window.CASE_DASHBOARD_DATA);
+}
+
+function s0DeleteCard(id, btn) {
+  var persisted = s0LoadPersisted();
+  var current = persisted[id] && persisted[id].status;
+  if (current === 'deleted') {
+    // 恢复已删除的卡片：重置状态并完整重渲染行（确保确认/删除按钮都回来）
+    s0SavePersisted(id, { status: undefined });
+    renderS0Panel(window.CASE_DASHBOARD_DATA);
+  } else {
+    // 软删除（可恢复）
+    if (!confirm('确定删除此卡片？（可在筛选器中选择"已删除"后恢复）')) return;
+    s0SavePersisted(id, { status: 'deleted' });
+    renderS0Panel(window.CASE_DASHBOARD_DATA);
+  }
+  s0RefreshCounters();
+}
+
+function s0RestoreDeleted() {
+  var persisted = s0LoadPersisted();
+  var restored = 0;
+  Object.keys(persisted).forEach(function(id) {
+    if (persisted[id].status === 'deleted') {
+      s0SavePersisted(id, { status: undefined });
+      restored++;
+    }
+  });
+  if (restored > 0) {
+    renderS0Panel(window.CASE_DASHBOARD_DATA);
+  } else {
+    alert('没有已删除的卡片可恢复');
+  }
+}
+
+function s0ConfirmFiltered() {
+  var rows = document.querySelectorAll('#s0TableBody tr:not([style*="display:none"])');
+  rows.forEach(function(row) {
+    if (!row.classList.contains('s0-row-confirmed')) {
+      var id = row.querySelector('td:first-child')?.textContent?.trim();
+      if (id && id !== '—') {
+        s0SavePersisted(id, { status: 'confirmed' });
+        row.classList.add('s0-row-confirmed');
+      }
+    }
+  });
+  s0RefreshCounters();
+}
+
+function s0ExportResults() {
+  var s0 = window.CASE_DASHBOARD_DATA?.s0Data;
+  var persisted = s0LoadPersisted();
+  var cards = (s0?.cards || []).map(function(c) {
+    var p = persisted[c.id] || {};
+    return Object.assign({}, c, p.edits, { status: p.status || 'pending' });
+  }).filter(function(c) { return c.status !== 'deleted'; });
+
+  var blob = new Blob([JSON.stringify({ cards: cards, exported_at: new Date().toISOString() }, null, 2)], { type: 'application/json' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 's0-evidence-cards.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function s0SetStatusFilter(val) {
+  window._s0State.statusFilter = val;
+  s0ApplyFilters();
+}
+
+function s0SetConfFilter(val) {
+  window._s0State.confFilter = val;
+  s0ApplyFilters();
+}
+
+function s0SetPurposeFilter(val) {
+  window._s0State.purposeFilter = val;
+  s0ApplyFilters();
+}
+
+function s0ApplyFilters() {
+  var st = window._s0State.statusFilter;
+  var cf = window._s0State.confFilter;
+  var pf = window._s0State.purposeFilter;
+  var persisted = s0LoadPersisted();
+  var visibleCount = 0, totalCount = 0;
+
+  document.querySelectorAll('#s0TableBody tr').forEach(function(row) {
+    totalCount++;
+    var id = row.querySelector('td:first-child')?.textContent?.trim();
+    var p = persisted[id] || {};
+    var statusMatch = st === 'all' ||
+      (st === 'confirmed' && p.status === 'confirmed') ||
+      (st === 'pending' && p.status !== 'confirmed' && p.status !== 'deleted') ||
+      (st === 'deleted' && p.status === 'deleted');
+    var confMatch = cf === 'all' || (row.cells[7]?.textContent?.includes(cf));
+    var purposeMatch = pf === 'all' || (row.cells[3]?.textContent?.includes(pf));
+    var isDeleted = p.status === 'deleted';
+
+    if (statusMatch && confMatch && purposeMatch) {
+      row.style.display = '';
+      visibleCount++;
+    } else {
+      row.style.display = 'none';
+    }
+  });
+
+  var counter = document.getElementById('s0FilterCount');
+  if (counter) counter.textContent = '显示 ' + visibleCount + '/' + totalCount + ' 条';
+}
+
+function s0RefreshCounters() {
+  var persisted = s0LoadPersisted();
+  var confirmed = 0, deleted = 0;
+  Object.values(persisted).forEach(function(v) {
+    if (v.status === 'confirmed') confirmed++;
+    if (v.status === 'deleted') deleted++;
+  });
+  s0ApplyFilters();
+}
+
+function renderS0Panel(D) {
+  var s0 = D.s0Data;
+  var el = document.getElementById('s0Content');
+  var badge = document.getElementById('s0Badge');
+  var panel = document.getElementById('s0Panel');
+  if (!el || !badge) return;
+
+  // 没有数据或 pending
+  if (!s0 || s0.status === 'pending' || s0.total_count === 0) {
+    badge.textContent = '⏳ 待提取';
+    badge.className = 's0-badge pending';
+    el.innerHTML = '<div class="s0-empty">尚未提取证据卡片。请在 Material 转 Markdown 后运行 /S0</div>';
+    return;
+  }
+
+  // 更新徽章
+  var statusLabel = { 'review_pending': '待确认', 'completed': '已确认', 'parse_error': '解析错误' };
+  var statusClass = { 'review_pending': 'review', 'completed': 'done', 'parse_error': 'pending' };
+  badge.textContent = (s0.need_review > 0 ? '⚠️ ' : '✅ ') + (statusLabel[s0.status] || s0.status);
+  badge.className = 's0-badge ' + (statusClass[s0.status] || 'pending');
+
+  var persisted = s0LoadPersisted();
+
+  // 生成摘要栏
+  var html = '<div class="s0-summary">' +
+    '<div class="s0-summary-item"><div class="s0-summary-num">' + s0.total_count + '</div><div class="s0-summary-label">总卡片</div></div>' +
+    '<div class="s0-summary-item"><div class="s0-summary-num">' + s0.high_confidence + '</div><div class="s0-summary-label">高置信</div></div>' +
+    '<div class="s0-summary-item"><div class="s0-summary-num">' + s0.need_review + '</div><div class="s0-summary-label">待确认</div></div>';
+
+  // 标签分布
+  var dist = s0.purpose_distribution || {};
+  var purposes = Object.keys(dist);
+  purposes.forEach(function(k) {
+    html += '<div class="s0-summary-item"><div class="s0-summary-num">' + dist[k] + '</div><div class="s0-summary-label">' + k.slice(0, 6) + '</div></div>';
+  });
+  html += '</div>';
+
+  // 筛选栏
+  html += '<div class="s0-filter-bar" style="display:flex;flex-wrap:wrap;gap:8px;padding:12px;background:var(--surface-alt);border-radius:8px;margin:12px 0;align-items:center;">' +
+    '<div style="display:flex;gap:4px;"><button class="s0-filter-btn active" onclick="s0SetStatusFilter(\'all\');this.parentElement.querySelectorAll(\'button\').forEach(b=>b.classList.remove(\'active\'));this.classList.add(\'active\')">全部</button>' +
+    '<button class="s0-filter-btn" onclick="s0SetStatusFilter(\'pending\');this.parentElement.querySelectorAll(\'button\').forEach(b=>b.classList.remove(\'active\'));this.classList.add(\'active\')">待确认</button>' +
+    '<button class="s0-filter-btn" onclick="s0SetStatusFilter(\'confirmed\');this.parentElement.querySelectorAll(\'button\').forEach(b=>b.classList.remove(\'active\'));this.classList.add(\'active\')">已确认</button>' +
+    '<button class="s0-filter-btn" onclick="s0SetStatusFilter(\'deleted\');this.parentElement.querySelectorAll(\'button\').forEach(b=>b.classList.remove(\'active\'));this.classList.add(\'active\')">已删除</button></div>' +
+    '<span style="width:1px;height:20px;background:var(--border);margin:0 4px;"></span>' +
+    '<div style="display:flex;gap:4px;align-items:center;"><span style="font-size:11px;color:var(--text-dim);">置信度:</span>' +
+    '<button class="s0-filter-btn active" onclick="s0SetConfFilter(\'all\');this.parentElement.querySelectorAll(\'button\').forEach(b=>b.classList.remove(\'active\'));this.classList.add(\'active\')">全部</button>' +
+    '<button class="s0-filter-btn" onclick="s0SetConfFilter(\'高\');this.parentElement.querySelectorAll(\'button\').forEach(b=>b.classList.remove(\'active\'));this.classList.add(\'active\')">高</button>' +
+    '<button class="s0-filter-btn" onclick="s0SetConfFilter(\'中\');this.parentElement.querySelectorAll(\'button\').forEach(b=>b.classList.remove(\'active\'));this.classList.add(\'active\')">中</button>' +
+    '<button class="s0-filter-btn" onclick="s0SetConfFilter(\'低\');this.parentElement.querySelectorAll(\'button\').forEach(b=>b.classList.remove(\'active\'));this.classList.add(\'active\')">低</button></div>' +
+    '<span style="flex:1"></span>' +
+    '<span id="s0FilterCount" style="font-size:11px;color:var(--text-dim);">显示 ' + s0.total_count + '/' + s0.total_count + ' 条</span>' +
+    '<button class="s0-btn s0-btn-primary" style="font-size:11px;padding:4px 10px;" onclick="s0ConfirmFiltered()">一键确认筛选结果</button>' +
+    '<button class="s0-btn" style="font-size:11px;padding:4px 10px;" onclick="s0ExportResults()">导出确认结果</button>' +
+    '<button class="s0-btn" style="font-size:11px;padding:4px 10px;background:rgba(107,114,128,0.15);" onclick="s0RestoreDeleted()">↩ 恢复全部已删除</button>' +
+    '</div>';
+
+  // 表格
+  html += '<div style="max-height:400px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;">';
+  html += '<table class="s0-table"><thead><tr>' +
+    '<th style="width:50px;">编号</th><th style="width:100px;">来源</th><th style="min-width:200px;">片段摘要</th><th style="width:80px;">证明目的</th><th style="width:60px;">当事人</th><th style="width:70px;">时间</th><th style="width:60px;">金额</th><th style="width:50px;">置信度</th><th style="width:140px;">操作</th>' +
+  '</tr></thead><tbody id="s0TableBody">';
+
+  (s0.cards || []).forEach(function(sp) {
+    var confClass = sp.confidence === '高' ? 's0-confirmed' : sp.confidence === '中' ? '' : 's0-pending';
+    var p = persisted[sp.id] || {};
+    var rowClass = p.status === 'confirmed' ? 's0-row-confirmed' : '';
+    var rowStyle = p.status === 'deleted' ? 'display:none;' : '';
+    var displayText = p.edits?.text || sp.text || '—';
+    var displayPurpose = p.edits?.purpose_label || sp.purpose_label || '—';
+    html += '<tr class="' + rowClass + '" style="' + rowStyle + '">' +
+      '<td style="font-family:monospace;font-size:10px;">' + (sp.id || '—') + '</td>' +
+      '<td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + (sp.source || '') + '">' + (sp.source || '—') + '</td>' +
+      '<td class="s0-text" title="' + displayText + '">' + _truncate(displayText, 80) + '</td>' +
+      '<td style="font-size:10px;">' + displayPurpose + '</td>' +
+      '<td>' + (sp.parties || '—') + '</td>' +
+      '<td>' + (sp.time || '—') + '</td>' +
+      '<td>' + (sp.amount || '—') + '</td>' +
+      '<td class="' + confClass + '">' + (sp.confidence || '—') + (sp.pending_review ? ' ⚠️' : '') + '</td>' +
+      '<td style="padding:6px 4px;display:flex;gap:4px;flex-wrap:wrap;">' +
+      (p.status === 'deleted'
+        ? '<button onclick="s0DeleteCard(\'' + sp.id + '\',this)" style="padding:3px 8px;border:none;border-radius:4px;background:#6b7280;color:white;cursor:pointer;font-size:10px;flex:1;">↩ 恢复</button>'
+        : (p.status === 'confirmed'
+            ? '<button onclick="s0ConfirmCard(\'' + sp.id + '\',this)" style="padding:3px 8px;border:none;border-radius:4px;background:#059669;color:white;cursor:pointer;font-size:10px;flex:1;">✓ 已确认</button>'
+            : '<button onclick="s0ConfirmCard(\'' + sp.id + '\',this)" style="padding:3px 8px;border:none;border-radius:4px;background:#10b981;color:white;cursor:pointer;font-size:10px;flex:1;">✓ 确认</button>')) +
+      '<button onclick="s0EditCard(\'' + sp.id + '\')" style="padding:3px 8px;border:none;border-radius:4px;background:#3b82f6;color:white;cursor:pointer;font-size:10px;flex:1;">✎ 编辑</button>' +
+      (p.status !== 'deleted'
+        ? '<button onclick="s0DeleteCard(\'' + sp.id + '\',this)" style="padding:3px 8px;border:none;border-radius:4px;background:#ef4444;color:white;cursor:pointer;font-size:10px;flex:1;">✗ 删除</button>'
+        : '') +
+      '</td>' +
+    '</tr>';
+  });
+  html += '</tbody></table></div>';
+
+  el.innerHTML = html;
+}
+
+function _truncate(str, max) {
+  if (!str) return '—';
+  return str.length > max ? str.slice(0, max) + '…' : str;
+}
+
+// ========== 五张可视化图表 ==========
+function renderTimelineChart(D) {
+  var ctx = setupHiDPICanvas('timelineCanvas', 520, 240);
+  if (!ctx) return;
+  var events = D.timelineData || [];
+  var w = 520, h = 240;
+  ctx.clearRect(0, 0, w, h);
+  if (events.length === 0) {
+    ctx.fillStyle = '#6b7280'; ctx.font = '11px JetBrains Mono'; ctx.textAlign = 'center';
+    ctx.fillText('暂无时间线数据（请先执行 S0+refresh_dashboard）', w/2, h/2); return;
+  }
+  // 动态计算高度：每条事件约 50px（支持2行文字），最小 240
+  var lineH = 64, maxVis = 20;
+  var actualH = Math.max(h, events.length * lineH + 40);
+  var canvas = document.getElementById('timelineCanvas');
+  if (canvas && Math.abs(canvas.height - actualH * (window.devicePixelRatio || 1)) > 1) {
+    canvas.style.height = actualH + 'px';
+    canvas.height = actualH * (window.devicePixelRatio || 1);
+    h = actualH;
+    ctx = setupHiDPICanvas('timelineCanvas', 520, actualH);
+    if (!ctx) return;
+    ctx.clearRect(0, 0, 520, h);
+  }
+  // 文字自动换行辅助函数
+  function _wrapText(ctx2, text, maxWidth) {
+    var lines = [];
+    var chars = text.split('');
+    var cur = '';
+    for (var ci = 0; ci < chars.length; ci++) {
+      var test = cur + chars[ci];
+      var m = ctx2.measureText(test);
+      if (m.width > maxWidth && cur.length > 0) {
+        lines.push(cur);
+        cur = chars[ci];
+      } else {
+        cur = test;
+      }
+    }
+    if (cur) lines.push(cur);
+    return lines;
+  }
+  var pad = { top: 16, bottom: 16, left: 100, right: 16 };
+  var yStep = lineH;
+  var lineX = pad.left;
+  // 主线
+  ctx.beginPath(); ctx.moveTo(lineX, pad.top); ctx.lineTo(lineX, h - pad.bottom);
+  ctx.strokeStyle = 'rgba(42,47,62,0.6)'; ctx.lineWidth = 1; ctx.stroke();
+  var maxTextW = w - pad.left - pad.right - 28;
+  ctx.font = '10px JetBrains Mono';
+  var max = Math.min(events.length, maxVis);
+  for (var i = 0; i < max; i++) {
+    var e = events[i]; var y = pad.top + i * yStep;
+    // 节点圆点
+    ctx.beginPath(); ctx.arc(lineX, y + 6, 5, 0, 2*Math.PI);
+    ctx.fillStyle = '#f59e0b'; ctx.fill();
+    // 日期（左侧）
+    ctx.fillStyle = '#9ca3af'; ctx.font = '9px JetBrains Mono'; ctx.textAlign = 'right';
+    ctx.fillText((e.date || '—').slice(0, 10), lineX - 10, y + 4);
+    // 事件标签（右侧，支持2行自动换行）
+    ctx.fillStyle = '#f9fafb'; ctx.font = '11px JetBrains Mono'; ctx.textAlign = 'left';
+    var label = (e.label || e.purpose || '—').replace(/[\n\r]+/g, ' ');
+    var lines = _wrapText(ctx, label, maxTextW);
+    for (var li = 0; li < Math.min(lines.length, 4); li++) {
+      var lineText = lines[li];
+      if (li === 3 && lines.length > 4) lineText += '…';
+      ctx.fillText(lineText, lineX + 14, y + li * 14 + 4);
+    }
+  }
+  if (events.length > maxVis) {
+    ctx.fillStyle = '#6b7280'; ctx.font = '10px JetBrains Mono'; ctx.textAlign = 'center';
+    ctx.fillText('... 共 ' + events.length + ' 条，仅显示前 ' + maxVis + ' 条', w/2, h - 6);
+  }
+}
+function renderDisputeTree(D) {
+  var el = document.getElementById('disputeEvidenceTree'); if (!el) return;
+  var data = D.disputeEvidence || [];
+  if (data.length === 0) { el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-dim);font-size:12px;">暂无争议点-证据映射</div>'; return; }
+  var html = '';
+  data.forEach(function(d) {
+    var rCol = d.risk.includes('🔴') ? 'var(--red)' : d.risk.includes('🟡') ? 'var(--amber)' : 'var(--green)';
+    html += '<div class="tree-node" onclick="this.classList.toggle(\'collapsed\')">' +
+      '<div style="display:flex;align-items:center;gap:6px;padding:7px 0;">' +
+        '<span style="color:' + rCol + ';">' + (d.risk || '●') + '</span>' +
+        '<span style="font-size:12px;font-weight:600;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + d.name + '">' + (d.name || '').slice(0, 30) + '</span>' +
+        '<span style="font-size:10px;color:var(--text-dim);background:var(--surface-alt);padding:1px 8px;border-radius:8px;">' + d.evidence_count + '条</span>' +
+        '<span style="font-size:9px;color:var(--text-dim);">' + d.level + '</span>' +
+      '</div><div class="tree-children" style="padding-left:16px;">';
+    (d.evidence || []).forEach(function(sp) {
+      var cIcon = sp.confidence === '高' ? '✓' : '~';
+      var cCol = sp.confidence === '高' ? 'var(--green)' : 'var(--amber)';
+      html += '<div style="display:flex;align-items:center;gap:6px;padding:3px 0;font-size:11px;">' +
+        '<span style="color:' + cCol + ';">' + cIcon + '</span>' +
+        '<span style="color:var(--text-mid);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + (sp.text||'') + '">' + (sp.text||'—') + '</span>' +
+        '<span style="font-size:9px;color:var(--text-dim);flex-shrink:0;">' + (sp.source||'') + '</span></div>';
+    });
+    if (!d.evidence || d.evidence.length === 0) html += '<div style="font-size:11px;color:var(--text-dim);padding:3px 8px;">暂无关联证据</div>';
+    html += '</div></div>';
+  });
+  el.innerHTML = html;
+}
+function renderPartyRelation(D) {
+  var ctx = setupHiDPICanvas('partyRelationCanvas', 500, 280);
+  if (!ctx) return;
+  var data = D.partyRelations || {}; var nodes = data.nodes || []; var edges = data.edges || [];
+  var w = 500, h = 280; ctx.clearRect(0, 0, w, h);
+  if (nodes.length === 0) { ctx.fillStyle = '#6b7280'; ctx.font = '12px JetBrains Mono'; ctx.textAlign = 'center'; ctx.fillText('暂无当事人数据', w/2, h/2); return; }
+  var pos = {};
+  // 按类型分类节点
+  function _isPType(t) { return t === 'plaintiff' || t === 'plaintiff_person'; }
+  function _isDType(t) { return t === 'defendant' || t === 'defendant_person'; }
+  var pNode = nodes.find(function(n){return n.type==='plaintiff';});
+  var dNode = nodes.find(function(n){return n.type==='defendant';});
+  var pPersons = nodes.filter(function(n){return n.type==='plaintiff_person';});
+  var dPersons = nodes.filter(function(n){return n.type==='defendant_person';});
+  var others = nodes.filter(function(n){return !_isPType(n.type) && !_isDType(n.type);});
+  // 星型布局：原告左，被告右，人员环绕各自所属公司
+  var pX = 130, pY = 150, dX = 370, dY = 150;
+  if (pNode) pos[pNode.id] = {x: pX, y: pY, radius: 28, color: '#3b82f6', fill: 'rgba(59,130,246,0.15)', label: pNode.name};
+  if (dNode) pos[dNode.id] = {x: dX, y: dY, radius: 28, color: '#ef4444', fill: 'rgba(239,68,68,0.15)', label: dNode.name};
+  // 原告侧人员：蓝色调小圆，围绕原告
+  pPersons.forEach(function(n, i) {
+    var count = pPersons.length;
+    var startAngle = -Math.PI * 0.75;
+    var endAngle = -Math.PI * 0.1;
+    var angle = count > 1 ? startAngle + (endAngle - startAngle) * i / (count - 1) : -Math.PI * 0.4;
+    var rx = 85, ry = 60;
+    pos[n.id] = {x: pX + Math.cos(angle) * rx, y: pY + Math.sin(angle) * ry, radius: 18, color: '#60a5fa', fill: 'rgba(59,130,246,0.12)', label: n.name};
+  });
+  // 被告侧人员：红色调小圆，围绕被告
+  dPersons.forEach(function(n, i) {
+    var count = dPersons.length;
+    var startAngle = Math.PI * 0.1;
+    var endAngle = Math.PI * 0.75;
+    var angle = count > 1 ? startAngle + (endAngle - startAngle) * i / (count - 1) : Math.PI * 0.4;
+    var rx = 85, ry = 60;
+    pos[n.id] = {x: dX + Math.cos(angle) * rx, y: dY + Math.sin(angle) * ry, radius: 18, color: '#f87171', fill: 'rgba(239,68,68,0.12)', label: n.name};
+  });
+  // 未知归属节点（后备）
+  others.forEach(function(n, i) {
+    var x = 250 + (i % 3) * 90;
+    var y = 60 + Math.floor(i / 3) * 70;
+    pos[n.id] = {x: x, y: y, radius: 16, color: '#9ca3af', fill: 'rgba(107,114,128,0.1)', label: n.name};
+  });
+  // 先画连线
+  edges.forEach(function(e) {
+    var f = pos[e.from], t = pos[e.to]; if (!f||!t) return;
+    ctx.beginPath(); ctx.moveTo(f.x, f.y); ctx.lineTo(t.x, t.y);
+    if (e.type === 'dispute') {
+      ctx.strokeStyle = '#9ca3af'; ctx.lineWidth = 2.5; ctx.setLineDash([]);
+    } else {
+      ctx.strokeStyle = 'rgba(107,114,128,0.5)'; ctx.lineWidth = 1.2; ctx.setLineDash([5,3]);
+    }
+    ctx.stroke(); ctx.setLineDash([]);
+    // 连线中点标注关系类型
+    if (e.label) {
+      var mx = (f.x + t.x) / 2, my = (f.y + t.y) / 2;
+      ctx.fillStyle = e.type === 'dispute' ? '#f9fafb' : '#9ca3af';
+      ctx.font = '10px JetBrains Mono'; ctx.textAlign = 'center';
+      ctx.fillText(e.label, mx, my - 6);
+    }
+  });
+  // 再画节点
+  nodes.forEach(function(n) {
+    var p = pos[n.id]; if (!p) return;
+    // 阴影效果
+    ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, 2*Math.PI);
+    ctx.fillStyle = p.fill; ctx.fill();
+    ctx.strokeStyle = p.color; ctx.lineWidth = 2.5; ctx.stroke();
+    // 标签
+    var label = (p.label || n.name || '—');
+    var maxLen = p.radius > 20 ? 6 : 4;
+    if (label.length > maxLen) label = label.slice(0, maxLen) + '…';
+    ctx.fillStyle = p.color; ctx.font = (p.radius > 20 ? 'bold ' : '') + '12px JetBrains Mono'; ctx.textAlign = 'center';
+    ctx.fillText(label, p.x, p.y + p.radius + 16);
+  });
+  // 图例
+  ctx.font = '10px JetBrains Mono'; ctx.textAlign = 'left';
+  ctx.fillStyle = '#9ca3af';
+  ctx.beginPath(); ctx.moveTo(10, 16); ctx.lineTo(36, 16);
+  ctx.strokeStyle = '#9ca3af'; ctx.lineWidth = 2.5; ctx.setLineDash([]); ctx.stroke();
+  ctx.fillText('纠纷关系', 40, 20);
+  ctx.beginPath(); ctx.moveTo(10, 36); ctx.lineTo(36, 36);
+  ctx.strokeStyle = 'rgba(107,114,128,0.5)'; ctx.lineWidth = 1.2; ctx.setLineDash([5,3]); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillText('关联关系', 40, 40);
+}
+function renderMoneyFlow(D) {
+  var ctx = setupHiDPICanvas('moneyFlowCanvas', 400, 220);
+  if (!ctx) return;
+  var flows = D.moneyFlow || [];
+  var w = 400, h = 220; ctx.clearRect(0, 0, w, h);
+  if (flows.length === 0) { ctx.fillStyle = '#6b7280'; ctx.font = '11px JetBrains Mono'; ctx.textAlign = 'center'; ctx.fillText('暂无金额流向数据', w/2, h/2); return; }
+  var padL = 10, padR = 10, yStep = 32, barH = 16, maxItems = Math.min(flows.length, 7);
+  // 左侧标签区宽度（日期 + 金额）
+  var labelW = 100;
+  var barX = padL + labelW + 8;
+  var barW = w - barX - padR;
+  var maxAmt = flows.slice(0,maxItems).reduce(function(m,f){ return f.amount_num && f.amount_num>m ? f.amount_num : m; }, 1);
+  for (var i = 0; i < maxItems; i++) {
+    var f = flows[i]; var y = padL + i * yStep;
+    var bw = f.amount_num ? Math.max((f.amount_num/maxAmt)*barW, 30) : 30;
+    var purpose = (f.purpose || '') + (f.text || '');
+    var isIn = /收到|借款|贷款|融资|入账|收入|转入/.test(purpose);
+    var isOut = /还款|支付|转账|汇款|还本|付息|偿还|支出|转出/.test(purpose);
+    var barColor, textColor;
+    if (isOut) { barColor = 'rgba(239,68,68,0.55)'; textColor = '#fca5a5'; }
+    else if (isIn) { barColor = 'rgba(16,185,129,0.55)'; textColor = '#6ee7b7'; }
+    else { barColor = 'rgba(245,158,11,0.45)'; textColor = '#fcd34d'; }
+    // 左侧：日期（上）+ 金额（下），右对齐
+    ctx.fillStyle = '#9ca3af'; ctx.font = '10px JetBrains Mono'; ctx.textAlign = 'right';
+    ctx.fillText(f.date || '—', barX - 4, y + 7);
+    var amtLabel = f.amount_num && f.amount_num>=10000 ? (f.amount_num/10000).toFixed(1)+'万' : (f.amount||'—');
+    ctx.fillStyle = textColor; ctx.font = 'bold 11px JetBrains Mono';
+    ctx.fillText(amtLabel, barX - 4, y + barH + 3);
+    // 进度条
+    ctx.fillStyle = barColor;
+    ctx.beginPath();
+    try { ctx.roundRect(barX, y + 2, bw, barH, 4); } catch(e) { ctx.rect(barX, y + 2, bw, barH); }
+    ctx.fill();
+    // 右侧：目的标签（在条内部或右侧）
+    ctx.fillStyle = '#d1d5db'; ctx.font = '10px JetBrains Mono'; ctx.textAlign = 'left';
+    var lbl = (f.purpose||f.text||'').slice(0, 20);
+    if (bw > lbl.length * 12 + 12) {
+      ctx.fillStyle = (isOut||isIn) ? '#fff' : '#1f2937';
+      ctx.fillText(lbl, barX + 6, y + barH - 1);
+    } else {
+      ctx.fillStyle = '#d1d5db';
+      ctx.fillText(lbl, barX + bw + 6, y + barH - 1);
+    }
+  }
+}
+function renderLawMatrix(D) {
+  var el = document.getElementById('lawEvidenceMatrix'); if (!el) return;
+  var data = D.lawMatrix || {}; var elems = data.elements || [];
+  if (elems.length === 0) { el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-dim);font-size:12px;">暂无法条-证据对照数据（请先执行 S4）</div>'; return; }
+  var html = '<div style="font-size:10px;color:var(--text-dim);margin-bottom:8px;">要件覆盖: ' + data.covered + '/' + data.total_elements + '</div>';
+  html += '<table class="s0-table"><thead><tr><th>要件</th><th>名称</th><th>证据数</th><th>状态</th><th>来源</th></tr></thead><tbody>';
+  elems.forEach(function(el) {
+    var sIcon = el.has_evidence ? '✓' : '✗'; var sCol = el.has_evidence ? 'var(--green)' : 'var(--red)';
+    html += '<tr><td style="font-family:monospace;font-size:10px;">' + el.id + '</td>' +
+      '<td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + (el.name||'') + '">' + (el.name||'—').slice(0,16) + '</td>' +
+      '<td style="text-align:center;font-weight:700;">' + el.evidence_count + '</td>' +
+      '<td style="color:' + sCol + ';font-weight:700;">' + sIcon + '</td>' +
+      '<td style="font-size:10px;">' + (el.evidence[0]&&el.evidence[0].source||'—') + '</td></tr>';
+  });
+  html += '</tbody></table>';
+  el.innerHTML = html;
+}
+
+// Resize canvas on window resize
+window.addEventListener('resize', function() {
+  if (_D) {
+    // Canvas charts will be re-rendered on next data refresh
+  }
+});
+
+// ========== 截止日期弹窗 ==========
+var DEADLINE_DIALOG_HTML = '<div id="deadlineOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(4px);" onclick="if(event.target===this)closeDeadlineDialog()">' +
+  '<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px;max-width:440px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.5);">' +
+    '<div style="font-family:\'Noto Serif SC\',serif;font-size:18px;font-weight:700;margin-bottom:20px;">⏰ 设置关键节点截止日期</div>' +
+    '<div style="margin-bottom:14px;"><label style="font-size:11px;color:var(--text-dim);display:block;margin-bottom:4px;">截止日期</label>' +
+      '<input type="date" id="dlDate" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);font-family:inherit;font-size:13px;"></div>' +
+    '<div style="margin-bottom:14px;"><label style="font-size:11px;color:var(--text-dim);display:block;margin-bottom:4px;">节点名称（如：立案、开庭、证据交换）</label>' +
+      '<input type="text" id="dlTask" placeholder="例如：提交立案材料" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);font-family:inherit;font-size:13px;"></div>' +
+    '<div style="margin-bottom:18px;"><label style="font-size:11px;color:var(--text-dim);display:block;margin-bottom:4px;">备注（可选）</label>' +
+      '<textarea id="dlNote" rows="2" placeholder="补充说明..." style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);font-family:inherit;font-size:13px;resize:vertical;"></textarea></div>' +
+    '<div style="display:flex;gap:10px;justify-content:flex-end;align-items:center;">' +
+      '<span id="dlSyncStatus" style="font-size:10px;color:var(--text-dim);flex:1;"></span>' +
+      '<button onclick="closeDeadlineDialog()" style="padding:8px 18px;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--text-dim);cursor:pointer;font-family:inherit;font-size:12px;">取消</button>' +
+      '<button onclick="saveDeadline()" style="padding:8px 18px;border:none;border-radius:8px;background:var(--amber);color:#000;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;">确认保存</button>' +
+      '<button onclick="saveDeadlineAndSync()" id="dlSyncBtn" style="padding:8px 18px;border:1px solid var(--cyan);border-radius:8px;background:var(--cyan-dim);color:var(--cyan);cursor:pointer;font-family:inherit;font-size:12px;" title="保存并同步到飞书任务中枢">保存并同步→飞书</button>' +
+    '</div></div></div>';
+
+function ensureDeadlineDialog() {
+  if (!document.getElementById('deadlineOverlay')) {
+    var div = document.createElement('div');
+    div.innerHTML = DEADLINE_DIALOG_HTML;
+    document.body.appendChild(div.firstElementChild);
+  }
+}
+
+function openDeadlineDialog() {
+  ensureDeadlineDialog();
+  var saved = loadDeadlineData();
+  var today = new Date().toISOString().slice(0,10);
+  document.getElementById('dlDate').value = saved.date || '';
+  document.getElementById('dlDate').setAttribute('min', today);
+  document.getElementById('dlTask').value = saved.task || '';
+  document.getElementById('dlNote').value = saved.note || '';
+  document.getElementById('dlSyncStatus').textContent = '';
+  document.getElementById('deadlineOverlay').style.display = 'flex';
+}
+
+function closeDeadlineDialog() {
+  var ov = document.getElementById('deadlineOverlay');
+  if (ov) ov.style.display = 'none';
+}
+
+function _deadlineKey() {
+  var caseName = (window._D && window._D.meta && window._D.meta.caseName) || 'default';
+  return 'caseos_deadline_' + caseName.replace(/\s+/g, '_');
+}
+function loadDeadlineData() {
+  try {
+    return JSON.parse(localStorage.getItem(_deadlineKey()) || '{}');
+  } catch(e) { return {}; }
+}
+
+function saveDeadlineData(data) {
+  localStorage.setItem(_deadlineKey(), JSON.stringify(data));
+}
+
+function saveDeadline() {
+  var date = document.getElementById('dlDate').value;
+  var task = document.getElementById('dlTask').value.trim();
+  var note = document.getElementById('dlNote').value.trim();
+  if (!date) { alert('请选择截止日期'); return; }
+  var data = { date: date, task: task, note: note, updatedAt: new Date().toISOString() };
+  saveDeadlineData(data);
+  updateDeadlineDisplay();
+  document.getElementById('dlSyncStatus').textContent = '已保存 ✓';
+  setTimeout(function(){ document.getElementById('dlSyncStatus').textContent = ''; }, 2000);
+  closeDeadlineDialog();
+}
+
+function saveDeadlineAndSync() {
+  saveDeadline();
+  syncDeadlineToFeishu();
+}
+
+function updateDeadlineDisplay() {
+  var data = loadDeadlineData();
+  var deadlineEl = document.getElementById('kpiDeadlineVal');
+  var deadlineBtn = document.getElementById('kpiDeadlineBtn');
+  if (!deadlineEl) return;
+  if (data.date) {
+    var dlDate = new Date(data.date);
+    var now = new Date(); now.setHours(0,0,0,0);
+    var days = Math.max(0, Math.round((dlDate - now) / 86400000));
+    deadlineEl.textContent = days;
+    var cls = days <= 3 ? 'orange' : days <= 7 ? 'amber' : 'cyan';
+    if (deadlineBtn) { deadlineBtn.className = 'topbar-kpi-btn ' + cls; deadlineBtn.title = data.task || data.date; }
+  }
+  // 如果 localStorage 没有数据，使用 CLAUDE.md 中的 deadline
+}
+
+function syncDeadlineToFeishu() {
+  var data = loadDeadlineData();
+  if (!data.date || !data.task) {
+    document.getElementById('dlSyncStatus').textContent = '请填写日期和节点名称';
+    return;
+  }
+  document.getElementById('dlSyncStatus').textContent = '同步中...';
+  document.getElementById('dlSyncBtn').disabled = true;
+
+  var caseName = '';
+  if (window._D && window._D.caseName) caseName = window._D.caseName;
+  else if (window.CONFIRM_TABLE_DATA && window.CONFIRM_TABLE_DATA.caseName) caseName = window.CONFIRM_TABLE_DATA.caseName;
+
+  var payload = {
+    action: 'sync_task',
+    payload: { fields: {
+      '任务名称': data.task,
+      '截止日期': data.date,
+      '备注': data.note || '',
+      '来源案件': caseName
+    }}
+  };
+
+  fetch('http://127.0.0.1:18903/sync-feishu', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  }).then(function(r){ return r.json(); })
+  .then(function(res){
+    document.getElementById('dlSyncStatus').textContent = res.ok ? '已同步到飞书 ✓' : '同步失败: ' + (res.error || '未知错误');
+    document.getElementById('dlSyncBtn').disabled = false;
+  }).catch(function(){
+    // 代理未启动，降级：复制到剪贴板供手动运行
+    var cmd = 'node ~/.local/bin/sync-feishu-deadline.js --task "' + data.task + '" --date "' + data.date + '"';
+    if (data.note) cmd += ' --note "' + data.note + '"';
+    if (caseName) cmd += ' --case "' + caseName + '"';
+    var text = cmd;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(function(){
+        document.getElementById('dlSyncStatus').textContent = '代理未启动，已复制命令到剪贴板。终端粘贴运行即可同步';
+      });
+    } else {
+      document.getElementById('dlSyncStatus').textContent = '代理未启动。请在终端运行: ' + cmd;
+    }
+    document.getElementById('dlSyncBtn').disabled = false;
+  });
+}
+
+// 页面加载时，优先用 localStorage 的 deadline 覆盖 CLAUDE.md 中的值
+function applyLocalDeadline() {
+  var local = loadDeadlineData();
+  if (local.date) {
+    // 等 _D 加载后用 local deadline 覆盖
+    var check = setInterval(function(){
+      if (window._D) {
+        clearInterval(check);
+        updateDeadlineDisplay();
+      }
+    }, 100);
+    // 15秒超时
+    setTimeout(function(){ clearInterval(check); }, 15000);
+  }
+}
+applyLocalDeadline();
+
+// 主题切换功能
+function initTheme() {
+  var saved = localStorage.getItem('caseDashboardTheme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+  updateThemeBtn(saved);
+}
+
+function toggleTheme() {
+  var current = document.documentElement.getAttribute('data-theme') || 'dark';
+  var next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('caseDashboardTheme', next);
+  updateThemeBtn(next);
+}
+
+function updateThemeBtn(theme) {
+  var btn = document.getElementById('themeToggleBtn');
+  if (btn) {
+    btn.textContent = theme === 'dark' ? '🌙' : '☀️';
+    btn.title = theme === 'dark' ? '切换到浅色主题' : '切换到深色主题';
+  }
+}
+
+initTheme();
+</script>
+
+<!-- 外部数据文件（由 refresh_dashboard.py 生成，保存在 _archive/） -->
+<script src="_archive/CaseDashboard-data.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,133 @@
+{
+  "step_id": "S9",
+  "status": "pending_review",
+  "case_id": "demo-case-001",
+  "case_name": "借贷合同纠纷案",
+  "generated_at": "2026-05-23T10:00:00+08:00",
+  "input_refs": {
+    "s2_path": "intermediate/原告九步法/S2-请求权基础/S2-请求权基础.md",
+    "s4_path": "intermediate/原告九步法/S4-要件分析/S4-要件分析.md",
+    "s8_path": "intermediate/原告九步法/S8-事实认定/S8-事实认定.md",
+    "s8_defendant_path": "intermediate/被告九步法/S8-事实认定/S8-事实认定.md",
+    "s8_reference_status": "resolved",
+    "s4_fallback": false
+  },
+  "syllogistic_reasoning": [
+    {
+      "element_id": "S4-E001",
+      "major_premise": "借款合同生效 + 借款期间届满 + 未按约还款 → 应承担还款责任（《民法典》第577条）",
+      "minor_premise": "借款合同真实有效（E001+E002印证）+ 借款期间已届满 + 仅还款7万元",
+      "preliminary_conclusion": "黄某应承担剩余17万元的还款责任（24万-7万=17万）",
+      "review_status": "pending_review"
+    },
+    {
+      "element_id": "S4-E002",
+      "major_premise": "保证合同生效 + 主债未履行 + 保证期间内主张 → 应承担连带保证责任（《民法典》第681条）",
+      "minor_premise": "保证合同真实有效 + 主债未完全履行 + 保证期间内主张 + 无证据表明债权人明知无权代理",
+      "preliminary_conclusion": "张某应承担连带保证责任（担保金额随主债部分清偿而减少）",
+      "review_status": "pending_review"
+    }
+  ],
+  "element_imputation": [
+    {
+      "element_id": "S4-E001",
+      "element_source": "claim_basis",
+      "element_description": "借款合同已生效",
+      "matched_fact_ids": ["S8-F001"],
+      "matching_facts": ["借款合同是当事人真实意思，刘某已实际交付了借款 [supported]"],
+      "fact_match": "supported",
+      "match_level": "high",
+      "gap_analysis": "要件满足，无缺口",
+      "review_status": "pending_review",
+      "basis": "借据+转账凭证相互印证，fact_id S8-F001"
+    },
+    {
+      "element_id": "S4-E002",
+      "element_source": "claim_basis",
+      "element_description": "负有偿还义务",
+      "matched_fact_ids": ["S8-F002"],
+      "matching_facts": ["借款期间已届满 [supported]"],
+      "fact_match": "supported",
+      "match_level": "high",
+      "gap_analysis": "要件满足，借款期间已届满",
+      "review_status": "pending_review",
+      "basis": "借据记载，fact_id S8-F002"
+    },
+    {
+      "element_id": "S4-E003",
+      "element_source": "claim_basis",
+      "element_description": "义务未履行",
+      "matched_fact_ids": ["S8-F003"],
+      "matching_facts": ["黄某偿还了数额为7万元的借款 [supported]"],
+      "fact_match": "supported",
+      "match_level": "medium",
+      "gap_analysis": "部分履行，已还款7万元，剩余17万元未还",
+      "review_status": "pending_review",
+      "basis": "转账凭证证明，fact_id S8-F003"
+    },
+    {
+      "element_id": "S4-D001",
+      "element_source": "defense",
+      "element_description": "明知无代理权（权利阻碍性抗辩）",
+      "matched_fact_ids": ["S8-F004"],
+      "matching_facts": ["无证据表明刘某明知黄某私盖了张某私章 [unclear]"],
+      "fact_match": "unclear",
+      "match_level": "unclear",
+      "gap_analysis": "真伪不明，由被告承担不利后果",
+      "review_status": "pending_review",
+      "basis": "无证据证明，fact_id S8-F004，真伪不明"
+    }
+  ],
+  "judgment_conclusion": {
+    "judgment_type": "preliminary",
+    "plaintiff_claim": {
+      "preliminary_result": "刘某享有请求黄某即时清偿债务的权利（应自债务总额中扣除黄某已清偿部分的7万元）",
+      "review_status": "pending_review",
+      "basis": "借款合同成立并生效，借款期间已届满，部分还款事实成立"
+    },
+    "defendant_defense": {
+      "preliminary_result": "张某关于刘某知情的抗辩证据不足，不能成立表见代理抗辩；但担保债务随主债部分清偿而减少",
+      "review_status": "pending_review",
+      "basis": "被告未能证明刘某明知黄某私盖私章"
+    },
+    "amount_recommendation": {
+      "preliminary_amount": 170000,
+      "currency": "CNY",
+      "calculation": "24万（借款总额）- 7万（已还款）= 17万（剩余债务）",
+      "review_status": "pending_review",
+      "basis": "转账凭证证明已还款7万元"
+    },
+    "judgment_content": {
+      "draft_text": "被告黄某应于判决生效之日起十日内偿还原告刘某借款人民币17万元；被告张某对上述债务承担连带清偿责任",
+      "review_status": "pending_review",
+      "basis": "要件归入分析结果"
+    },
+    "review_status": "pending_review",
+    "predict_marker": "predict"
+  },
+  "rationale": "基于S8事实认定结果，将要件事实与法律规范构成要件进行归入分析。原告主张的借款合同成立、交付、部分还款等要件事实均有证据支持；被告张某的知情抗辩因证据不足，真伪不明，由被告承担不利后果。担保债务随主债部分清偿而相应减少。",
+  "handoff_to_s10": {
+    "target_step": "S10",
+    "output_fields": [
+      "element_imputation.element_id",
+      "element_imputation.fact_match",
+      "judgment_conclusion.judgment_type",
+      "judgment_conclusion",
+      "rationale",
+      "syllogistic_reasoning"
+    ],
+    "purpose": "S10基于裁判结果进行八个一致质量检查",
+    "s10_check_items": [
+      "EC_02: 诉讼主张与基础规范一致",
+      "EC_05: 认定事实与事实争点一致",
+      "EC_06: 法律理由与法律争点一致",
+      "EC_07: 判决主文与诉讼请求一致"
+    ],
+    "blocking_conditions": [
+      "judgment_conclusion.review_status != pending_review 时阻断",
+      "judgment_conclusion.predict_marker 缺失时阻断",
+      "judgment_conclusion.judgment_content.draft_text 或 plaintiff_claim.preliminary_result 字段出现 confirmed/final/boolean 等终局落定词汇时阻断",
+      "element_imputation 存在 fact_match=unclear 且无 gap_analysis 说明时阻断"
+    ]
+  }
+}

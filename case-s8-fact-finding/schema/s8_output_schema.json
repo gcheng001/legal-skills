@@ -1,0 +1,186 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "s8_output_schema.json",
+  "title": "S8 事实认定输出Schema",
+  "description": "九步法S8事实认定输出结构，包含JSON frontmatter各字段的JSON Schema定义",
+  "type": "object",
+  "required": ["step_id", "status", "case_id", "case_name", "generated_at", "fact_findings", "evidence_evaluation", "burden_result", "review_required", "references"],
+  "properties": {
+    "step_id": {
+      "type": "string",
+      "const": "S8"
+    },
+    "status": {
+      "type": "string",
+      "const": "pending_review"
+    },
+    "case_id": {
+      "type": "string"
+    },
+    "case_name": {
+      "type": "string"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "fact_findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["fact_id", "fact_content", "preliminary_finding", "review_status", "finding_basis", "evidence_support", "related_issue"],
+        "properties": {
+          "fact_id": {
+            "type": "string",
+            "pattern": "^S8-F\\d{3}$"
+          },
+          "fact_content": {
+            "type": "string"
+          },
+          "preliminary_finding": {
+            "type": "string",
+            "enum": ["supported", "not_supported", "unclear", "undetermined"]
+          },
+          "review_status": {
+            "type": "string",
+            "const": "pending_review"
+          },
+          "finding_basis": {
+            "type": "string"
+          },
+          "evidence_support": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["evidence_id", "evidence_description"],
+              "properties": {
+                "evidence_id": {"type": "string"},
+                "evidence_description": {"type": "string"}
+              }
+            }
+          },
+          "related_issue": {"type": "string"}
+        }
+      }
+    },
+    "evidence_evaluation": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["evidence_id", "source_evidence_ids", "admissibility", "relevance", "probative_value", "weight"],
+        "properties": {
+          "evidence_id": {"type": "string"},
+          "source_evidence_ids": {
+            "type": "array",
+            "items": {"type": "string"}
+          },
+          "admissibility": {
+            "type": "object",
+            "required": ["preliminary_value", "review_status", "basis"],
+            "properties": {
+              "preliminary_value": {"type": "string", "enum": ["admissible", "conditionally_admissible", "inadmissible"]},
+              "review_status": {"type": "string", "const": "pending_review"},
+              "basis": {"type": "string"}
+            }
+          },
+          "relevance": {
+            "type": "object",
+            "required": ["preliminary_value", "review_status", "basis"],
+            "properties": {
+              "preliminary_value": {"type": "string", "enum": ["highly_relevant", "moderately_relevant", "marginally_relevant", "irrelevant"]},
+              "review_status": {"type": "string", "const": "pending_review"},
+              "basis": {"type": "string"}
+            }
+          },
+          "probative_value": {
+            "type": "object",
+            "required": ["preliminary_value", "review_status", "basis"],
+            "properties": {
+              "preliminary_value": {"type": "string", "enum": ["strong", "moderate", "weak", "very_weak"]},
+              "review_status": {"type": "string", "const": "pending_review"},
+              "basis": {"type": "string"}
+            }
+          },
+          "weight": {
+            "type": "object",
+            "required": ["weight_level", "review_status", "basis"],
+            "properties": {
+              "weight_level": {"type": "string", "enum": ["high", "medium", "low", "none", "unclear"]},
+              "suggested_score": {"type": ["number", "null"]},
+              "review_status": {"type": "string", "const": "pending_review"},
+              "basis": {"type": "string"}
+            }
+          },
+          "evaluation_notes": {"type": "string"}
+        }
+      }
+    },
+    "burden_result": {
+      "type": "object",
+      "required": ["party_sufficient", "facts_undetermined", "burden_applied_summary"],
+      "properties": {
+        "party_sufficient": {
+          "type": "object",
+          "required": ["plaintiff", "defendant"],
+          "properties": {
+            "plaintiff": {
+              "type": "object",
+              "required": ["preliminary_sufficiency", "review_status"],
+              "properties": {
+                "preliminary_sufficiency": {"type": "string", "enum": ["sufficient", "insufficient", "unclear"]},
+                "review_status": {"type": "string", "const": "pending_review"},
+                "notes": {"type": "string"}
+              }
+            },
+            "defendant": {
+              "type": "object",
+              "required": ["preliminary_sufficiency", "review_status"],
+              "properties": {
+                "preliminary_sufficiency": {"type": "string", "enum": ["sufficient", "insufficient", "unclear"]},
+                "review_status": {"type": "string", "const": "pending_review"},
+                "notes": {"type": "string"}
+              }
+            }
+          }
+        },
+        "facts_undetermined": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["fact_id", "fact_content", "burden_bearer", "burden_rule_applied", "consequence_statement"],
+            "properties": {
+              "fact_id": {"type": "string"},
+              "fact_content": {"type": "string"},
+              "burden_bearer": {"type": "string", "enum": ["plaintiff", "defendant"]},
+              "burden_rule_applied": {"type": "string"},
+              "consequence_statement": {
+                "type": "string",
+                "const": "由负有举证责任的当事人承担不利后果"
+              }
+            }
+          }
+        },
+        "burden_applied_summary": {"type": "string"}
+      }
+    },
+    "review_required": {
+      "type": "object",
+      "required": ["evidence_evaluation_needs_review", "burden_result_needs_review", "facts_undetermined_needs_review"],
+      "properties": {
+        "evidence_evaluation_needs_review": {"type": "boolean", "const": true},
+        "burden_result_needs_review": {"type": "boolean", "const": true},
+        "facts_undetermined_needs_review": {"type": "boolean", "const": true}
+      }
+    },
+    "references": {
+      "type": "object",
+      "required": ["s7_reference_status"],
+      "properties": {
+        "s7_burden_allocation_ref": {"type": "string"},
+        "s7_judicial_disclosure_ref": {"type": "string"},
+        "s7_proof_resource_review_ref": {"type": "string"},
+        "s7_reference_status": {"type": "string", "enum": ["resolved", "unresolved"]}
+      }
+    }
+  }
+}

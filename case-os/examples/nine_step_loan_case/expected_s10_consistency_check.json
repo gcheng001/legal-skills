@@ -1,0 +1,102 @@
+{
+  "step_id": "S10",
+  "status": "pending_review",
+  "input_refs": {
+    "s1_path": "intermediate/原告九步法/S1-固定权利请求/S1-固定权利请求.md",
+    "s2_path": "intermediate/原告九步法/S2-请求权基础/S2-请求权基础.md",
+    "s4_path": "intermediate/原告九步法/S4-要件分析/S4-要件分析.md",
+    "s8_path": "intermediate/原告九步法/S8-事实认定/S8-事实认定.md",
+    "s9_path": "intermediate/原告九步法/S9-要件归入与裁判预测/S9-要件归入与裁判预测.md",
+    "s9_reference_status": "resolved"
+  },
+  "hallucination_check": {
+    "statute_accuracy": [
+      {
+        "statute_reference": "《民法典》第577条",
+        "exists": true,
+        "content_match": true,
+        "risk_level": "低"
+      },
+      {
+        "statute_reference": "《民法典》第681条",
+        "exists": true,
+        "content_match": true,
+        "risk_level": "低"
+      }
+    ],
+    "case_consistency": [],
+    "logic_validity": {
+      "is_valid": true,
+      "fallacy_detected": false,
+      "fallacy_type": null
+    }
+  },
+  "eight_consistency_check": {
+    "当事人诉辩一致": {
+      "检查结果": "通过",
+      "具体问题": []
+    },
+    "诉讼主张与基础规范一致": {
+      "检查结果": "通过",
+      "具体分析": []
+    },
+    "诉讼争点与诉讼主张一致": {
+      "检查结果": "通过",
+      "具体问题": []
+    },
+    "诉讼证据与诉讼主张一致": {
+      "检查结果": "通过",
+      "具体问题": []
+    },
+    "认定事实与事实争点一致": {
+      "检查结果": "通过",
+      "具体问题": []
+    },
+    "法律理由与法律争点一致": {
+      "检查结果": "通过",
+      "具体问题": []
+    },
+    "判决主文与诉讼请求一致": {
+      "检查结果": "通过",
+      "具体问题": []
+    },
+    "引用条文与判决主文一致": {
+      "检查结果": "通过",
+      "具体问题": []
+    }
+  },
+  "s9_consumption_check": {
+    "s9_read_status": "resolved",
+    "s9_json_parse": true,
+    "s9_schema_validation": "passed",
+    "pending_review_status": "pending_review",
+    "predict_marker_present": true,
+    "handoff_to_s10_exists": true,
+    "handoff_required_fields_present": true,
+    "finalization_language_detected": false,
+    "input_read_errors": [],
+    "unresolved_reason": null
+  },
+  "quality_score": {
+    "total_consistency_score": 85,
+    "critical_rules_score": 90,
+    "form_rules_score": 75
+  },
+  "recommendations": [],
+  "blocking_result": {
+    "is_blocked": false,
+    "blocking_level": null,
+    "blocking_reasons": [],
+    "statute_hallucination_blocked": false,
+    "s9_unresolved_blocked": false,
+    "s9_finalization_blocked": false,
+    "ec_critical_failures": [],
+    "can_enter_final": true
+  },
+  "review_required": {
+    "hallucination_check_needs_review": true,
+    "eight_consistency_check_needs_review": true,
+    "s9_consumption_check_needs_review": true,
+    "quality_score_needs_review": true
+  }
+}

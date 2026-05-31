@@ -1,0 +1,214 @@
+{
+  "step_id": "S4",
+  "step_name": "基础规范构成要件分析",
+  "case_context": {
+    "case_type": "借贷合同纠纷",
+    "plaintiff": "刘某",
+    "defendants": [
+      "黄某",
+      "张某"
+    ],
+    "legal_relationships": [
+      "借款合同关系",
+      "担保合同关系"
+    ]
+  },
+  "legal_basis_analysis": {
+    "plaintiff_claim_basics": {
+      "rights_basis_1": {
+        "basis_type": "违约责任请求权",
+        "target_defendant": "黄某",
+        "legal_relationship": "借款关系"
+      },
+      "rights_basis_2": {
+        "basis_type": "担保责任请求权",
+        "target_defendant": "张某",
+        "legal_relationship": "担保关系"
+      }
+    },
+    "defense_basics": {
+      "defense_1": {
+        "defendant": "黄某",
+        "defense_type": "权利消灭性抗辩",
+        "claim": "部分清偿"
+      },
+      "defense_2": {
+        "defendant": "张某",
+        "defense_type": "权利阻碍性抗辩",
+        "claim": "明知无代理权"
+      },
+      "defense_3": {
+        "defendant": "张某",
+        "defense_type": "权利妨碍性抗辩",
+        "claim": "主债部分履行"
+      }
+    }
+  },
+  "elements_analysis_by_defendant": {
+    "黄某": {
+      "defendant": "黄某",
+      "rights_basis": "违约责任请求权",
+      "legal_articles": [
+        {
+          "article": "《合同法》第210条",
+          "current_equivalent": "《民法典》第679条",
+          "element_covered": "借款合同已生效",
+          "note": "自然人之间的借款合同，自贷款人提供借款时生效（民法典改为成立）"
+        },
+        {
+          "article": "《合同法》第206条",
+          "current_equivalent": "《民法典》第675条",
+          "element_covered": "负有偿还义务"
+        },
+        {
+          "article": "《合同法》第107条",
+          "current_equivalent": "《民法典》第577条",
+          "element_covered": "义务未履行"
+        }
+      ],
+      "elements_summary": {
+        "权利依据的要件事由": "借款合同已生效、负有偿还义务、义务未履行",
+        "权利阻碍性事由": "无",
+        "权利消灭性抗辩事由": "部分履行（70000元）",
+        "权利妨碍性抗辩事由": "无"
+      }
+    },
+    "张某": {
+      "defendant": "张某",
+      "rights_basis": "担保责任请求权",
+      "legal_articles": [
+        {
+          "article": "《担保法》第13条",
+          "current_equivalent": "《民法典》第685条",
+          "element_covered": "担保合同已生效",
+          "note": "保证人与债权人应当以书面形式订立保证合同"
+        },
+        {
+          "article": "《担保法》第18条",
+          "current_equivalent": "《民法典》第688条",
+          "element_covered": "负有保证义务"
+        },
+        {
+          "article": "《担保法》第18条第2款、第26条",
+          "current_equivalent": "《民法典》第688条第2款、第692条、第693条",
+          "element_covered": "义务未履行、保证期间"
+        },
+        {
+          "article": "《合同法》第49条",
+          "current_equivalent": "《民法典》第172条",
+          "element_covered": "明知无代理权",
+          "note": "表见代理条款"
+        }
+      ],
+      "elements_summary": {
+        "权利依据的要件事由": "担保合同已生效、负有保证义务、义务未履行",
+        "权利阻碍性事由": "明知无代理权",
+        "权利消灭性抗辩事由": "主债部分履行",
+        "权利妨碍性抗辩事由": "无"
+      }
+    }
+  },
+  "legal_articles_reference": {
+    "contract_law_210": {
+      "original": "《合同法》第210条规定：自然人之间的借款合同，自贷款人提供借款时生效。",
+      "current": "《民法典》第679条规定：自然人之间的借款合同，自贷款人提供借款时成立。"
+    },
+    "contract_law_206": {
+      "original": "《合同法》第206条规定：借款人应当按照约定的期限返还借款。对借款期限没有约定或者约定不明确，依照本法第六十一条的规定仍不能确定的，借款人可以随时返还；贷款人可以催告借款人在合理期限内返还。",
+      "current": "《民法典》第675条规定：借款人应当按照约定的期限返还借款。对借款期限没有约定或者约定不明确，依据本法第五百一十条的规定仍不能确定的，借款人可以随时返还；贷款人可以催告借款人在合理期限内返还。"
+    },
+    "contract_law_107": {
+      "original": "《合同法》第107条规定：当事人一方不履行合同义务或者履行合同义务不符合约定的，应当承担继续履行、采取补救措施或者赔偿损失等违约责任。",
+      "current": "《民法典》第577条规定：当事人一方不履行合同义务或者履行合同义务不符合约定的，应当承担继续履行、采取补救措施或者赔偿损失等违约责任。"
+    },
+    "guarantee_law_13": {
+      "original": "《担保法》第13条规定：保证人与债权人应当以书面形式订立保证合同。",
+      "current": "《民法典》第685条规定：保证合同可以是单独订立的书面合同，也可以是主债权债务合同中的保证条款。第三人单方以书面形式向债权人作出保证，债权人接收且未提出异议的，保证合同成立。"
+    },
+    "guarantee_law_18": {
+      "original": "《担保法》第18条规定：当事人在保证合同中约定保证人与债务人对债务承担连带责任的，为连带责任保证。连带责任保证的债务人在主合同规定的债务履行期届满没有履行债务的，债权人可以要求债务人履行债务，也可以要求保证人在其保证范围内承担保证责任。",
+      "current": "《民法典》第688条规定：当事人在保证合同中约定保证人和债务人对债务承担连带责任的，为连带责任保证。连带责任保证的债务人不履行到期债务或者发生当事人约定的情形时，债权人可以请求债务人履行债务，也可以请求保证人在其保证范围内承担保证责任。"
+    },
+    "guarantee_law_26": {
+      "original": "《担保法》第26条规定：连带责任保证的保证人与债权人未约定保证期间的，债权人有权自主债务履行期届满之日起六个月内要求保证人承担保证责任。在合同约定的保证期间和前款规定的保证期间，债权人未要求保证人承担保证责任的，保证人免除保证责任。",
+      "current": "《民法典》第692条、第693条规定：保证期间是确定保证人承担保证责任的期间...连带责任保证的债权人未在保证期间请求保证人承担保证责任的，保证人不再承担保证责任。"
+    },
+    "contract_law_49": {
+      "original": "《合同法》第49条规定：行为人没有代理权、超越代理权或者代理权终止后以被代理人名义订立合同，相对人有理由相信行为人有代理权的，该代理行为有效。",
+      "current": "《民法典》第172条规定：行为人没有代理权、超越代理权或者代理权终止后，仍然实施代理行为，相对人有理由相信行为人有代理权的，代理行为有效。"
+    }
+  },
+  "elements_summary_table": {
+    "rights_basis_1": {
+      "defendant": "黄某",
+      "basis_type": "违约责任请求权",
+      "elements": {
+        "权利依据要件": [
+          "借款合同已生效",
+          "负有偿还义务",
+          "义务未履行"
+        ],
+        "权利阻碍性事由": [],
+        "权利消灭性事由": [
+          "部分履行"
+        ],
+        "权利妨碍性事由": []
+      }
+    },
+    "rights_basis_2": {
+      "defendant": "张某",
+      "basis_type": "担保责任请求权",
+      "elements": {
+        "权利依据要件": [
+          "担保合同已生效",
+          "负有保证义务",
+          "义务未履行"
+        ],
+        "权利阻碍性事由": [
+          "明知无代理权"
+        ],
+        "权利消灭性事由": [
+          "主债部分履行"
+        ],
+        "权利妨碍性事由": []
+      }
+    }
+  },
+  "handoff_info": {
+    "input_from_previous": {
+      "source": "S2、S3输出",
+      "input_fields": [
+        "identified_rights_bases",
+        "identified_defense_claims"
+      ],
+      "specific_content": "黄某-违约责任请求权+权利消灭性抗辩、张某-担保责任请求权+权利阻碍性/妨碍性抗辩"
+    },
+    "handoff_to_next": {
+      "target_step": "S5",
+      "output_fields": [
+        "elements_analysis_by_defendant",
+        "elements_summary_table"
+      ],
+      "purpose": "S5基于构成要件分析进行诉讼主张检索"
+    },
+    "source_refs": {
+      "attachment": "附件三借贷合同纠纷案例",
+      "location": "法院释明及法律适用部分（P457-460）"
+    },
+    "blocking_conditions": {
+      "potential_failures": [
+        "构成要件识别不完整",
+        "法条适用错误",
+        "要件分类错误"
+      ],
+      "failure_mode_ref": "nine_step_failure_modes.json -> S4_failure_modes"
+    },
+    "step_id": "S4"
+  },
+  "notes": [
+    "通过法律推理和法律解释，确定了裁判适用的具体法条",
+    "分析了所有相关法律条文中包含的构成要件",
+    "识别了权利依据要件、权利阻碍性事由、权利消灭性抗辩事由、权利妨碍性抗辩事由",
+    "标注了原《合同法》《担保法》条款与《民法典》的对应关系"
+  ]
+}

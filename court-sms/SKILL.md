@@ -1,7 +1,7 @@
 ---
 name: court-sms
 homepage: https://github.com/goacheng001/legal-skills
-author: 高澄（微信cheng715)
+author: Legal Skills Project
 version: "2.0.0"
 license: MIT
 description: 本技能应在用户收到法院短信（文书送达、立案通知、开庭提醒等）时使用。TRIGGER: 短信含法院名称 + 案号 + zxfw.court.gov.cn/sd.gdems.com/jysd.10102368.com 任一送达平台链接 → 立即调用此 skill，不先尝试 WebFetch/pkulaw/其他工具。下载到 ~/Desktop/文书下载/，原样保存不删不改，仅对传票/开庭通知提取关键信息写飞书。

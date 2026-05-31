@@ -1,0 +1,80 @@
+<!-- 对抗矩阵模板 - HTML 表格
+     用途：原告主张 vs 被告抗辩，逐项对照
+     生成时机：S6 争点矩阵完成后自动生成
+     数据来源：S1请求权 + S3抗辩 + S6争点矩阵
+-->
+<style>
+.confrontation-matrix {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 14px;
+}
+.confrontation-matrix th {
+    background: #1a1a2e;
+    color: #fff;
+    padding: 12px 16px;
+    text-align: left;
+    border: 1px solid #333;
+}
+.confrontation-matrix td {
+    padding: 10px 16px;
+    border: 1px solid #444;
+    vertical-align: top;
+}
+.confrontation-matrix tr:nth-child(even) {
+    background: #1e1e2e;
+}
+.confrontation-matrix tr:hover {
+    background: #2a2a3e;
+}
+.claim-cell { color: #4fc3f7; }
+.defense-cell { color: #ef5350; }
+.verdict-cell { font-weight: bold; }
+.verdict-advantage { color: #66bb6a; }
+.verdict-disadvantage { color: #ef5350; }
+.verdict-uncertain { color: #ffa726; }
+.priority-p0 { border-left: 4px solid #e94560; }
+.priority-p1 { border-left: 4px solid #ff9800; }
+.priority-p2 { border-left: 4px solid #4caf50; }
+</style>
+
+<table class="confrontation-matrix">
+    <thead>
+        <tr>
+            <th style="width:5%">编号</th>
+            <th style="width:10%">优先级</th>
+            <th style="width:25%">原告主张</th>
+            <th style="width:25%">被告抗辩</th>
+            <th style="width:15%">法律依据</th>
+            <th style="width:20%">态势判断</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- 示例行，实际数据由 refresh_dashboard.py 生成 -->
+        <tr class="priority-p0">
+            <td>1</td>
+            <td><strong>P0</strong> 主战场</td>
+            <td class="claim-cell">{{原告主张1}}</td>
+            <td class="defense-cell">{{被告抗辩1}}</td>
+            <td>{{法条引用}}</td>
+            <td class="verdict-cell verdict-advantage">🟢 原告有利</td>
+        </tr>
+        <tr class="priority-p0">
+            <td>2</td>
+            <td><strong>P0</strong> 主战场</td>
+            <td class="claim-cell">{{原告主张2}}</td>
+            <td class="defense-cell">{{被告抗辩2}}</td>
+            <td>{{法条引用}}</td>
+            <td class="verdict-cell verdict-disadvantage">🔴 被告有利</td>
+        </tr>
+        <tr class="priority-p1">
+            <td>3</td>
+            <td><strong>P1</strong> 次战场</td>
+            <td class="claim-cell">{{原告主张3}}</td>
+            <td class="defense-cell">{{被告抗辩3}}</td>
+            <td>{{法条引用}}</td>
+            <td class="verdict-cell verdict-uncertain">🟡 待定</td>
+        </tr>
+    </tbody>
+</table>

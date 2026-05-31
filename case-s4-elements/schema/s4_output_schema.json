@@ -1,0 +1,204 @@
+{
+  "schema_name": "S4要件拆解输出Schema",
+  "schema_version": "1.0.1",
+  "schema_purpose": "定义S4要件拆解的输出结构，对齐expected_s4_elements.json",
+  "step_id": "S4",
+  "step_name": "基础规范构成要件分析",
+  "output_fields": {
+    "step_id": {
+      "type": "string",
+      "description": "步骤标识符",
+      "required": true,
+      "default": "S4"
+    },
+    "legal_basis_analysis": {
+      "type": "object",
+      "description": "法律基础分析",
+      "properties": {
+        "plaintiff_claim_basics": {
+          "type": "object",
+          "description": "原告诉讼请求基础"
+        },
+        "defense_basics": {
+          "type": "object",
+          "description": "被告抗辩基础"
+        }
+      }
+    },
+    "statute_nature_verification": {
+      "type": "object",
+      "description": "法条性质验证（读取S2输出）",
+      "required": true,
+      "properties": {
+        "verification_passed": {
+          "type": "boolean",
+          "description": "法条性质验证是否通过"
+        },
+        "advocatory_statutes_found": {
+          "type": "array",
+          "description": "发现的倡导性法条列表",
+          "items": {
+            "type": "object",
+            "properties": {
+              "法律名称": {
+                "type": "string"
+              },
+              "条款号": {
+                "type": "string"
+              },
+              "statute_nature": {
+                "type": "string",
+                "enum": ["倡导性法条"]
+              }
+            }
+          }
+        },
+        "blocking_reason": {
+          "type": "string",
+          "description": "阻断原因（如发现倡导性法条）"
+        },
+        "verification_details": {
+          "type": "object",
+          "description": "验证详情",
+          "properties": {
+            "total_statutes_from_s2": {
+              "type": "integer",
+              "description": "从S2读取的法条总数"
+            },
+            "complete_statutes": {
+              "type": "integer",
+              "description": "完全性法条数量"
+            },
+            "advocatory_statutes": {
+              "type": "integer",
+              "description": "倡导性法条数量"
+            },
+            "statutes_used_for_analysis": {
+              "type": "array",
+              "description": "实际用于要件拆解的法条列表（覆盖所有legal_articles中的current_equivalent）",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "elements_analysis_by_defendant": {
+      "type": "object",
+      "description": "各被告的构成要件分析",
+      "required": true,
+      "patternProperties": {
+        ".*": {
+          "type": "object",
+          "properties": {
+            "defendant": {
+              "type": "string",
+              "description": "被告名称"
+            },
+            "rights_basis": {
+              "type": "string",
+              "description": "权利基础"
+            },
+            "legal_articles": {
+              "type": "array",
+              "description": "法律条文列表（仅包含完全性法条）",
+              "required": true,
+              "items": {
+                "type": "object",
+                "properties": {
+                  "article": {
+                    "type": "string",
+                    "description": "法条（如《合同法》第107条）"
+                  },
+                  "current_equivalent": {
+                    "type": "string",
+                    "description": "现行对应法条（如《民法典》第577条）"
+                  },
+                  "element_covered": {
+                    "type": "string",
+                    "description": "覆盖的要件"
+                  },
+                  "note": {
+                    "type": "string",
+                    "description": "备注（如法条性质：完全性法条）"
+                  },
+                  "statute_nature": {
+                    "type": "string",
+                    "description": "法条性质（从S2读取）",
+                    "enum": ["完全性法条", "倡导性法条"]
+                  }
+                }
+              }
+            },
+            "elements_summary": {
+              "type": "object",
+              "description": "要件汇总",
+              "required": true,
+              "properties": {
+                "权利依据的要件事由": {
+                  "type": "array",
+                  "description": "权利依据的要件事由列表",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "权利阻碍性事由": {
+                  "type": "array",
+                  "description": "权利阻碍性事由列表",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "权利消灭性抗辩事由": {
+                  "type": "array",
+                  "description": "权利消灭性抗辩事由列表",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "权利妨碍性抗辩事由": {
+                  "type": "array",
+                  "description": "权利妨碍性抗辩事由列表",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "statute_nature_rules": {
+    "only_complete_statutes": {
+      "rule": "仅使用完全性法条进行要件拆解",
+      "description": "倡导性法条不可作为请求权基础，必须在S2阶段替换为完全性法条"
+    },
+    "blocking_mechanism": {
+      "rule": "发现倡导性法条自动阻断",
+      "description": "如从S2读取到statute_nature为'倡导性法条'，S4应自动阻断并提示律师"
+    },
+    "verification_source": {
+      "rule": "从S2输出读取statute_nature字段",
+      "description": "S4不应独立判断法条性质，应直接引用S2的鉴别结果"
+    }
+  },
+  "validation_rules": {
+    "rule_1": "所有required字段必须提供",
+    "rule_2": "legal_articles必须仅包含完全性法条（statute_nature='完全性法条'）",
+    "rule_3": "如发现倡导性法条，verification_passed必须为false",
+    "rule_4": "defense_type枚举值必须对齐nine_step_core_schema.json",
+    "rule_5": "elements_summary必须包含四种事由类型",
+    "rule_6": "statutes_used_for_analysis必须覆盖所有legal_articles中的current_equivalent"
+  },
+  "notes": [
+    "本Schema定义了S4要件拆解的输出结构",
+    "顶层结构对齐expected_s4_elements.json",
+    "法条性质验证依赖S2输出，不独立判断",
+    "仅对完全性法条进行要件拆解",
+    "输出采用JSON frontmatter + Markdown正文格式",
+    "statutes_used_for_analysis必须覆盖所有实际使用的法条"
+  ]
+}

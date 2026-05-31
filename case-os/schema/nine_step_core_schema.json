@@ -1,0 +1,528 @@
+{
+  "schema_name": "九步法核心Schema",
+  "schema_version": "1.0.0",
+  "schema_purpose": "定义要件审判九步法的核心数据结构和字段规范",
+  "core_schemas": {
+    "case_basic_info": {
+      "description": "案件基本信息",
+      "type": "object",
+      "required_fields": [
+        "case_id",
+        "case_type",
+        "court",
+        "case_number",
+        "filing_date",
+        "plaintiff",
+        "defendants"
+      ],
+      "optional_fields": [
+        "third_parties",
+        "claim_amount",
+        "case_status"
+      ],
+      "field_definitions": {
+        "case_id": {
+          "type": "string",
+          "description": "案件唯一标识符"
+        },
+        "case_type": {
+          "type": "string",
+          "description": "案件类型（如：借贷合同纠纷、买卖合同纠纷等）",
+          "enum": ["借贷合同纠纷", "买卖合同纠纷", "租赁合同纠纷", "其他合同纠纷"]
+        },
+        "court": {
+          "type": "string",
+          "description": "审理法院"
+        },
+        "case_number": {
+          "type": "string",
+          "description": "案号"
+        },
+        "filing_date": {
+          "type": "string",
+          "description": "立案日期（格式：YYYY-MM-DD）"
+        },
+        "plaintiff": {
+          "type": "object",
+          "description": "原告信息",
+          "properties": {
+            "name": {"type": "string"},
+            "legal_representative": {"type": "string"},
+            "agent": {"type": "string"}
+          }
+        },
+        "defendants": {
+          "type": "array",
+          "description": "被告信息列表",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {"type": "string"},
+              "legal_representative": {"type": "string"},
+              "agent": {"type": "string"}
+            }
+          }
+        }
+      }
+    },
+    "s1_fixed_claims": {
+      "description": "S1固定权利请求",
+      "type": "object",
+      "required_fields": [
+        "initial_claims",
+        "clarification_process",
+        "final_fixed_claims"
+      ],
+      "field_definitions": {
+        "initial_claims": {
+          "type": "object",
+          "description": "初始诉讼请求",
+          "properties": {
+            "original_statement": {"type": "string"},
+            "issues_identified": {"type": "array"}
+          }
+        },
+        "clarification_process": {
+          "type": "object",
+          "description": "释明过程",
+          "properties": {
+            "judge_inquiry": {"type": "string"},
+            "party_response": {"type": "string"}
+          }
+        },
+        "final_fixed_claims": {
+          "type": "array",
+          "description": "最终固定的诉讼请求",
+          "items": {
+            "type": "object",
+            "properties": {
+              "target_party": {"type": "array"},
+              "claim_type": {"type": "string"},
+              "claim_object": {"type": "string"},
+              "relationship_between_defendants": {"type": "string"}
+            }
+          }
+        }
+      }
+    },
+    "s2_claim_bases": {
+      "description": "S2确定权利请求基础规范",
+      "type": "object",
+      "required_fields": [
+        "initial_legal_basis_inquiry",
+        "identified_rights_bases",
+        "legal_norms_identification"
+      ],
+      "field_definitions": {
+        "identified_rights_bases": {
+          "type": "object",
+          "description": "识别的请求权基础",
+          "patternProperties": {
+            ".*": {
+              "type": "object",
+              "properties": {
+                "party": {"type": "string"},
+                "legal_relationship": {"type": "string"},
+                "role": {"type": "string"},
+                "rights_basis": {"type": "string"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "s3_defense_bases": {
+      "description": "S3确定抗辩权基础规范",
+      "type": "object",
+      "required_fields": [
+        "initial_defense_statements",
+        "clarification_process",
+        "identified_defense_claims"
+      ],
+      "field_definitions": {
+        "identified_defense_claims": {
+          "type": "object",
+          "description": "识别的抗辩权基础",
+          "patternProperties": {
+            ".*": {
+              "type": "object",
+              "properties": {
+                "defense_type": {
+                  "type": "string",
+                  "enum": ["权利阻碍性抗辩", "权利消灭性抗辩", "权利妨碍性抗辩"]
+                },
+                "defense_claim": {"type": "string"},
+                "legal_basis": {"type": "string"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "s4_elements_analysis": {
+      "description": "S4基础规范构成要件分析",
+      "type": "object",
+      "required_fields": [
+        "legal_basis_analysis",
+        "elements_analysis_by_defendant"
+      ],
+      "field_definitions": {
+        "elements_analysis_by_defendant": {
+          "type": "object",
+          "description": "各被告的构成要件分析",
+          "patternProperties": {
+            ".*": {
+              "type": "object",
+              "properties": {
+                "defendant": {"type": "string"},
+                "rights_basis": {"type": "string"},
+                "legal_articles": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "article": {"type": "string"},
+                      "current_equivalent": {"type": "string"},
+                      "element_covered": {"type": "string"},
+                      "note": {"type": "string"}
+                    }
+                  }
+                },
+                "elements_summary": {
+                  "type": "object",
+                  "properties": {
+                    "权利依据的要件事由": {"type": "array"},
+                    "权利阻碍性事由": {"type": "array"},
+                    "权利消灭性抗辩事由": {"type": "array"},
+                    "权利妨碍性抗辩事由": {"type": "array"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "s5_assertions": {
+      "description": "S5诉讼主张的检索",
+      "type": "object",
+      "required_fields": [
+        "plaintiff_assertions_analysis",
+        "defendant_assertions_analysis",
+        "completeness_assessment"
+      ],
+      "field_definitions": {
+        "completeness_assessment": {
+          "type": "object",
+          "description": "完备性评估",
+          "patternProperties": {
+            ".*": {
+              "type": "object",
+              "properties": {
+                "诉讼请求": {"type": "string"},
+                "事实主张": {"type": "string"},
+                "法律依据": {"type": "string"},
+                "逻辑关系": {"type": "string"},
+                "总体评估": {"type": "string"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "s6_issues_organization": {
+      "description": "S6争点整理",
+      "type": "object",
+      "required_fields": [
+        "final_issues_fixed"
+      ],
+      "field_definitions": {
+        "final_issues_fixed": {
+          "type": "object",
+          "description": "最终固定的争点",
+          "properties": {
+            "issues_summary": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "issue_id": {"type": "string"},
+                  "issue": {"type": "string"},
+                  "related_element": {"type": "string"},
+                  "rights_basis": {"type": "string"}
+                }
+              }
+            },
+            "court_announcement_and_fixation": {
+              "type": "object",
+              "properties": {
+                "法官归纳并询问固定": {"type": "array"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "s7_proof_matrix": {
+      "description": "S7要件事实证明",
+      "type": "object",
+      "required_fields": [
+        "proof_matrix_by_issue",
+        "burden_allocation_summary"
+      ],
+      "field_definitions": {
+        "proof_matrix_by_issue": {
+          "type": "object",
+          "description": "按争点的举证矩阵",
+          "patternProperties": {
+            "争点.*": {
+              "type": "object",
+              "properties": {
+                "issue": {"type": "string"},
+                "rights_basis": {"type": "string"},
+                "element": {"type": "string"},
+                "preliminary_judgment": {"type": "string"},
+                "evidence_law_basis": {"type": "string"},
+                "current_equivalent": {"type": "string"},
+                "burden_allocated_to": {"type": "string"},
+                "proof_requirement": {"type": "string"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "s8_fact_finding": {
+      "description": "S8事实认定",
+      "type": "object",
+      "required_fields": [
+        "step_id",
+        "status",
+        "case_id",
+        "case_name",
+        "generated_at",
+        "fact_findings",
+        "evidence_evaluation",
+        "burden_result",
+        "review_required",
+        "references"
+      ],
+      "field_definitions": {
+        "fact_findings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "fact_id": {"type": "string"},
+              "fact_content": {"type": "string"},
+              "preliminary_finding": {"type": "string"},
+              "review_status": {"type": "string"},
+              "finding_basis": {"type": "string"},
+              "evidence_support": {"type": "array"},
+              "related_issue": {"type": "string"}
+            }
+          }
+        },
+        "evidence_evaluation": {
+          "type": "array",
+          "description": "证据评价（三件套结构）",
+          "items": {
+            "type": "object",
+            "properties": {
+              "evidence_id": {"type": "string"},
+              "source_evidence_ids": {"type": "array"},
+              "admissibility": {
+                "type": "object",
+                "properties": {
+                  "preliminary_value": {"type": "string"},
+                  "review_status": {"type": "string"},
+                  "basis": {"type": "string"}
+                }
+              },
+              "relevance": {
+                "type": "object",
+                "properties": {
+                  "preliminary_value": {"type": "string"},
+                  "review_status": {"type": "string"},
+                  "basis": {"type": "string"}
+                }
+              },
+              "probative_value": {
+                "type": "object",
+                "properties": {
+                  "preliminary_value": {"type": "string"},
+                  "review_status": {"type": "string"},
+                  "basis": {"type": "string"}
+                }
+              },
+              "weight": {
+                "type": "object",
+                "properties": {
+                  "weight_level": {"type": "string"},
+                  "suggested_score": {"type": ["number", "null"]},
+                  "review_status": {"type": "string"},
+                  "basis": {"type": "string"}
+                }
+              }
+            }
+          }
+        },
+        "burden_result": {
+          "type": "object",
+          "properties": {
+            "party_sufficient": {"type": "object"},
+            "facts_undetermined": {"type": "array"},
+            "burden_applied_summary": {"type": "string"}
+          }
+        }
+      }
+    },
+    "s9_subsumption": {
+      "description": "S9要件归入并作出裁判",
+      "type": "object",
+      "required_fields": [
+        "step_id",
+        "status",
+        "case_id",
+        "case_name",
+        "generated_at",
+        "syllogistic_reasoning",
+        "element_imputation",
+        "judgment_conclusion",
+        "rationale",
+        "handoff_to_s10"
+      ],
+      "field_definitions": {
+        "syllogistic_reasoning": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "element_id": {"type": "string"},
+              "major_premise": {"type": "string"},
+              "minor_premise": {"type": "string"},
+              "preliminary_conclusion": {"type": "string"},
+              "review_status": {"type": "string"}
+            }
+          }
+        },
+        "element_imputation": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "element_id": {"type": "string"},
+              "element_source": {"type": "string"},
+              "element_description": {"type": "string"},
+              "matched_fact_ids": {"type": "array"},
+              "matching_facts": {"type": "array"},
+              "fact_match": {"type": "string"},
+              "match_level": {"type": "string"},
+              "gap_analysis": {"type": "string"},
+              "review_status": {"type": "string"},
+              "basis": {"type": "string"}
+            }
+          }
+        },
+        "judgment_conclusion": {
+          "type": "object",
+          "properties": {
+            "judgment_type": {"type": "string"},
+            "plaintiff_claim": {"type": "object"},
+            "defendant_defense": {"type": "object"},
+            "amount_recommendation": {"type": "object"},
+            "predict_marker": {"type": "string"}
+          }
+        },
+        "handoff_to_s10": {
+          "type": "object",
+          "properties": {
+            "target_step": {"type": "string"},
+            "output_fields": {"type": "array"},
+            "purpose": {"type": "string"},
+            "s10_check_items": {"type": "array"},
+            "blocking_conditions": {"type": "array"}
+          }
+        }
+      }
+    },
+    "s10_consistency_check": {
+      "description": "S10幻觉校验和八个一致",
+      "type": "object",
+      "required_fields": [
+        "step_id",
+        "status",
+        "input_refs",
+        "hallucination_check",
+        "eight_consistency_check",
+        "s9_consumption_check",
+        "quality_score",
+        "blocking_result",
+        "review_required"
+      ],
+      "field_definitions": {
+        "hallucination_check": {
+          "type": "object",
+          "properties": {
+            "statute_accuracy": {"type": "array"},
+            "case_consistency": {"type": "array"},
+            "logic_validity": {"type": "object"}
+          }
+        },
+        "eight_consistency_check": {
+          "type": "object",
+          "description": "八个一致性检查",
+          "properties": {
+            "当事人诉辩一致": {"type": "object"},
+            "诉讼主张与基础规范一致": {"type": "object"},
+            "诉讼争点与诉讼主张一致": {"type": "object"},
+            "诉讼证据与诉讼主张一致": {"type": "object"},
+            "认定事实与事实争点一致": {"type": "object"},
+            "法律理由与法律争点一致": {"type": "object"},
+            "判决主文与诉讼请求一致": {"type": "object"},
+            "引用条文与判决主文一致": {"type": "object"}
+          }
+        },
+        "quality_score": {
+          "type": "object",
+          "properties": {
+            "total_consistency_score": {"type": "number"},
+            "critical_rules_score": {"type": "number"},
+            "form_rules_score": {"type": "number"}
+          }
+        },
+        "blocking_result": {
+          "type": "object",
+          "properties": {
+            "is_blocked": {"type": "boolean"},
+            "blocking_level": {"type": ["string", "null"]},
+            "blocking_reasons": {"type": "array"},
+            "statute_hallucination_blocked": {"type": "boolean"},
+            "s9_unresolved_blocked": {"type": "boolean"},
+            "s9_finalization_blocked": {"type": "boolean"},
+            "ec_critical_failures": {"type": "array"},
+            "can_enter_final": {"type": "boolean"}
+          }
+        }
+      }
+    }
+  },
+  "data_type_enums": {
+    "defense_types": ["权利阻碍性抗辩", "权利消灭性抗辩", "权利妨碍性抗辩"],
+    "case_types": ["借贷合同纠纷", "买卖合同纠纷", "租赁合同纠纷", "其他合同纠纷"],
+    "rights_basis_types": ["违约责任请求权", "担保责任请求权", "其他"],
+    "evidence_types": ["书证", "物证", "视听资料", "证人证言", "当事人陈述", "鉴定意见", "勘验笔录"]
+  },
+  "validation_rules": {
+    "rule_1": "所有required_fields必须提供，不能为空",
+    "rule_2": "enum类型字段必须符合预定义的枚举值",
+    "rule_3": "日期字段必须符合YYYY-MM-DD格式",
+    "rule_4": "数组类型字段不能为空数组（除非明确允许）",
+    "rule_5": "嵌套对象的字段验证遵循相同的规则"
+  },
+  "notes": [
+    "本Schema定义了九步法的核心数据结构，适用于AI系统对审判过程的标准化处理",
+    "所有步骤的输出都应符合本Schema的定义",
+    "本Schema可根据实际案件类型进行扩展和定制"
+  ]
+}

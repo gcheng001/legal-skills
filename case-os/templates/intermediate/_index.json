@@ -1,0 +1,135 @@
+{
+  "version": "6.0",
+  "schema": "九步法双视图",
+  "S0": {
+    "status": "pending",
+    "started_at": null,
+    "completed_at": null,
+    "产物": null
+  },
+  "原告九步法": {
+    "S1-固定权利请求": {
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "产物": null,
+      "北大法宝复验": null
+    },
+    "S2-请求权基础": {
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "产物": null,
+      "北大法宝复验": "pending"
+    },
+    "S3-抗辩规范": {
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "产物": null,
+      "北大法宝复验": "pending"
+    },
+    "S4-要件拆解": {
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "产物": null,
+      "北大法宝复验": "pending"
+    },
+    "S5-主张检索": {
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "产物": null,
+      "北大法宝复验": null
+    },
+    "S6-争点矩阵": {
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "产物": null,
+      "北大法宝复验": null
+    },
+    "S7-举证责任": {
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "产物": null,
+      "北大法宝复验": "pending"
+    },
+    "S8-事实认定": {
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "产物": null,
+      "北大法宝复验": null
+    },
+    "S9-要件归入与裁判预测": {
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "产物": null,
+      "北大法宝复验": null
+    }
+  },
+  "被告九步法": {
+    "S1-固定权利请求": {
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "产物": null
+    },
+    "S2-请求权基础": {
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "产物": null
+    },
+    "S3-抗辩规范": {
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "产物": null
+    },
+    "S4-要件拆解": {
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "产物": null
+    },
+    "S5-主张检索": {
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "产物": null
+    },
+    "S6-争点矩阵": {
+      "status": "shared_with_原告九步法",
+      "note": "双方共用同一份"
+    },
+    "S7-举证责任": {
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "产物": null
+    },
+    "S8-事实认定": {
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "产物": null
+    },
+    "S9-要件归入与裁判预测": {
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "产物": null
+    }
+  },
+  "meta": {
+    "case_name": null,
+    "case_number": null,
+    "created_at": null,
+    "last_updated": null
+  }
+}

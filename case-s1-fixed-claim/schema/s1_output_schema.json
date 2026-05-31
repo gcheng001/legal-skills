@@ -1,0 +1,190 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "S1 Fixed Claim Output Schema",
+  "description": "Schema for S1 Fixed Claim Output with JSON frontmatter",
+  "type": "object",
+  "required": ["title", "case_id", "party", "confidence", "status", "fixed_claims", "clarification_records", "claim_completeness"],
+  "properties": {
+    "title": {
+      "type": "string",
+      "const": "S1 固定权利请求"
+    },
+    "case_id": {
+      "type": "string"
+    },
+    "party": {
+      "type": "string",
+      "enum": ["原告", "被告"]
+    },
+    "confidence": {
+      "type": "string",
+      "enum": ["high", "medium", "low"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["pending_review"]
+    },
+    "fixed_claims": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "content", "source", "status"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^S1-C\\d{3}$"
+          },
+          "content": {
+            "type": "string"
+          },
+          "amount": {
+            "type": ["object", "null"],
+            "required": ["review_status"],
+            "properties": {
+              "extracted_amount": {
+                "type": ["number", "null"]
+              },
+              "parsed_amount": {
+                "type": ["number", "null"]
+              },
+              "review_status": {
+                "type": "string",
+                "enum": ["pending_review", "confirmed", "rejected"]
+              },
+              "source_text": {
+                "type": "string"
+              }
+            }
+          },
+          "currency": {
+            "type": "string"
+          },
+          "stated_legal_basis": {
+            "type": "string",
+            "description": "当事人明示引用的法律依据，不得AI补全"
+          },
+          "source": {
+            "type": "string"
+          },
+          "ocr_shadow": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["pending"]
+          },
+          "clarification_record": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "clarification_records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "claim_id", "type", "lawyer", "timestamp"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^S1-CLAR-\\d{3}$"
+          },
+          "claim_id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["modified", "confirmed", "rejected", "added"]
+          },
+          "original": {
+            "type": "string"
+          },
+          "final": {
+            "type": "string"
+          },
+          "lawyer": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "claim_completeness": {
+      "type": "object",
+      "required": ["checklist", "overall"],
+      "properties": {
+        "checklist": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["item", "result", "claim_ids"],
+            "properties": {
+              "item": {
+                "type": "string"
+              },
+              "result": {
+                "type": "string",
+                "enum": ["covered", "missing", "unclear", "not_applicable"]
+              },
+              "claim_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "custom": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "overall": {
+          "type": "string",
+          "const": "review_required"
+        }
+      }
+    },
+    "conflicts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "claim_ids", "type", "resolution"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^S1-CONF-\\d{3}$"
+          },
+          "claim_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "type": {
+            "type": "string"
+          },
+          "resolution": {
+            "type": "string",
+            "enum": [
+              "pending_lawyer_choice",
+              "simultaneous_claim",
+              "alternative_claim",
+              "subsidiary_claim",
+              "mutually_exclusive",
+              "withdrawn_or_rejected"
+            ]
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,667 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://codex.ai/skills/case-s10-hallucination/schema/s10_output_schema.json",
+  "title": "S10 幻觉校验输出Schema（Strict JSON Schema）",
+  "description": "S10幻觉校验和八个一致质量检查的输出结构定义，符合JSON Schema Draft-07标准，可通过jsonschema.validate()校验。包含schema级语义约束，确保blocking_result在特定条件下必须正确设置。",
+  "type": "object",
+  "required": [
+    "step_id",
+    "status",
+    "input_refs",
+    "hallucination_check",
+    "eight_consistency_check",
+    "s9_consumption_check",
+    "quality_score",
+    "blocking_result",
+    "review_required"
+  ],
+  "additionalProperties": false,
+
+  "allOf": [
+    {
+      "description": "语义约束1：S9 unresolved 必须导致 blocking_result.s9_unresolved_blocked=true AND is_blocked=true AND can_enter_final=false",
+      "if": {
+        "properties": {
+          "s9_consumption_check": {
+            "properties": {
+              "s9_read_status": { "const": "unresolved" }
+            },
+            "required": ["s9_read_status"]
+          }
+        },
+        "required": ["s9_consumption_check"]
+      },
+      "then": {
+        "properties": {
+          "blocking_result": {
+            "properties": {
+              "is_blocked": { "const": true },
+              "s9_unresolved_blocked": { "const": true },
+              "can_enter_final": { "const": false }
+            },
+            "required": ["is_blocked", "s9_unresolved_blocked", "can_enter_final"]
+          }
+        },
+        "required": ["blocking_result"]
+      }
+    },
+    {
+      "description": "语义约束2：finalization_language_detected=true 必须导致 blocking_result.s9_finalization_blocked=true AND is_blocked=true AND can_enter_final=false",
+      "if": {
+        "properties": {
+          "s9_consumption_check": {
+            "properties": {
+              "finalization_language_detected": { "const": true }
+            },
+            "required": ["finalization_language_detected"]
+          }
+        },
+        "required": ["s9_consumption_check"]
+      },
+      "then": {
+        "properties": {
+          "blocking_result": {
+            "properties": {
+              "is_blocked": { "const": true },
+              "s9_finalization_blocked": { "const": true },
+              "can_enter_final": { "const": false }
+            },
+            "required": ["is_blocked", "s9_finalization_blocked", "can_enter_final"]
+          }
+        },
+        "required": ["blocking_result"]
+      }
+    },
+    {
+      "description": "语义约束3：predict_marker_present=false 必须导致 blocking_result.is_blocked=true AND can_enter_final=false",
+      "if": {
+        "properties": {
+          "s9_consumption_check": {
+            "properties": {
+              "predict_marker_present": { "const": false }
+            },
+            "required": ["predict_marker_present"]
+          }
+        },
+        "required": ["s9_consumption_check"]
+      },
+      "then": {
+        "properties": {
+          "blocking_result": {
+            "properties": {
+              "is_blocked": { "const": true },
+              "can_enter_final": { "const": false }
+            },
+            "required": ["is_blocked", "can_enter_final"]
+          }
+        },
+        "required": ["blocking_result"]
+      }
+    },
+    {
+      "description": "语义约束4：EC_02(诉讼主张与基础规范一致) 检查结果 != '通过' 必须导致 blocking_result.is_blocked=true AND ec_critical_failures 包含 'EC_02'",
+      "if": {
+        "properties": {
+          "eight_consistency_check": {
+            "properties": {
+              "诉讼主张与基础规范一致": {
+                "properties": {
+                  "检查结果": { "not": { "const": "通过" } }
+                },
+                "required": ["检查结果"]
+              }
+            },
+            "required": ["诉讼主张与基础规范一致"]
+          }
+        },
+        "required": ["eight_consistency_check"]
+      },
+      "then": {
+        "properties": {
+          "blocking_result": {
+            "properties": {
+              "is_blocked": { "const": true },
+              "can_enter_final": { "const": false },
+              "ec_critical_failures": {
+                "type": "array",
+                "contains": { "const": "EC_02" }
+              }
+            },
+            "required": ["is_blocked", "can_enter_final", "ec_critical_failures"]
+          }
+        },
+        "required": ["blocking_result"]
+      }
+    },
+    {
+      "description": "语义约束5：EC_05(认定事实与事实争点一致) 检查结果 != '通过' 必须导致 blocking_result.is_blocked=true AND ec_critical_failures 包含 'EC_05'",
+      "if": {
+        "properties": {
+          "eight_consistency_check": {
+            "properties": {
+              "认定事实与事实争点一致": {
+                "properties": {
+                  "检查结果": { "not": { "const": "通过" } }
+                },
+                "required": ["检查结果"]
+              }
+            },
+            "required": ["认定事实与事实争点一致"]
+          }
+        },
+        "required": ["eight_consistency_check"]
+      },
+      "then": {
+        "properties": {
+          "blocking_result": {
+            "properties": {
+              "is_blocked": { "const": true },
+              "can_enter_final": { "const": false },
+              "ec_critical_failures": {
+                "type": "array",
+                "contains": { "const": "EC_05" }
+              }
+            },
+            "required": ["is_blocked", "can_enter_final", "ec_critical_failures"]
+          }
+        },
+        "required": ["blocking_result"]
+      }
+    },
+    {
+      "description": "语义约束6：EC_06(法律理由与法律争点一致) 检查结果 != '通过' 必须导致 blocking_result.is_blocked=true AND ec_critical_failures 包含 'EC_06'",
+      "if": {
+        "properties": {
+          "eight_consistency_check": {
+            "properties": {
+              "法律理由与法律争点一致": {
+                "properties": {
+                  "检查结果": { "not": { "const": "通过" } }
+                },
+                "required": ["检查结果"]
+              }
+            },
+            "required": ["法律理由与法律争点一致"]
+          }
+        },
+        "required": ["eight_consistency_check"]
+      },
+      "then": {
+        "properties": {
+          "blocking_result": {
+            "properties": {
+              "is_blocked": { "const": true },
+              "can_enter_final": { "const": false },
+              "ec_critical_failures": {
+                "type": "array",
+                "contains": { "const": "EC_06" }
+              }
+            },
+            "required": ["is_blocked", "can_enter_final", "ec_critical_failures"]
+          }
+        },
+        "required": ["blocking_result"]
+      }
+    },
+    {
+      "description": "语义约束7：EC_07(判决主文与诉讼请求一致) 检查结果 != '通过' 必须导致 blocking_result.is_blocked=true AND ec_critical_failures 包含 'EC_07'",
+      "if": {
+        "properties": {
+          "eight_consistency_check": {
+            "properties": {
+              "判决主文与诉讼请求一致": {
+                "properties": {
+                  "检查结果": { "not": { "const": "通过" } }
+                },
+                "required": ["检查结果"]
+              }
+            },
+            "required": ["判决主文与诉讼请求一致"]
+          }
+        },
+        "required": ["eight_consistency_check"]
+      },
+      "then": {
+        "properties": {
+          "blocking_result": {
+            "properties": {
+              "is_blocked": { "const": true },
+              "can_enter_final": { "const": false },
+              "ec_critical_failures": {
+                "type": "array",
+                "contains": { "const": "EC_07" }
+              }
+            },
+            "required": ["is_blocked", "can_enter_final", "ec_critical_failures"]
+          }
+        },
+        "required": ["blocking_result"]
+      }
+    }
+  ],
+
+  "properties": {
+    "step_id": {
+      "type": "string",
+      "const": "S10",
+      "description": "步骤标识符，必须为S10"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["pending_review", "confirmed", "rejected"],
+      "description": "S10状态"
+    },
+    "input_refs": {
+      "type": "object",
+      "description": "输入文件引用路径记录",
+      "required": ["s9_path"],
+      "properties": {
+        "s1_path": {
+          "type": "string",
+          "description": "S1固定权利请求文件路径"
+        },
+        "s2_path": {
+          "type": "string",
+          "description": "S2请求权基础文件路径"
+        },
+        "s4_path": {
+          "type": "string",
+          "description": "S4要件分析文件路径"
+        },
+        "s8_path": {
+          "type": "string",
+          "description": "S8事实认定文件路径"
+        },
+        "s9_path": {
+          "type": "string",
+          "description": "S9要件归入与裁判预测文件路径"
+        },
+        "s9_defendant_path": {
+          "type": "string",
+          "description": "被告S9要件归入与裁判预测文件路径"
+        },
+        "s9_reference_status": {
+          "type": "string",
+          "enum": ["resolved", "partial", "unresolved"],
+          "description": "S9引用状态"
+        },
+        "s9_read_errors": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "S9读取错误列表"
+        }
+      }
+    },
+    "hallucination_check": {
+      "type": "object",
+      "description": "幻觉检测结果",
+      "required": ["statute_accuracy", "case_consistency", "logic_validity"],
+      "properties": {
+        "statute_accuracy": {
+          "type": "array",
+          "description": "法条准确性检查结果列表",
+          "items": {
+            "type": "object",
+            "required": ["statute_reference", "exists", "content_match", "risk_level"],
+            "properties": {
+              "statute_reference": {"type": "string"},
+              "exists": {"type": "boolean"},
+              "content_match": {"type": "boolean"},
+              "risk_level": {"type": "string", "enum": ["低", "中", "高", "CRITICAL"]}
+            }
+          }
+        },
+        "case_consistency": {
+          "type": "array",
+          "description": "案例一致性检查结果列表",
+          "items": {
+            "type": "object",
+            "required": ["case_reference", "relevance", "applicability"],
+            "properties": {
+              "case_reference": {"type": "string"},
+              "relevance": {"type": "string"},
+              "applicability": {"type": "string"}
+            }
+          }
+        },
+        "logic_validity": {
+          "type": "object",
+          "required": ["is_valid", "fallacy_detected"],
+          "properties": {
+            "is_valid": {"type": "boolean"},
+            "fallacy_detected": {"type": "boolean"},
+            "fallacy_type": {"type": ["string", "null"]}
+          }
+        }
+      }
+    },
+    "eight_consistency_check": {
+      "type": "object",
+      "description": "八个一致性检查结果",
+      "required": [
+        "当事人诉辩一致",
+        "诉讼主张与基础规范一致",
+        "诉讼争点与诉讼主张一致",
+        "诉讼证据与诉讼主张一致",
+        "认定事实与事实争点一致",
+        "法律理由与法律争点一致",
+        "判决主文与诉讼请求一致",
+        "引用条文与判决主文一致"
+      ],
+      "properties": {
+        "当事人诉辩一致": {
+          "type": "object",
+          "required": ["检查结果"],
+          "properties": {
+            "检查结果": {"type": "string", "enum": ["通过", "部分一致", "不一致"]},
+            "具体问题": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "问题类型": {"type": "string"},
+                  "具体情况": {"type": "string"},
+                  "判决书记载": {"type": "string"},
+                  "问题": {"type": "string"}
+                }
+              }
+            }
+          }
+        },
+        "诉讼主张与基础规范一致": {
+          "type": "object",
+          "required": ["检查结果"],
+          "properties": {
+            "检查结果": {"type": "string", "enum": ["通过", "部分一致", "不一致"]},
+            "具体分析": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "主张类型": {"type": "string"},
+                  "请求权基础": {"type": "string"},
+                  "构成要件": {"type": "array", "items": {"type": "string"}},
+                  "当事人主张": {"type": "array", "items": {"type": "string"}},
+                  "比对结论": {"type": "string"},
+                  "问题": {"type": "string"}
+                }
+              }
+            }
+          }
+        },
+        "诉讼争点与诉讼主张一致": {
+          "type": "object",
+          "required": ["检查结果"],
+          "properties": {
+            "检查结果": {"type": "string", "enum": ["通过", "争点归纳过于笼统", "争点归纳不准确"]},
+            "具体问题": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "问题类型": {"type": "string"},
+                  "庭审笔录中的争点": {"type": "string"},
+                  "判决书归纳的争点": {"type": "string"},
+                  "问题": {"type": "string"},
+                  "改进建议": {"type": "string"}
+                }
+              }
+            }
+          }
+        },
+        "诉讼证据与诉讼主张一致": {
+          "type": "object",
+          "required": ["检查结果"],
+          "properties": {
+            "检查结果": {"type": "string", "enum": ["通过", "举证质证认证过程过于简略", "证据与主张不对应"]},
+            "具体问题": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "问题类型": {"type": "string"},
+                  "裁判文书表述": {"type": "string"},
+                  "问题": {"type": "string"}
+                }
+              }
+            }
+          }
+        },
+        "认定事实与事实争点一致": {
+          "type": "object",
+          "required": ["检查结果"],
+          "properties": {
+            "检查结果": {"type": "string", "enum": ["通过", "事实争点未作出认定", "事实认定不完整"]},
+            "具体问题": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "认定事实": {"type": "string"},
+                  "对应争点": {"type": "string"},
+                  "比对结论": {"type": "string"}
+                }
+              }
+            }
+          }
+        },
+        "法律理由与法律争点一致": {
+          "type": "object",
+          "required": ["检查结果"],
+          "properties": {
+            "检查结果": {"type": "string", "enum": ["通过", "论证理由不充分", "法律理由与争点不对应"]},
+            "具体问题": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "法律争点": {"type": "string"},
+                  "判决理由": {"type": "string"},
+                  "问题": {"type": "array", "items": {"type": "string"}}
+                }
+              }
+            }
+          }
+        },
+        "判决主文与诉讼请求一致": {
+          "type": "object",
+          "required": ["检查结果"],
+          "properties": {
+            "检查结果": {"type": "string", "enum": ["通过", "部分不一致", "超出诉讼请求"]},
+            "具体问题": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "诉讼请求": {"type": "string"},
+                  "判决主文": {"type": "string"},
+                  "比对结论": {"type": "string"},
+                  "问题": {"type": "string"}
+                }
+              }
+            }
+          }
+        },
+        "引用条文与判决主文一致": {
+          "type": "object",
+          "required": ["检查结果"],
+          "properties": {
+            "检查结果": {"type": "string", "enum": ["通过", "多引法条", "漏引法条", "引用不准确"]},
+            "具体问题": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "判决主文": {"type": "string"},
+                  "引用条文": {"type": "string"},
+                  "比对结论": {"type": "string"},
+                  "问题": {"type": "string"}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "s9_consumption_check": {
+      "type": "object",
+      "description": "S9消费状态检查记录",
+      "required": [
+        "s9_read_status",
+        "s9_schema_validation",
+        "pending_review_status",
+        "predict_marker_present",
+        "handoff_to_s10_exists",
+        "handoff_required_fields_present",
+        "finalization_language_detected",
+        "input_read_errors",
+        "unresolved_reason"
+      ],
+      "properties": {
+        "s9_read_status": {
+          "type": "string",
+          "enum": ["resolved", "partial", "unresolved"],
+          "description": "S9读取状态"
+        },
+        "s9_schema_validation": {
+          "type": "string",
+          "enum": ["passed", "failed", "not_attempted"],
+          "description": "S9 schema校验结果"
+        },
+        "pending_review_status": {
+          "type": "string",
+          "enum": ["pending_review", "confirmed", "rejected"],
+          "description": "S9 pending_review状态"
+        },
+        "predict_marker_present": {
+          "type": "boolean",
+          "description": "predict_marker是否存在"
+        },
+        "handoff_to_s10_exists": {
+          "type": "boolean",
+          "description": "handoff_to_s10是否存在"
+        },
+        "handoff_required_fields_present": {
+          "type": "boolean",
+          "description": "handoff必需字段是否完整"
+        },
+        "finalization_language_detected": {
+          "type": "boolean",
+          "description": "是否检测到终局落定语言(confirmed/final/胜诉/败诉等)"
+        },
+        "input_read_errors": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "输入读取错误列表"
+        },
+        "unresolved_reason": {
+          "type": ["string", "null"],
+          "description": "未解决原因"
+        }
+      }
+    },
+    "quality_score": {
+      "type": "object",
+      "description": "综合质量评分",
+      "required": ["total_consistency_score", "critical_rules_score", "form_rules_score"],
+      "properties": {
+        "total_consistency_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "总分（0-100）"
+        },
+        "critical_rules_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "关键规则得分（0-100）"
+        },
+        "form_rules_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "形式规则得分（0-100）"
+        }
+      }
+    },
+    "recommendations": {
+      "type": "array",
+      "description": "改进建议列表",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {"type": "string"},
+          "content": {"type": "string"},
+          "priority": {"type": "string"}
+        }
+      }
+    },
+    "blocking_result": {
+      "type": "object",
+      "description": "阻断结果记录",
+      "required": [
+        "is_blocked",
+        "blocking_reasons",
+        "statute_hallucination_blocked",
+        "s9_unresolved_blocked",
+        "s9_finalization_blocked",
+        "ec_critical_failures",
+        "can_enter_final"
+      ],
+      "properties": {
+        "is_blocked": {
+          "type": "boolean",
+          "description": "是否被阻断"
+        },
+        "blocking_level": {
+          "type": ["string", "null"],
+          "enum": ["CRITICAL", "HIGH", "MEDIUM", "LOW", null],
+          "description": "阻断级别"
+        },
+        "blocking_reasons": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "阻断原因列表"
+        },
+        "statute_hallucination_blocked": {
+          "type": "boolean",
+          "description": "是否因法条幻觉被阻断"
+        },
+        "s9_unresolved_blocked": {
+          "type": "boolean",
+          "description": "是否因S9 unresolved被阻断"
+        },
+        "s9_finalization_blocked": {
+          "type": "boolean",
+          "description": "是否因S9终局落定被阻断"
+        },
+        "ec_critical_failures": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "EC关键检查失败列表(EC_02/EC_05/EC_06/EC_07)"
+        },
+        "can_enter_final": {
+          "type": "boolean",
+          "description": "是否可以进入FINAL"
+        }
+      }
+    },
+    "review_required": {
+      "type": "object",
+      "description": "需要复核的检查项",
+      "required": [
+        "hallucination_check_needs_review",
+        "eight_consistency_check_needs_review",
+        "s9_consumption_check_needs_review",
+        "quality_score_needs_review"
+      ],
+      "properties": {
+        "hallucination_check_needs_review": {"type": "boolean"},
+        "eight_consistency_check_needs_review": {"type": "boolean"},
+        "s9_consumption_check_needs_review": {"type": "boolean"},
+        "quality_score_needs_review": {"type": "boolean"}
+      }
+    }
+  }
+}

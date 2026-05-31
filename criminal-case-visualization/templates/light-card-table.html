@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<!--
+  刑事案件可视化 · 浅色 HTML 表格/卡片标准模板
+  用途：文字密集型图表(时间轴、量刑预测、共同犯罪对比、受援人参与、证据矩阵)
+  原则：纯 HTML+CSS，浏览器自动换行/撑高，绝不手写 SVG 坐标。
+  禁止：黑底卡片、深色方框、SVG <filter url(#id)> 跨节点引用。
+
+  套用方法：复制本文件 → 替换 {{占位符}} → 删除用不到的 section →
+            node ~/.claude/skills/html2png/scripts/html2png.js 本文件 out.png --width=1467
+            python3 ~/.claude/skills/criminal-case-visualization/scripts/render_pixel_check.py 本文件
+-->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>{{案件名}} - 可视化图表</title>
+<style>
+  :root {
+    /* —— 调色板（Claude 橙白 · 方案A 极简克制，2026-05-30 定为默认）—— */
+    /* 设计原则：暖白底上浮白框，受援人陶土橙点亮全场，其他安静退后。 */
+    --c-page:      #FAFAF9;   /* 页面底：暖白（非冷灰） */
+    --c-card:      #FFFFFF;   /* 卡片底（永远浅色，禁止改深） */
+    --c-ink:       #1C1917;   /* 主文字（仅文字用，不可做卡片底） */
+    --c-sub:       #78716C;   /* 辅助文字（暖灰） */
+    --c-line:      #E7E5E4;   /* 分隔线（暖灰） */
+    --c-our:       #D97757;   /* 己方/受援人：Claude 陶土橙（唯一焦点色） */
+    --c-leader:    #78716C;   /* 主犯/组织者：深暖灰描边（退后，不与橙争焦点） */
+    --c-co:        #A8A29E;   /* 同案犯：中暖灰 */
+    --c-third:     #D6D3D1;   /* 第三方/被害人：浅暖灰 */
+    --c-ok:        #10B981;   /* 印证/有利 绿（功能色保留） */
+    --c-warn:      #F59E0B;   /* 存疑 黄 */
+    --c-bad:       #DC2626;   /* 矛盾/不利 红 */
+    /* 浅功能底（表格格子专用，全部浅色） */
+    --b-ok:   #DCFCE7;  --b-warn: #FEF3C7;  --b-bad: #FEE2E2;
+    --b-info: #DBEAFE;  --b-our:  #FBEEE8;  --b-mute: #F5F5F4;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--c-page);
+    font-family: "PingFang SC", -apple-system, "Microsoft YaHei", sans-serif;
+    color: var(--c-ink); font-weight: 400; line-height: 1.6;
+  }
+  nav {
+    position: sticky; top: 0; background: var(--c-card);
+    border-bottom: 1px solid var(--c-line); padding: 12px 24px;
+    display: flex; gap: 18px; flex-wrap: wrap; font-size: 13px; z-index: 10;
+  }
+  nav a { color: var(--c-sub); text-decoration: none; }
+  nav a:hover { color: var(--c-our); }
+  .chart-section { max-width: 1467px; margin: 0 auto; padding: 32px 24px 8px; }
+  .chart-title { font-size: 20px; font-weight: 600; margin: 0 0 4px; }
+  .chart-subtitle { font-size: 13px; color: var(--c-sub); margin: 0 0 20px; }
+
+  /* —— 通用卡片 —— */
+  .card {
+    background: var(--c-card); border: 2px solid var(--c-third);
+    border-radius: 8px; padding: 14px 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .card.our    { border-color: var(--c-our); }
+  .card.leader { border-color: var(--c-leader); }
+  .card.co     { border-color: var(--c-co); }
+  .card.ok     { border-color: var(--c-ok); }
+  .card.bad    { border-color: var(--c-bad); }
+  .card h3 { margin: 0 0 8px; font-size: 14px; font-weight: 600; }
+  .card .meta { font-size: 12px; color: var(--c-sub); }
+  .grid { display: grid; gap: 16px; }
+  .grid-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(3, 1fr); }
+  .grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+  /* —— 表格（时间轴 / 证据矩阵 通用）—— */
+  table { width: 100%; border-collapse: collapse; background: var(--c-card);
+          border-radius: 8px; overflow: hidden; font-size: 13px; }
+  th, td { border: 1px solid var(--c-line); padding: 10px 12px;
+           vertical-align: top; text-align: left; }
+  th { background: var(--b-mute); font-weight: 600; }
+  /* 行/格 浅色底（全部浅色，杜绝黑块） */
+  .row-our  { background: var(--b-our); }
+  .row-info { background: var(--b-info); }
+  .cell-ok   { background: var(--b-ok); }
+  .cell-warn { background: var(--b-warn); }
+  .cell-bad  { background: var(--b-bad); }
+  .cell-mute { background: var(--b-mute); color: var(--c-sub); }
+
+  /* —— 标签 —— */
+  .tag { display: inline-block; font-size: 11px; padding: 1px 7px;
+         border-radius: 4px; margin: 1px 2px; }
+  .tag-ok   { background: var(--b-ok);   color: #166534; }
+  .tag-info { background: var(--b-info); color: #1E40AF; }
+  .tag-warn { background: var(--b-warn); color: #92400E; }
+  .tag-bad  { background: var(--b-bad);  color: #991B1B; }
+  .tag-our  { background: var(--b-our);  color: #9A3412; }
+
+  /* —— 量刑/数据 行 —— */
+  .kv { display: grid; grid-template-columns: 92px 1fr; gap: 4px 10px;
+        font-size: 13px; }
+  .kv dt { color: var(--c-sub); }
+  .kv dd { margin: 0; }
+  .accent-ok  { color: var(--c-ok); }
+  .accent-bad { color: var(--c-bad); }
+  .accent-our { color: var(--c-our); }
+
+  /* —— 图例（流内放置，不用 absolute，避免遮挡）—— */
+  .legend { display: flex; gap: 18px; flex-wrap: wrap; font-size: 12px;
+            color: var(--c-sub); margin-top: 14px; }
+  .legend span::before { content: "—"; margin-right: 5px; font-weight: 700; }
+  .lg-our::before    { color: var(--c-our); }
+  .lg-co::before     { color: var(--c-co); }
+  .lg-third::before  { color: var(--c-third); }
+
+  footer { max-width: 1467px; margin: 24px auto; padding: 16px 24px;
+           border-top: 1px solid var(--c-line); font-size: 12px;
+           color: var(--c-sub); }
+
+  @media print {
+    nav { display: none; }
+    .chart-section { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#chart2">2. 事实时间轴</a>
+  <a href="#chart3">3. 受援人参与</a>
+  <a href="#chart4">4. 量刑预测</a>
+  <a href="#chart5">5. 共同犯罪地位</a>
+  <a href="#chart6">6. 证据矩阵</a>
+</nav>
+
+<!-- ============ 图表2：案件事实时间轴（HTML 表格，禁用 SVG）============ -->
+<section id="chart2" class="chart-section">
+  <h2 class="chart-title">{{案件名}} — 案件事实时间轴</h2>
+  <p class="chart-subtitle">{{案号}}｜时间—事件—证据三栏对照</p>
+  <table>
+    <colgroup><col style="width:12%"><col style="width:38%"><col style="width:50%"></colgroup>
+    <thead><tr><th>时间</th><th>关键事件</th><th>证据支撑</th></tr></thead>
+    <tbody>
+      <!-- 受援人参与的犯罪事实行加 class="row-our" -->
+      <tr class="row-our">
+        <td>{{日期}}</td>
+        <td>{{何人何地何事}} <span class="tag tag-our">★ 受援人参与</span></td>
+        <td><span class="tag tag-ok">被告人供述</span><span class="tag tag-info">被害人陈述</span> {{具体证据}}</td>
+      </tr>
+      <tr>
+        <td>{{日期}}</td>
+        <td>{{事件}}</td>
+        <td><span class="tag tag-warn">微信转账</span> {{证据}} <span class="accent-bad">❌ {{矛盾点}}</span></td>
+      </tr>
+      <!-- 程序节点行加 class="row-info" -->
+      <tr class="row-info">
+        <td>{{日期}}</td>
+        <td>{{程序节点：抓获/起诉/开庭}}</td>
+        <td><span class="tag tag-info">法律文书</span> {{文书}}</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============ 图表3：受援人参与分析（卡片 grid）============ -->
+<section id="chart3" class="chart-section">
+  <h2 class="chart-title">受援人参与情况分析</h2>
+  <p class="chart-subtitle">逐起分析参与程度、获利与同案犯对比</p>
+  <div class="grid grid-3">
+    <div class="card our">
+      <h3>第一起：{{案名}}</h3>
+      <div class="kv">
+        <dt>时间地点</dt><dd>{{时间地点}}</dd>
+        <dt>被害损失</dt><dd>{{金额}}</dd>
+        <dt>参与情况</dt><dd>{{报名✓ 到场✗ 谈判✗}}</dd>
+        <dt>获利</dt><dd class="accent-our">{{获利}}</dd>
+      </div>
+    </div>
+    <!-- 复制卡片… -->
+  </div>
+  <div class="grid grid-2" style="margin-top:16px">
+    <div class="card">
+      <h3>受援人整体参与</h3>
+      <div class="kv">
+        <dt>参与案件</dt><dd>{{n}}起</dd>
+        <dt>总获利</dt><dd>{{金额区间}}</dd>
+        <dt>参与程度</dt><dd>{{低｜多起未到场｜未主导}}</dd>
+      </div>
+    </div>
+    <div class="card our">
+      <h3>从犯地位认定依据</h3>
+      <ol style="margin:0;padding-left:18px;font-size:13px">
+        <li>组织地位：{{主犯认定}}</li>
+        <li>分工情况：{{受援人分工}}</li>
+        <li>分赃方式：{{无决定权/由主犯分配}}</li>
+        <li>获利较少：{{金额}}</li>
+      </ol>
+      <p class="accent-our" style="margin:8px 0 0">⇒ 建议认定为从犯，从轻处罚</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 图表4：量刑预测对比（卡片 grid，浅色）============ -->
+<section id="chart4" class="chart-section">
+  <h2 class="chart-title">量刑预测对比</h2>
+  <p class="chart-subtitle">不同情节下的量刑预测、计算过程及法律依据</p>
+  <div class="grid grid-2">
+    <div class="card">
+      <h3>量刑基准计算</h3>
+      <div class="kv">
+        <dt>犯罪数额</dt><dd>{{数额}}（属"数额较大"）</dd>
+        <dt>法定刑期</dt><dd>{{刑法第X条}}</dd>
+        <dt>量刑起点</dt><dd>{{起点}}</dd>
+        <dt>基准刑</dt><dd class="accent-ok">{{基准刑}}</dd>
+      </div>
+      <p class="meta" style="margin:8px 0 0">法律依据：{{司法解释条文}}</p>
+    </div>
+    <div class="card">
+      <h3>量刑情节适用</h3>
+      <div class="kv">
+        <dt>从轻情节</dt><dd class="accent-ok">{{自首/坦白/退赃/认罪认罚}}</dd>
+        <dt>从重情节</dt><dd class="accent-bad">{{有则列，无则"无"}}</dd>
+        <dt>待完成</dt><dd>{{退赃/谅解}}</dd>
+      </div>
+    </div>
+  </div>
+  <div class="grid grid-3" style="margin-top:16px">
+    <div class="card bad">
+      <h3>情景一：检察院建议</h3>
+      <p class="kv"><dt>量刑幅度</dt><dd class="accent-bad">{{区间}}</dd></p>
+    </div>
+    <div class="card our">
+      <h3>情景二：认定从犯</h3>
+      <p class="kv"><dt>量刑幅度</dt><dd class="accent-our">{{区间}}</dd></p>
+    </div>
+    <div class="card ok">
+      <h3>情景三：全额退赃+谅解</h3>
+      <p class="kv"><dt>量刑幅度</dt><dd class="accent-ok">{{区间，可缓刑}}</dd></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 图表5：共同犯罪地位对比（表格）============ -->
+<section id="chart5" class="chart-section">
+  <h2 class="chart-title">共同犯罪地位对比</h2>
+  <p class="chart-subtitle">各被告地位、作用、分赃多维度对比</p>
+  <table>
+    <thead><tr><th>维度</th><th>{{主犯}}</th><th>{{同案犯A}}</th><th class="row-our">{{受援人}}</th></tr></thead>
+    <tbody>
+      <tr><th>地位作用</th><td>组织指挥</td><td>{{}}</td><td class="row-our">{{次要}}</td></tr>
+      <tr><th>参与案件</th><td>{{全部}}</td><td>{{}}</td><td class="row-our">{{n起}}</td></tr>
+      <tr><th>分赃</th><td>{{主导分配}}</td><td>{{}}</td><td class="row-our accent-our">{{最少}}</td></tr>
+      <tr><th>主从认定</th><td><span class="tag tag-bad">主犯</span></td><td>{{}}</td><td class="row-our"><span class="tag tag-our">从犯</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============ 图表6：证据印证关系矩阵（表格）============ -->
+<section id="chart6" class="chart-section">
+  <h2 class="chart-title">证据印证关系矩阵</h2>
+  <p class="chart-subtitle">双轴矩阵展示证据印证/矛盾</p>
+  <table>
+    <thead><tr><th>证据＼待证</th><th>主观明知</th><th>客观行为</th><th>分赃金额</th><th>从犯地位</th></tr></thead>
+    <tbody>
+      <tr>
+        <th>{{被告人供述}}</th>
+        <td class="cell-ok">✓ {{}}</td>
+        <td class="cell-ok">✓ {{}}</td>
+        <td class="cell-bad">❌ {{矛盾}}</td>
+        <td class="cell-ok">✓ {{}}</td>
+      </tr>
+      <tr>
+        <th>{{微信转账记录}}</th>
+        <td class="cell-mute">- 缺失</td>
+        <td class="cell-warn">⚠ {{部分}}</td>
+        <td class="cell-bad">❌ {{矛盾}}</td>
+        <td class="cell-mute">-</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="legend" style="margin-top:14px">
+    <span class="tag tag-ok">✓ 印证</span>
+    <span class="tag tag-bad">❌ 矛盾</span>
+    <span class="tag tag-warn">⚠ 存疑</span>
+    <span class="tag cell-mute" style="padding:1px 7px">- 缺失</span>
+  </div>
+</section>
+
+<footer>{{案号}}｜生成时间：{{日期}}</footer>
+
+</body>
+</html>

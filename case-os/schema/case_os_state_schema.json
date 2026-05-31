@@ -1,0 +1,160 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "case_os_state_schema.json",
+  "title": "Case OS local authoritative state",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "case_id",
+    "generated_at",
+    "validation_status",
+    "case",
+    "workflow",
+    "confirmations",
+    "deadlines",
+    "pending_items",
+    "blockers",
+    "artifacts",
+    "migration"
+  ],
+  "properties": {
+    "schema_version": {"const": "case-os-state-v1"},
+    "case_id": {"type": "string", "format": "uuid"},
+    "generated_at": {"type": "string", "format": "date-time"},
+    "validation_status": {"enum": ["valid", "validation_required"]},
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["folder_name", "case_name", "case_number", "cause", "parties", "confirmed_at"],
+      "properties": {
+        "folder_name": {"type": "string"},
+        "case_name": {"type": ["string", "null"]},
+        "case_number": {"type": ["string", "null"]},
+        "cause": {"type": ["string", "null"]},
+        "parties": {"type": "array", "items": {"type": "string"}},
+        "confirmed_at": {"type": ["string", "null"], "format": "date-time"}
+      }
+    },
+    "workflow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["current_phase", "current_step", "phase_a", "phase_b", "final_gate"],
+      "properties": {
+        "current_phase": {"type": ["string", "null"], "enum": ["A", "B", "FINAL", null]},
+        "current_step": {"type": ["string", "null"]},
+        "phase_a": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["A1", "A2", "A3", "A4", "A5", "A6"],
+          "properties": {
+            "A1": {"$ref": "#/$defs/stepState"},
+            "A2": {"$ref": "#/$defs/stepState"},
+            "A3": {"$ref": "#/$defs/stepState"},
+            "A4": {"$ref": "#/$defs/stepState"},
+            "A5": {"$ref": "#/$defs/stepState"},
+            "A6": {"$ref": "#/$defs/stepState"}
+          }
+        },
+        "phase_b": {
+          "type": "object",
+          "additionalProperties": {"$ref": "#/$defs/stepState"}
+        },
+        "final_gate": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["is_blocked", "can_enter_final", "source"],
+          "properties": {
+            "is_blocked": {"type": ["boolean", "null"]},
+            "can_enter_final": {"type": ["boolean", "null"]},
+            "source": {"type": ["string", "null"]}
+          }
+        }
+      }
+    },
+    "confirmations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["step", "confirmed_at", "source"],
+        "properties": {
+          "step": {"type": "string"},
+          "confirmed_at": {"type": "string", "format": "date-time"},
+          "source": {"type": "string"}
+        }
+      }
+    },
+    "deadlines": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["task_id", "type", "due_date", "status", "confirmed"],
+        "properties": {
+          "task_id": {"type": "string", "format": "uuid"},
+          "type": {"type": "string"},
+          "due_date": {"type": "string", "format": "date"},
+          "status": {"enum": ["open", "completed", "cancelled"]},
+          "confirmed": {"type": "boolean"}
+        }
+      }
+    },
+    "pending_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["type"],
+        "properties": {
+          "type": {"type": "string"},
+          "step": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["type"],
+        "properties": {
+          "type": {"type": "string"},
+          "step": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["type", "path"],
+        "properties": {
+          "type": {"type": "string"},
+          "path": {"type": "string"}
+        }
+      }
+    },
+    "migration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "source_conflicts"],
+      "properties": {
+        "mode": {"enum": ["new", "existing"]},
+        "source_conflicts": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  },
+  "$defs": {
+    "stepState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "confirmed"],
+      "properties": {
+        "status": {"enum": ["pending", "in_progress", "pending_review", "completed", "blocked", "shared"]},
+        "confirmed": {"type": "boolean"}
+      }
+    }
+  }
+}

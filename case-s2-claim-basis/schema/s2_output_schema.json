@@ -1,0 +1,195 @@
+{
+  "schema_name": "S2请求权基础输出Schema",
+  "schema_version": "1.0.0",
+  "schema_purpose": "定义S2请求权基础确定的输出结构，包含法条性质鉴别",
+  "step_id": "S2",
+  "step_name": "确定权利请求基础规范",
+  "output_fields": {
+    "step_id": {
+      "type": "string",
+      "description": "步骤标识符",
+      "required": true,
+      "default": "S2"
+    },
+    "claim_basis_analysis": {
+      "type": "object",
+      "description": "请求权基础分析",
+      "required": true,
+      "properties": {
+        "initial_legal_basis_inquiry": {
+          "type": "object",
+          "description": "初步法律基础询问",
+          "properties": {
+            "judge_question": {
+              "type": "string",
+              "description": "法官询问内容"
+            },
+            "party_response": {
+              "type": "string",
+              "description": "当事人回应"
+            }
+          }
+        },
+        "identified_rights_bases": {
+          "type": "object",
+          "description": "识别的请求权基础",
+          "patternProperties": {
+            ".*": {
+              "type": "object",
+              "properties": {
+                "party": {
+                  "type": "string",
+                  "description": "当事人"
+                },
+                "legal_relationship": {
+                  "type": "string",
+                  "description": "法律关系"
+                },
+                "role": {
+                  "type": "string",
+                  "description": "角色"
+                },
+                "rights_basis": {
+                  "type": "string",
+                  "description": "权利基础"
+                }
+              }
+            }
+          }
+        },
+        "legal_articles": {
+          "type": "array",
+          "description": "法律条文列表",
+          "required": true,
+          "items": {
+            "type": "object",
+            "properties": {
+              "法律名称": {
+                "type": "string",
+                "description": "法律名称"
+              },
+              "条款号": {
+                "type": "string",
+                "description": "条款号"
+              },
+              "法条内容": {
+                "type": "string",
+                "description": "法条完整内容"
+              },
+              "法条性质": {
+                "type": "string",
+                "description": "法条性质（完全性法条/倡导性法条）",
+                "enum": ["完全性法条", "倡导性法条"]
+              },
+              "statute_nature": {
+                "type": "string",
+                "description": "法条性质英文字段（供S4读取）",
+                "enum": ["完全性法条", "倡导性法条"]
+              },
+              "constitutive_elements": {
+                "type": "array",
+                "description": "构成要件",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "legal_effect": {
+                "type": "array",
+                "description": "法律效果",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "needs_replacement": {
+                "type": "boolean",
+                "description": "是否需要替换为其他法条（当法条性质为倡导性法条时为true）"
+              },
+              "元典复验结果": {
+                "type": "object",
+                "description": "元典平台复验结果",
+                "properties": {
+                  "exists": {
+                    "type": "boolean",
+                    "description": "法条是否存在"
+                  },
+                  "content_match": {
+                    "type": "boolean",
+                    "description": "内容是否匹配"
+                  },
+                  "source": {
+                    "type": "string",
+                    "description": "复验来源（元典/北大法宝/DeepSeek）"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "basis_confirmation_records": {
+          "type": "object",
+          "description": "请求权基础确认记录",
+          "properties": {
+            "法官释明过程": {
+              "type": "array",
+              "description": "法官释明记录",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "clarification_content": {
+                    "type": "string",
+                    "description": "释明内容"
+                  },
+                  "party_response": {
+                    "type": "string",
+                    "description": "当事人回应"
+                  }
+                }
+              }
+            },
+            "最终确认": {
+              "type": "object",
+              "description": "最终确认结果（按当事人/法院适用口径存储键值）",
+              "patternProperties": {
+                ".*": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "statute_nature_criteria": {
+    "完全性法条": {
+      "definition": "具有构成要件及法律效果的规定，可作为请求权基础",
+      "characteristics": [
+        "包含构成要件要素（主体、行为、结果、因果关系）",
+        "包含法律效果要素（权利、义务、责任）",
+        "可以作为司法裁判的直接依据"
+      ]
+    },
+    "倡导性法条": {
+      "definition": "仅宣示价值或原则，无具体构成要件，不可作为请求权基础",
+      "characteristics": [
+        "宣示性、原则性规定",
+        "无具体构成要件",
+        "无明确法律效果",
+        "需要通过其他完全性法条实现"
+      ]
+    }
+  },
+  "validation_rules": {
+    "rule_1": "所有required字段必须提供",
+    "rule_2": "法条性质必须是'完全性法条'或'倡导性法条'之一",
+    "rule_3": "倡导性法条必须标记needs_replacement为true",
+    "rule_4": "元典复验结果必须包含exists和content_match字段",
+    "rule_5": "statute_nature字段必须与法条性质字段一致"
+  },
+  "notes": [
+    "本Schema定义了S2请求权基础确定的输出结构",
+    "法条性质鉴别依据：nine_step_checklist.json 第16、17项",
+    "statute_nature字段供S4读取，确保S4只使用完全性法条",
+    "输出采用JSON frontmatter + Markdown正文格式"
+  ]
+}

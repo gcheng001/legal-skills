@@ -1,0 +1,97 @@
+{
+  "step_id": "S2",
+  "step_name": "确定权利请求基础规范",
+  "case_context": {
+    "case_type": "借贷合同纠纷",
+    "plaintiff": "刘某",
+    "defendants": ["黄某", "张某"]
+  },
+  "initial_legal_basis_inquiry": {
+    "judge_question": "要求两被告承担连带偿还责任的理由是什么？",
+    "plaintiff_response": "黄某在2008年12月22日向我借钱，应当还款。张某是借据上的担保人，而且在借款上盖了章；借款时黄某与张某还是夫妻，因此张某应当还款。"
+  },
+  "issues_identified": [
+    {
+      "issue": "张某承担连带偿还责任的法律基础不明确",
+      "conflicting_reasons": [
+        "基于担保关系产生的连带责任",
+        "基于夫妻关系产生的连带责任"
+      ]
+    }
+  ],
+  "clarification_process": {
+    "judge_inquiry": "基于担保关系产生的连带责任和基于夫妻关系产生的连带责任是两种不同性质的法律关系。你在陈述张某承担还款责任的同时，表述了两个事由，一个是由于他是担保人，另一个是由于借款时张某与黄某是夫妻关系，你到底选择哪一个？",
+    "plaintiff_response": "张某在借款上盖了章，他就是借款的担保人。借款时黄某与张某是夫妻，能够证明张某对借款是知道的。"
+  },
+  "identified_rights_bases": {
+    "defendant_huang": {
+      "party": "黄某",
+      "legal_relationship": "借款关系",
+      "role": "借款人",
+      "rights_basis": "借款合同关系"
+    },
+    "defendant_zhang": {
+      "party": "张某",
+      "legal_relationship": "担保关系",
+      "role": "保证人",
+      "rights_basis": "担保合同关系",
+      "additional_fact": "借款时黄某与张某是夫妻关系，证明张某对借款知情"
+    }
+  },
+  "legal_basis_confirmation": {
+    "judge_summary": "根据你的陈述，你要求两被告还款的理由是不是这样两个，关于第一被告黄某，是因她是借款人，也就是借款关系；而第二被告张某，是因为他是保证人，也就是担保关系。",
+    "plaintiff_confirmation": "刘某认诺"
+  },
+  "legal_norms_identification": {
+    "judge_question": "根据你的起诉理由，请具体陈述你诉讼请求依据的法律规范。",
+    "plaintiff_response": "他们一个是借款人，一个是担保人，具体法条我搞不清楚。",
+    "judge_clarification": "那么根据你的起诉理由，法院将依据同借款和担保有关的法律规范来判断这个案件，你的意见？",
+    "plaintiff_confirmation": "刘某认诺"
+  },
+  "final_legal_basis_summary": {
+    "plaintiff": "刘某",
+    "defendants": {
+      "黄某": {
+        "rights_basis": "借款合同关系",
+        "legal_norm_category": "借款相关法律规范"
+      },
+      "张某": {
+        "rights_basis": "担保合同关系",
+        "legal_norm_category": "担保相关法律规范",
+        "supporting_fact": "张某对借款知情（夫妻关系）"
+      }
+    },
+    "legal_basics_fixed": true,
+    "court_will_apply": "借款和担保有关的法律规范"
+  },
+  "handoff_info": {
+    "step_id": "S2",
+    "input_from_previous": {
+      "source": "S1输出",
+      "input_fields": ["final_fixed_claims", "fixed_claims_summary"],
+      "specific_content": "两被告对全部借款人民币24万元承担连带偿还责任"
+    },
+    "handoff_to_next": {
+      "target_step": "S3",
+      "output_fields": ["identified_rights_bases", "final_legal_basis_summary"],
+      "purpose": "S3基于权利请求基础规范确定被告的抗辩权基础规范"
+    },
+    "source_refs": {
+      "attachment": "附件三借贷合同纠纷案例",
+      "location": "庭审释明过程（P453-455）"
+    },
+    "blocking_conditions": {
+      "potential_failures": [
+        "权利基础不明确",
+        "法律关系混淆",
+        "当事人拒绝阐明法律依据"
+      ],
+      "failure_mode_ref": "nine_step_failure_modes.json -> S2_failure_modes"
+    }
+  },
+  "notes": [
+    "通过法律规范阐明和提示性询问，帮助当事人发现诉请理由中的模糊与矛盾之处",
+    "促使当事人主动更正有明显瑕疵的诉请理由",
+    "明确了两个被告分别对应不同的法律关系（借款关系 vs 担保关系）"
+  ]
+}

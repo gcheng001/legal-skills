@@ -1,0 +1,187 @@
+{
+  "step_id": "S7",
+  "step_name": "要件事实证明",
+  "case_context": {
+    "case_type": "借贷合同纠纷",
+    "plaintiff": "刘某",
+    "defendants": [
+      "黄某",
+      "张某"
+    ]
+  },
+  "objective": "帮助当事人厘清举证、质证的基本任务和要求，并通过举证责任的分配与法律规范阐明，使承担举证责任的当事人明确知晓真伪不明情形下的风险所在",
+  "method": "通过法官心证的适当公开与阐明，使当事人对存在的诉讼风险有充分的认知，自发地围绕法官分配的证明负担充分举证",
+  "process": [
+    "就争点形成初步心证",
+    "阐明",
+    "分配举证责任【法条寻找一分配】",
+    "固定"
+  ],
+  "proof_matrix_by_issue": {
+    "争点1": {
+      "issue": "刘某与黄某签订的借款协议内容是否真实？",
+      "rights_basis": "违约责任请求权",
+      "element": "借款合同已生效",
+      "preliminary_judgment": "刘某相关陈述虽得到被告黄某自认，但被张某否定；事实主张尚不成立",
+      "evidence_law_basis": "《证据规则》第5条第1款（主张合同关系成立并生效的一方当事人对合同订立和生效的事实承担举证责任）",
+      "current_equivalent": "《最高人民法院关于适用〈中华人民共和国民事诉讼法〉的解释》第91条第1款",
+      "burden_allocated_to": "刘某",
+      "proof_requirement": "刘某应就此向法庭举证"
+    },
+    "争点2": {
+      "issue": "刘某是否向黄某交付了借款？",
+      "rights_basis": "违约责任请求权",
+      "element": "借款合同已生效",
+      "preliminary_judgment": "刘某此节主张系消极事实，原则上无须承担举证责任，被告可通过主张积极事实以否定刘某主张",
+      "evidence_law_basis": "（消极事实举证原则）",
+      "burden_allocated_to": "（刘某不承担，被告可通过积极事实反驳）",
+      "proof_requirement": "被告可通过主张积极事实以否定刘某主张"
+    },
+    "争点3": {
+      "issue": "借款是否已到期？",
+      "rights_basis": "违约责任请求权",
+      "element": "负有偿还义务",
+      "preliminary_judgment": "刘某否认，相应抗辩尚不成立",
+      "evidence_law_basis": "《证据规则》第5条第1款",
+      "burden_allocated_to": "黄某",
+      "proof_requirement": "黄某应就此向法庭举证"
+    },
+    "争点4": {
+      "issue": "黄某是否还款？",
+      "rights_basis": "违约责任请求权",
+      "element": "义务未履行",
+      "preliminary_judgment": "刘某否认",
+      "evidence_law_basis": "《证据规则》第5条第2款（对合同是否履行发生争议的，由负有履行义务的当事人承担举证责任）",
+      "current_equivalent": "《最高人民法院关于适用〈中华人民共和国民事诉讼法〉的解释》第91条第2款",
+      "burden_allocated_to": "黄某",
+      "proof_requirement": "黄某应就此向法庭举证"
+    },
+    "争点5": {
+      "issue": "黄某归还借款的金额？",
+      "rights_basis": "违约责任请求权、担保责任请求权",
+      "element": "义务未履行、权利消灭性事由（部分履行）",
+      "preliminary_judgment": "刘某相关陈述为张某明确否定，相关事实主张尚未成立",
+      "evidence_law_basis": "《证据规则》第5条第1款",
+      "burden_allocated_to": "刘某",
+      "proof_requirement": "刘某应就此向法庭举证"
+    },
+    "争点6": {
+      "issue": "借款协议中所涉担保内容是否真实？",
+      "rights_basis": "担保责任请求权",
+      "element": "担保合同已生效",
+      "preliminary_judgment": "刘某相关陈述为张某明确否定，相关事实主张尚未成立",
+      "evidence_law_basis": "《证据规则》第5条第1款",
+      "burden_allocated_to": "刘某",
+      "proof_requirement": "刘某应就此向法庭举证"
+    },
+    "争点7": {
+      "issue": "刘某是否在保证期间提出主张？",
+      "rights_basis": "担保责任请求权",
+      "element": "负有保证义务",
+      "preliminary_judgment": "刘某否认明知私盖及主债已部分偿还，张某相关抗辩事实主张尚不成立",
+      "evidence_law_basis": "《证据规则》第5条第2款",
+      "burden_allocated_to": "张某",
+      "proof_requirement": "张某应就此向法庭举证"
+    },
+    "争点8": {
+      "issue": "张某是否偿还了借款？",
+      "rights_basis": "担保责任请求权",
+      "element": "义务未履行",
+      "preliminary_judgment": "刘某否认明知私盖及主债已部分偿还，张某相关抗辩事实主张尚不成立",
+      "evidence_law_basis": "《证据规则》第5条第2款",
+      "burden_allocated_to": "张某",
+      "proof_requirement": "张某应就此向法庭举证"
+    },
+    "争点9": {
+      "issue": "刘某是否明知黄某私盖张某私章？",
+      "rights_basis": "担保责任请求权",
+      "element": "明知无代理权（权利阻碍性事由）",
+      "preliminary_judgment": "刘某否认明知私盖及主债已部分偿还，张某相关抗辩事实主张尚不成立",
+      "evidence_law_basis": "《证据规则》第5条第2款",
+      "burden_allocated_to": "张某",
+      "proof_requirement": "张某应就此向法庭举证"
+    },
+    "争点10": {
+      "issue": "黄某归还借款的金额？",
+      "rights_basis": "违约责任请求权、担保责任请求权",
+      "element": "义务未履行、权利消灭性事由（部分履行）",
+      "preliminary_judgment": "刘某否认明知私盖及主债已部分偿还，张某相关抗辩事实主张尚不成立",
+      "evidence_law_basis": "《证据规则》第2条第1款（当事人对自己提出的诉讼请求所依据的事实或者反驳对方诉讼请求所依据的事实有责任提供证据加以证明）",
+      "current_equivalent": "《最高人民法院关于适用〈中华人民共和国民事诉讼法〉的解释》第90条第1款",
+      "burden_allocated_to": "刘某",
+      "proof_requirement": "刘某应就此向法庭举证"
+    }
+  },
+  "burden_allocation_summary": {
+    "刘某_举证责任": [
+      "刘某与黄某签订的借款协议内容是否真实？",
+      "刘某是否向黄某交付了借款？",
+      "黄某归还借款的金额？",
+      "借款协议中所涉担保内容是否真实？",
+      "黄某归还借款的金额？"
+    ],
+    "黄某_举证责任": [
+      "借款是否已到期？",
+      "黄某是否还款？"
+    ],
+    "张某_举证责任": [
+      "刘某是否在保证期间提出主张？",
+      "张某是否偿还了借款？",
+      "刘某是否明知黄某私盖张某私章？"
+    ]
+  },
+  "legal_basis_references": {
+    "证据规则_5_1": {
+      "original": "《证据规定》（2001年）第5条第1款：在合同纠纷案件中，主张合同关系成立并生效的一方当事人对合同订立和生效的事实承担举证责任；",
+      "current": "《最高人民法院关于适用〈中华人民共和国民事诉讼法〉的解释》第91条第1款：主张法律关系存在的当事人，应当对产生该法律关系的基本事实承担举证证明责任；"
+    },
+    "证据规则_5_2": {
+      "original": "《证据规定》（2001年）第5条第2款：对合同是否履行发生争议的，由负有履行义务的当事人承担举证责任。",
+      "current": "《最高人民法院关于适用〈中华人民共和国民事诉讼法〉的解释》第91条第2款：主张法律关系变更、终止、消灭的一方当事人，应当对法律关系变更、终止、消灭的基本事实承担举证证明责任。"
+    },
+    "证据规则_2_1": {
+      "original": "《证据规定》（2001年）第2条第1款：当事人对自己提出的诉讼请求所依据的事实或者反驳对方诉讼请求所依据的事实有责任提供证据加以证明。没有证据或者证据不足以证明当事人的事实主张的，由负有举证责任的当事人承担不利后果。",
+      "current": "《最高人民法院关于适用〈中华人民共和国民事诉讼法〉的解释》第90条第1款：当事人对自己提出的诉讼请求所依据的事实或者反驳对方诉讼请求所依据的事实，应当提供证据加以证明，但法律另有规定的除外。在作出判决前，当事人未能提供证据或者证据不足以证明其事实主张的，由负有举证证明责任的当事人承担不利的后果。"
+    }
+  },
+  "judge_open_preliminary_judgment": {
+    "阐明目的": "通过法官心证的适当公开与阐明，使当事人对存在的诉讼风险有充分的认知",
+    "预期效果": "自发地围绕法官分配的证明负担充分举证，进一步提高证明资源的发现程度及证明过程的诉讼效率"
+  },
+  "handoff_info": {
+    "input_from_previous": {
+      "source": "S6输出",
+      "input_fields": [
+        "final_issues_fixed"
+      ],
+      "specific_content": "9个具体争点"
+    },
+    "handoff_to_next": {
+      "target_step": "S8",
+      "output_fields": [
+        "proof_matrix_by_issue",
+        "burden_allocation_summary"
+      ],
+      "purpose": "S8基于举证责任分配结果进行事实认定"
+    },
+    "source_refs": {
+      "attachment": "附件三借贷合同纠纷案例",
+      "location": "法官阐明举证责任部分（P462-464）"
+    },
+    "blocking_conditions": {
+      "potential_failures": [
+        "举证责任分配错误",
+        "证明标准不明确",
+        "当事人未理解举证义务"
+      ],
+      "failure_mode_ref": "nine_step_failure_modes.json -> S7_failure_modes"
+    },
+    "step_id": "S7"
+  },
+  "notes": [
+    "通过公开初步心证、阐明并分配举证责任，明确了各方的举证义务",
+    "刘某承担5个争点的举证责任，黄某承担2个，张某承担3个",
+    "举证责任分配遵循了\\\"谁主张、谁举证\\\"的原则，同时考虑了消极事实的举证特殊性",
+    "为后续的事实认定奠定了基础"
+  ]
+}

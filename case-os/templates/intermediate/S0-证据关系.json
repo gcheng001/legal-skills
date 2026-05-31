@@ -1,0 +1,81 @@
+{
+  "meta": {
+    "case_root": "",
+    "version": "1.0",
+    "inferred_at": "",
+    "confirmed": false,
+    "confirmed_at": null,
+    "confirmed_by": null,
+    "total_relations": 0,
+    "relation_stats": {
+      "timeline": 0,
+      "corroborate": 0,
+      "contradict": 0,
+      "chain": 0
+    },
+    "status_stats": {
+      "pending": 0,
+      "confirmed": 0,
+      "rejected": 0,
+      "modified": 0
+    }
+  },
+  "relation_types": [
+    {
+      "id": "timeline",
+      "label": "时间线关联",
+      "description": "同一时间节点或连续时间段上的事件关联",
+      "color": "#4A90D9"
+    },
+    {
+      "id": "corroborate",
+      "label": "印证关联",
+      "description": "不同来源的证据相互印证同一事实主张",
+      "color": "#50B86C"
+    },
+    {
+      "id": "contradict",
+      "label": "矛盾关联",
+      "description": "证据之间就同一事项存在内容冲突或矛盾",
+      "color": "#E74C3C"
+    },
+    {
+      "id": "chain",
+      "label": "链条关联",
+      "description": "按事态发展顺序形成从因到果的证据链",
+      "color": "#F39C12"
+    }
+  ],
+  "relations": [
+    {
+      "id": "REL001",
+      "from": "SP001",
+      "to": "SP003",
+      "type": "timeline",
+      "label": "同一日期催收款",
+      "description": "SP001催收聊天发生在2024-01-15，同一天SP003确认未还款",
+      "precision": "paragraph",
+      "from": {
+        "card_id": "SP001",
+        "source_file": "微信聊天记录.md",
+        "anchor": "第2页第3段：'2024年1月15日，你到底还不还钱'",
+        "summary": "催收聊天，时间节点2024-01-15"
+      },
+      "to": {
+        "card_id": "SP003",
+        "source_file": "催收记录.md",
+        "anchor": "第1页第5段：'截止2024.1.15仍未收到还款'",
+        "summary": "书面催收记录，确认2024-01-15时点未还款"
+      },
+      "inference": {
+        "confidence": "高",
+        "basis": ["共享时间:2024-01-15", "共享实体:欠款关系"],
+        "extracted_by": "AI推导",
+        "extracted_at": ""
+      },
+      "status": "pending",
+      "review_note": null,
+      "visible_in": ["lawyer", "client", "judge"]
+    }
+  ]
+}

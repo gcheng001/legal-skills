@@ -1,0 +1,71 @@
+{
+  "step_id": "S1",
+  "step_name": "固定权利请求",
+  "case_context": {
+    "case_type": "借贷合同纠纷",
+    "parties": {
+      "plaintiff": "刘某",
+      "defendants": ["黄某", "张某"]
+    }
+  },
+  "initial_claims": {
+    "original_statement": "判令两被告归还原告借款人民币24万元",
+    "issues_identified": [
+      "两被告各自还款数额不明",
+      "还款顺序不明"
+    ]
+  },
+  "clarification_process": {
+    "judge_inquiry": "由于你的诉请涉及两位被告，请详细陈述你要求两被告各自承担的借款归还份额、承担还款责任时有没有先后次序？",
+    "plaintiff_response": "两被告都要对全部借款承担偿还责任，他们两个还款不分先后次序"
+  },
+  "final_fixed_claims": {
+    "claim_1": {
+      "target_party": ["黄某", "张某"],
+      "claim_type": "连带偿还责任",
+      "claim_object": "借款人民币24万元",
+      "relationship_between_defendants": "连带责任，不分先后次序"
+    },
+    "defendant_confirmation": "刘某认诺",
+    "judge_confirmation": "根据你的主张，要求两被告对全部借款承担连带偿还责任。刘某认诺。"
+  },
+  "fixed_claims_summary": {
+    "plaintiff": "刘某",
+    "defendants": ["黄某", "张某"],
+    "claim_content": "两被告对全部借款人民币24万元承担连带偿还责任，还款不分先后次序",
+    "claim_status": "已固定",
+    "issues_resolved": [
+      "明确了各被告的还款份额（均承担全部借款）",
+      "明确了还款顺序（无先后次序，承担连带责任）"
+    ]
+  },
+  "handoff_info": {
+    "step_id": "S1",
+    "input_from_previous": {
+      "source": "原告起诉状及庭审陈述",
+      "raw_content": "判令两被告归还原告借款人民币24万元"
+    },
+    "handoff_to_next": {
+      "target_step": "S2",
+      "output_fields": ["final_fixed_claims", "fixed_claims_summary"],
+      "purpose": "S2基于固定的诉讼请求确定权利请求基础规范"
+    },
+    "source_refs": {
+      "attachment": "附件三借贷合同纠纷案例",
+      "location": "起诉状部分及庭审释明过程"
+    },
+    "blocking_conditions": {
+      "potential_failures": [
+        "诉讼请求不明确无法释明",
+        "原告拒绝回应释明",
+        "诉讼请求变更未记录"
+      ],
+      "failure_mode_ref": "nine_step_failure_modes.json -> S1_failure_modes"
+    }
+  },
+  "notes": [
+    "通过提示性询问和主动追问，厘清了诉请中的模糊之处",
+    "促使当事人主动更正有明显瑕疵的诉讼请求",
+    "固定后诉请明确：两被告承担连带偿还责任"
+  ]
+}

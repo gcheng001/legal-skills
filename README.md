@@ -1,126 +1,181 @@
 # Legal Skills for Claude Code
 
-一套为律师和法律从业者设计的 Claude Code 技能集合，帮助自动化法律文书处理工作流。
+[中文文档](#中文) | English
 
-## 技能列表
+A comprehensive collection of **27 Claude Code skills** for Chinese legal professionals, covering civil litigation analysis, criminal defense workflows, and document automation.
 
-### 📋 court-sms — 法院短信识别与文书下载
+## Why This Matters
 
-收到法院送达短信时自动完成：**解析短信 → 下载文书 → 保存到桌面 → 提取关键日期 → 写入飞书**。
+Chinese lawyers spend 60%+ of their time on repetitive document processing, case analysis, and procedural compliance. This project brings the **power of agentic AI coding tools to legal practice**, turning Claude Code into a legal workflow engine.
 
-**触发条件**：消息包含法院名称 + 案号 + 送达平台链接（如 `zxfw.court.gov.cn`）
+Unlike generic legal AI tools, these skills encode **proven legal methodology** (the "Nine-Step Trial Method" from China's Supreme People's Court) into structured, deterministic workflows that Claude Code executes with human oversight at every decision point.
 
-**功能**：
-- 解析法院短信（文书送达 / 立案通知 / 开庭提醒）
-- 从全国法院统一送达平台、广东电子送达、集约送达平台自动下载文书
-- 文书原样保存到桌面，保留原始文件名
-- 自动提取传票/开庭通知书中的关键日期
-- 将开庭信息写入飞书多维表格
-
-## 安装
-
-### 前置依赖
-
-| 依赖 | 说明 | 安装 |
-|------|------|------|
-| Python 3.9+ | 运行下载脚本 | 系统自带 |
-| poppler | PDF 文本提取 | `brew install poppler` |
-| lark-cli | 飞书 API 调用 | `npm install -g @larksuiteoapi/lark-cli` |
-
-### 安装步骤
-
-1. 克隆仓库：
-
-```bash
-git clone https://github.com/goacheng001/legal-skills.git
-```
-
-2. 复制配置文件：
-
-```bash
-cp config/feishu-config.example.json config/feishu-config.json
-```
-
-3. 编辑 `config/feishu-config.json`，填入你的飞书多维表格信息：
-
-```json
-{
-  "app_token": "<你的飞书多维表格 App Token>",
-  "table_name": "日程任务中枢",
-  "table_id": "<你的表格 ID>"
-}
-```
-
-4. 在 Claude Code 中配置技能路径（添加到项目的 CLAUDE.md 或全局配置）。
-
-## 使用方法
-
-### court-sms
-
-收到法院短信后，直接将短信内容粘贴到 Claude Code 对话中：
-
-```
-【xx市人民法院】张三，您好！您有（2025）苏0981民初1234号案件文书送达，
-请点击链接查收：https://zxfw.court.gov.cn/zxfw/...
-```
-
-技能会自动：
-1. 解析短信，提取案号、法院、当事人
-2. 从送达平台下载所有文书
-3. 保存到 `~/Desktop/文书下载/{案号}/`
-4. 提取传票/开庭通知的关键日期信息
-5. 写入飞书多维表格
-
-### 仅粘贴送达链接
-
-也可以直接发送送达平台链接（无需完整短信），技能会从链接参数获取信息并下载文书。
-
-## 项目结构
+## Architecture
 
 ```
 legal-skills/
-├── SKILL.md                    # 技能主文件
-├── config/
-│   ├── feishu-config.example.json  # 飞书配置模板
-│   └── config.json                 # 表格结构配置（需自建）
-├── scripts/
-│   └── download_sms_docs.py    # 文书下载脚本
-├── references/                 # 解析规则和格式参考
-├── archive/                    # 处理记录归档
-├── CHANGELOG.md               # 变更日志
-├── LICENSE.txt                # MIT 许可证
-└── README.md                  # 本文件
+├── case-os/                      # Civil Case OS (orchestrator, 29KB)
+│   ├── scripts/                  # 25+ Python scripts
+│   ├── schema/                   # JSON Schema validation
+│   ├── templates/                # Visualization & document templates
+│   ├── references/               # Legal knowledge bases
+│   └── data/defenses/            # 12 case-type defense libraries
+│
+├── case-s1 ~ case-s10/           # Nine-Step Method (core analysis pipeline)
+│   ├── S1: Fixed Claim           # Extract claims, analyze concurrence
+│   ├── S2: Claim Basis           # Map to legal provisions
+│   ├── S3: Defense               # Identify defenses & counterclaims
+│   ├── S4: Elements              # Decompose into provable facts
+│   ├── S5: Case Search           # Research favorable authorities
+│   ├── S6: Dispute Matrix        # Plaintiff vs defendant collision
+│   ├── S7: Burden of Proof       # Allocate & assess proof status
+│   ├── S8: Fact Finding          # Predict court findings
+│   ├── S9: Judgment Predict      # Predict outcome & amount
+│   └── S10: Hallucination Gate   # Anti-hallucination verification
+│
+├── case-git-init/                # Case directory initialization
+├── case-ocr/                     # Document OCR pipeline
+├── case-evidence-cards/          # Structured evidence extraction
+├── case-filing-gen/              # Generate filing documents
+│
+├── criminal-case-os/             # Criminal Case OS (orchestrator)
+│   └── references/               # Criminal law references
+├── criminal-case-review/         # Case file review (legal aid / retained)
+├── criminal-meeting/             # Client meeting question lists
+├── criminal-defense-strategy/    # Defense path selection
+├── criminal-defense-statement/   # Defense statement drafting
+├── criminal-investigation/       # Pre-trial documents (bail, etc.)
+├── criminal-case-visualization/  # Case visualization charts
+├── criminal-non-prosecution/     # Non-prosecution opinions
+├── criminal-plea-bargain/        # Plea bargaining strategy
+├── criminal-client-comm/         # Client communication
+├── criminal-trial-examination/   # Trial questioning & evidence review
+│
+└── court-sms/                    # Court SMS document downloader
+    ├── scripts/                  # Python download automation
+    └── references/               # SMS parsing patterns
 ```
 
-## 飞书多维表格配置
+## Civil Case OS — The Nine-Step Method
 
-技能将开庭信息写入飞书多维表格。需要创建一个包含以下字段的表格：
+The core of this project is a complete implementation of the **"Nine-Step Trial Method"** (要件审判九步法), a structured legal analysis framework promoted by China's Supreme People's Court. The workflow:
 
-| 字段名 | 类型 | 说明 |
-|--------|------|------|
-| 事项 | Text | 主要标题（如"开庭审理"） |
-| 任务内容 | Text | 法院名称 + 案由详情 |
-| 开始时间 | DateTime | 开庭/宣判时间 |
-| 截止时间 | DateTime | 截止日期 |
-| 地点 | Text | 法庭/地点 |
-| 备注 | Text | 备注信息 |
-| 来源 | Text | 来源标识 |
-| 优先级 | SingleSelect | 高 / 中 / 低 |
+1. **Fixed Claim** → Extract all claims from the complaint, analyze concurrence
+2. **Claim Basis** → Map each claim to its legal provisions, decompose elements
+3. **Defense** → Identify all possible defenses, assess threat levels
+4. **Elements** → Convert legal elements into provable facts, map evidence gaps
+5. **Case Search** → Research favorable laws, precedents, and scholarly views
+6. **Dispute Matrix** → Collide plaintiff/defendant analyses, prioritize disputes
+7. **Burden of Proof** → Assign burden to each dispute, assess proof status
+8. **Fact Finding** → Predict court findings based on evidence and burden
+9. **Judgment Predict** → Predict outcome, amount, and reasoning
+10. **Hallucination Gate** → Verify all legal citations against real databases, block on hallucination
 
-飞书 CLI 首次使用需登录认证（通过 Keychain 持久化）。
+Each step has **precondition dependencies** — you cannot skip ahead. Most steps require **explicit lawyer confirmation** before proceeding.
 
-## 支持的送达平台
+### Anti-Hallucination System (S10)
 
-| 平台 | 域名 | 下载方式 |
-|------|------|----------|
-| 全国法院统一送达平台 | `zxfw.court.gov.cn` | API 直连 |
-| 广东法院电子送达 | `sd.gdems.com` | 浏览器自动化 |
-| 集约送达平台 | `jysd.10102368.com` | 浏览器自动化 |
+The S10 step is a mandatory quality gate that:
+- Verifies every legal citation against the Yuandian legal database API
+- Runs "Eight Consistency Checks" across all analytical outputs
+- Automatically blocks progression when hallucinations are detected
+- Produces a structured audit report
 
-## 贡献
+## Criminal Case OS
 
-欢迎提交 Issue 和 Pull Request，添加新的法律相关技能或改进现有功能。
+A parallel system for criminal defense attorneys, covering the full lifecycle:
 
-## 许可证
+- **Pre-trial**: Bail applications, non-arrest opinions, detention necessity reviews
+- **Review**: Structured case file review (supports both legal aid and retained cases)
+- **Strategy**: Defense path selection with strength assessment
+- **Trial**: Questioning outlines, evidence examination, defense statements
+- **Negotiation**: Plea bargaining strategy with sentencing prediction
+- **Communication**: Client-facing reports (with red-line protection of defense strategy)
 
-MIT License — 详见 [LICENSE.txt](LICENSE.txt)
+## Court SMS — Document Downloader
+
+Automates processing of Chinese court delivery notifications:
+- Parses SMS from 3 major court delivery platforms
+- Downloads all legal documents via API
+- Extracts key dates from summons and hearing notices
+- Optional: writes to Feishu/Lark bitable
+
+## Quick Start
+
+```bash
+# Clone the collection
+git clone https://github.com/goacheng001/legal-skills.git
+
+# Copy a skill to your Claude Code skills directory
+cp -r legal-skills/case-os ~/.claude/skills/
+cp -r legal-skills/criminal-case-os ~/.claude/skills/
+
+# Start Claude Code and invoke
+claude
+# Then type: /case-os or /criminal-case-os
+```
+
+## Dependencies
+
+| Dependency | Purpose | Install |
+|------------|---------|---------|
+| Python 3.9+ | Script execution | System |
+| `requests` | API calls | `pip install requests` |
+| `poppler` | PDF text extraction | `brew install poppler` |
+| `lark-cli` | Feishu integration (optional) | `npm install -g @larksuiteoapi/lark-cli` |
+| Yuandian API | Legal database (S10 verification) | API key required |
+
+## For Codex for Open Source
+
+This project is a demonstration of what's possible when agentic coding tools are applied to **domain-specific professional workflows**. Key metrics:
+
+- **27 skills** covering the full lifecycle of Chinese civil and criminal legal work
+- **100,000+ lines** of structured legal workflow instructions
+- **25+ Python scripts** for automation (document download, analysis, report generation)
+- **12 defense knowledge bases** covering major Chinese civil case types
+- **Anti-hallucination system** with real legal database verification
+- **Active production use** in real legal practice
+
+The project demonstrates that Claude Code is not just a coding tool — it's a **general-purpose agent platform** capable of encoding and executing complex domain expertise with appropriate human oversight.
+
+## Contributing
+
+Contributions welcome! Please see individual skill directories for their specific documentation.
+
+## License
+
+MIT License — see [LICENSE](LICENSE) for details.
+
+---
+
+## 中文
+
+### 项目概述
+
+一套为律师和法律从业者设计的 Claude Code 技能集合，共 27 个技能，覆盖：
+
+**民事案件OS（16个技能）**：
+- 总控调度器（case-os）+ 九步法分析流水线（S1-S10）
+- 案件生命周期管理（初始化/OCR/归档/信息提取/证据卡片/起诉状生成）
+
+**刑事案件OS（11个技能）**：
+- 总控调度器（criminal-case-os）
+- 全流程覆盖：侦查→阅卷→会见→辩护策略→辩护词→庭审→认罪认罚→不起诉
+- 可视化图表生成
+
+**独立技能**：
+- 法院短信文书自动下载（court-sms）
+
+### 核心设计理念
+
+1. **前置条件依赖链**：不可跳跃执行，确保分析完整性
+2. **律师确认机制**：关键步骤必须律师显式确认
+3. **幻觉阻断**：S10 幻觉校验门禁，法条引用逐条核验
+4. **职责分离**：每个技能专注单一功能，总控负责调度
+
+### 安装
+
+```bash
+git clone https://github.com/goacheng001/legal-skills.git
+cp -r legal-skills/case-os ~/.claude/skills/
+```

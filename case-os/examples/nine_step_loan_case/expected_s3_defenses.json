@@ -1,0 +1,136 @@
+{
+  "step_id": "S3",
+  "step_name": "确定抗辩权基础规范",
+  "case_context": {
+    "case_type": "借贷合同纠纷",
+    "plaintiff": "刘某",
+    "defendants": [
+      "黄某",
+      "张某"
+    ]
+  },
+  "initial_defense_statements": {
+    "defendant_huang": {
+      "party": "黄某",
+      "initial_statement": "我确实收到过原告两笔金额分别为70000元与170000元的钱款，但我后来划了70000元到刘某工商银行的账户。我从没说过不还钱，但我现在没有收入。"
+    },
+    "defendant_zhang": {
+      "party": "张某",
+      "initial_statement": "对借款事实不知情，钱没拿到家里用过，我不应承担还款责任。"
+    }
+  },
+  "issues_identified": [
+    {
+      "defendant": "张某",
+      "issue": "抗辩过于模糊，并未针对原告的事实主张直接展开抗辩",
+      "vague_points": [
+        "对借款事实不知情",
+        "钱没拿到家里用过"
+      ]
+    }
+  ],
+  "clarification_process": {
+    "judge_inquiry_to_zhang": "刘某认为你是借款担保人，因此要求你承担连带责任，你的意见？",
+    "zhang_response": "同黄某是在2009年3月3日登记离婚的，借据盖的章是我的。但这章当时放在家中抽屉里，是黄某私自拿取。盖章的事，没有事先和我商量，我并不知情。我们夫妻关系不好，私盖的事刘某心里是清楚的。",
+    "follow_up_inquiry": "借据上张某的章的真实性，形成过程是怎样的？",
+    "huang_response": "张某是我的前夫，借据上要张某作担保是刘某要求的，签借条时他不在场，他的章是我私自拿去盖的。"
+  },
+  "identified_defense_claims": {
+    "defendant_huang": {
+      "party": "黄某",
+      "defense_claim": "已偿还70000元借款，因此还款总额要扣掉这部分",
+      "defense_type": "权利消灭性抗辩",
+      "legal_basis": "借款合同相关法律规范（部分清偿）"
+    },
+    "defendant_zhang": {
+      "party": "张某",
+      "defense_claim_1": "担保关系没有成立",
+      "defense_claim_2": "刘某对黄某私盖张某的章是知情的",
+      "defense_types": [
+        "权利阻碍性抗辩",
+        "权利妨碍性抗辩"
+      ],
+      "legal_basis": "担保合同相关法律规范（无权代理、表见代理）"
+    }
+  },
+  "defense_confirmation": {
+    "huang_confirmation": {
+      "judge_summary": "根据你的陈述，你认为你已偿还了70000元借款，因此还款总额要扣掉这部分？",
+      "defendant_response": "黄某认诺"
+    },
+    "zhang_confirmation": {
+      "judge_summary": "根据你的陈述，你认为刘某对黄某私盖你的章是知情的，因此担保关系没有成立？",
+      "defendant_response": "张某认诺"
+    }
+  },
+  "legal_norms_identification": {
+    "judge_question": "请具体陈述答辩依据的法律规范。",
+    "defendant_response": "不清楚具体法条。",
+    "judge_clarification": "根据被告答辩主张和理由，法院将依据同借款和担保有关的法律规范来判断这个案件，你的意见？",
+    "defendant_confirmation": "黄某及张某认诺"
+  },
+  "final_defense_basis_summary": {
+    "defendant_huang": {
+      "defense_basics": [
+        {
+          "defense_type": "权利消灭性抗辩",
+          "defense_claim": "已偿还70000元借款",
+          "legal_norm_category": "借款合同相关法律规范"
+        }
+      ]
+    },
+    "defendant_zhang": {
+      "defense_basics": [
+        {
+          "defense_type": "权利阻碍性抗辩",
+          "defense_claim": "担保关系没有成立（无权代理）",
+          "legal_norm_category": "担保合同相关法律规范"
+        },
+        {
+          "defense_type": "权利妨碍性抗辩",
+          "defense_claim": "刘某明知私盖私章（表见代理不成立）",
+          "legal_norm_category": "合同法相关法律规范"
+        }
+      ]
+    },
+    "legal_basics_fixed": true,
+    "court_will_apply": "借款和担保有关的法律规范"
+  },
+  "handoff_info": {
+    "input_from_previous": {
+      "source": "S2输出",
+      "input_fields": [
+        "identified_rights_bases",
+        "final_legal_basis_summary"
+      ],
+      "specific_content": "黄某-借款关系、张某-担保关系"
+    },
+    "handoff_to_next": {
+      "target_step": "S4",
+      "output_fields": [
+        "identified_defense_claims",
+        "final_defense_basis_summary"
+      ],
+      "purpose": "S4基于权利请求基础规范和抗辩权基础规范进行构成要件分析"
+    },
+    "source_refs": {
+      "attachment": "附件三借贷合同纠纷案例",
+      "location": "被告答辩及庭审释明过程（P455-457）"
+    },
+    "blocking_conditions": {
+      "potential_failures": [
+        "抗辩权基础不明确",
+        "抗辩类型混淆",
+        "当事人拒绝阐明抗辩依据"
+      ],
+      "failure_mode_ref": "nine_step_failure_modes.json -> S3_failure_modes"
+    },
+    "step_id": "S3"
+  },
+  "notes": [
+    "通过提示性询问和法律规范阐明，帮助当事人发现答辩中的模糊与矛盾之处",
+    "促使当事人主动更正有明显瑕疵的答辩主张与理由",
+    "明确了被告的抗辩所依据的实体法规范",
+    "张某的抗辩从笼统的\"不知情\"细化为\"担保关系不成立（无权代理）+ 刘某知情（表见代理不成立）\""
+  ]
+}

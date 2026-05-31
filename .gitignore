@@ -1,6 +1,11 @@
 # 排除含敏感信息的配置文件（用户应自行创建）
-config/feishu-config.json
-config/config.json
+**/config/feishu-config.json
+**/config/config.json
+**/data/*.log
+**/data/*.txt
+**/data/*.json
+!**/data/defenses/*.json
+!**/data/defenses/**/*.json
 
 # 排除 macOS 系统文件
 .DS_Store
@@ -13,6 +18,10 @@ config/config.json
 __pycache__/
 *.pyc
 *.pyo
+
+# 排除备份文件
+*.backup
+*.bak
 
 # 排除临时文件
 *.tmp

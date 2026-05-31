@@ -1,0 +1,48 @@
+%% 诉讼策略决策树模板 - Mermaid 流程图
+%% 用途：多请求权基础的风险路径展开
+%% 生成时机：S9完成后自动生成
+%% 数据来源：S1请求权竞合 + S2请求权基础 + S9裁判预测
+
+graph TD
+    START["🎯 案件名称\n诉讼策略决策"] --> Q1{"请求权基础选择"}
+
+    Q1 -->|"路径A"| A1["{{请求权A名称}}\n依据: {{法条}}"]
+    Q1 -->|"路径B"| B1["{{请求权B名称}}\n依据: {{法条}}"]
+
+    A1 --> A1_1{"要件1: {{名称}}\n证据充分？"}
+    A1_1 -->|"✅ 充分"| A1_2{"要件2: {{名称}}\n证据充分？"}
+    A1_1 -->|"⚠️ 不足"| A1_R1["🔴 风险: {{风险描述}}\n建议: {{补强建议}}"]
+
+    A1_2 -->|"✅ 充分"| A1_3{"要件3: {{名称}}\n证据充分？"}
+    A1_2 -->|"⚠️ 不足"| A1_R2["🟡 风险: {{风险描述}}\n建议: {{补强建议}}"]
+
+    A1_3 -->|"✅ 充分"| A_WIN["🟢 路径A胜诉概率: {{X}}%\n策略: {{策略建议}}"]
+    A1_3 -->|"⚠️ 不足"| A1_R3["🔴 风险: {{风险描述}}\n建议: 考虑路径B"]
+
+    B1 --> B1_1{"要件1: {{名称}}\n证据充分？"}
+    B1_1 -->|"✅ 充分"| B1_2{"要件2: {{名称}}\n证据充分？"}
+    B1_1 -->|"⚠️ 不足"| B1_R1["🔴 风险: {{风险描述}}"]
+
+    B1_2 -->|"✅ 充分"| B_WIN["🟢 路径B胜诉概率: {{Y}}%\n策略: {{策略建议}}"]
+    B1_2 -->|"⚠️ 不足"| B1_R2["🔴 风险: {{风险描述}}"]
+
+    A_WIN --> FINAL["📋 最终建议:\n{{综合策略建议}}"]
+    B_WIN --> FINAL
+    A1_R3 --> FINAL
+    B1_R2 --> FINAL
+
+    classDef start fill:#1a1a2e,stroke:#e94560,color:#fff,stroke-width:2px
+    classDef decision fill:#533483,stroke:#e94560,color:#fff
+    classDef path fill:#16213e,stroke:#0f3460,color:#fff
+    classDef risk-high fill:#8b0000,stroke:#ff6b6b,color:#fff
+    classDef risk-low fill:#b36b00,stroke:#ffa726,color:#fff
+    classDef success fill:#1b5e20,stroke:#4caf50,color:#fff
+    classDef final fill:#0277bd,stroke:#03a9f4,color:#fff
+
+    class START start
+    class Q1,A1_1,A1_2,A1_3,B1_1,B1_2 decision
+    class A1,B1 path
+    class A1_R1,A1_R3,B1_R1,B1_R2 risk-high
+    class A1_R2 risk-low
+    class A_WIN,B_WIN success
+    class FINAL final

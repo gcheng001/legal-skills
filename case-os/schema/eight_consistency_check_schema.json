@@ -1,0 +1,318 @@
+{
+  "schema_name": "八个一致质检Schema",
+  "schema_version": "1.0.0",
+  "schema_purpose": "定义裁判文书八个一致质量检查的数据结构和字段规范",
+  "eight_consistency_standards_schema": {
+    "标准1": {
+      "name": "当事人的诉辩称与卷宗记载一致性",
+      "description": "检查原告的诉讼主张应与其起诉状一致，被告的诉讼主张应与其答辩状及笔录记载的相一致",
+      "check_points": [
+        "原告的诉讼主张应与其起诉状一致",
+        "诉讼过程中有变更的，应当记入笔录，并应在裁判文书中体现",
+        "被告的诉讼主张应与其答辩状及笔录记载的相一致",
+        "经释明，当事人的诉辩称主张有变动的，释明过程及诉辩称变更过程应记入笔录，并应在裁判文书中体现"
+      ],
+      "check_result": {
+        "type": "object",
+        "properties": {
+          "检查结果": {
+            "type": "string",
+            "enum": ["通过", "部分一致", "不一致"]
+          },
+          "具体问题": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "问题类型": {"type": "string"},
+                "具体情况": {"type": "string"},
+                "判决书记载": {"type": "string"},
+                "问题": {"type": "string"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "标准2": {
+      "name": "当事人的诉讼主张与基础规范一致性",
+      "description": "检查原告诉讼主张应包含请求权基础规范涵盖的所有构成要件，被告抗辩主张应包含抗辩权基础规范涵盖的所有构成要件",
+      "check_points": [
+        "原告诉讼主张应包含请求权基础规范涵盖的所有构成要件",
+        "被告抗辩主张应包含抗辩权基础规范涵盖的所有构成要件",
+        "被告答辩主张应与原告诉讼主张形成争点交锋"
+      ],
+      "check_result": {
+        "type": "object",
+        "properties": {
+          "检查结果": {
+            "type": "string",
+            "enum": ["通过", "部分一致", "不一致"]
+          },
+          "具体分析": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "主张类型": {"type": "string"},
+                "请求权基础": {"type": "string"},
+                "构成要件": {"type": "array"},
+                "当事人主张": {"type": "array"},
+                "比对结论": {"type": "string"},
+                "问题": {"type": "string"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "标准3": {
+      "name": "归纳的诉讼争点与当事人的诉讼主张一致性",
+      "description": "检查判决书是否在全面反映当事人诉辩意见的基础上，准确概括当事人的争议焦点",
+      "check_points": [
+        "判决书应当在全面反映当事人诉辩意见的基础上，准确概括当事人的争议焦点",
+        "争点概括应当具有连贯性，可以时间、过程为主线",
+        "事实争点应当归纳到请求权基础规范的要件事实",
+        "双方认可的事实应当在概括争点前表述"
+      ],
+      "check_result": {
+        "type": "object",
+        "properties": {
+          "检查结果": {
+            "type": "string",
+            "enum": ["通过", "争点归纳过于笼统", "争点归纳不准确"]
+          },
+          "具体问题": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "问题类型": {"type": "string"},
+                "庭审笔录中的争点": {"type": "string"},
+                "判决书归纳的争点": {"type": "string"},
+                "问题": {"type": "string"},
+                "改进建议": {"type": "string"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "标准4": {
+      "name": "当事人的诉讼证据与诉讼主张一致性",
+      "description": "检查所有要件事实是否均有证据证明，认诺和自认是否经当事人明示",
+      "check_points": [
+        "所有要件事实均应有证据证明",
+        "认诺和自认必须经当事人明示，并在庭审笔录中记明"
+      ],
+      "check_result": {
+        "type": "object",
+        "properties": {
+          "检查结果": {
+            "type": "string",
+            "enum": ["通过", "举证质证认证过程过于简略", "证据与主张不对应"]
+          },
+          "具体问题": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "问题类型": {"type": "string"},
+                "裁判文书表述": {"type": "string"},
+                "问题": {"type": "string"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "标准5": {
+      "name": "认定事实与事实争点一致性",
+      "description": "检查裁判文书是否对事实争点作出认定，对事实争点的认定是否完整",
+      "check_points": [
+        "裁判文书应对事实争点作出认定",
+        "对事实争点的认定要完整，不应遗漏",
+        "法院依职权主动查明的事实，在另查明部分表述"
+      ],
+      "check_result": {
+        "type": "object",
+        "properties": {
+          "检查结果": {
+            "type": "string",
+            "enum": ["通过", "事实争点未作出认定", "事实认定不完整"]
+          },
+          "具体问题": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "认定事实": {"type": "string"},
+                "对应争点": {"type": "string"},
+                "比对结论": {"type": "string"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "标准6": {
+      "name": "法律理由与法律争点一致性",
+      "description": "检查对于当事人的法律争点，是否逐一写明法院是否采纳并写明理由",
+      "check_points": [
+        "对于当事人的法律争点，应当逐一写明法院是否采纳，并写明理由",
+        "应当写明适用法律条文的主要理由",
+        "判决理由中不应当出现当事人诉辩称及法院认定事实中未出现的事实"
+      ],
+      "check_result": {
+        "type": "object",
+        "properties": {
+          "检查结果": {
+            "type": "string",
+            "enum": ["通过", "论证理由不充分", "法律理由与争点不对应"]
+          },
+          "具体问题": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "法律争点": {"type": "string"},
+                "判决理由": {"type": "string"},
+                "问题": {"type": "array"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "标准7": {
+      "name": "判决主文与诉讼请求一致性",
+      "description": "检查判决主文是否与原告的诉讼请求完全对应",
+      "check_points": [
+        "判决主文要与原告的诉讼请求完全对应，不能漏判或超过诉讼请求多判",
+        "不应遗漏当事人变更、追加的诉讼请求"
+      ],
+      "check_result": {
+        "type": "object",
+        "properties": {
+          "检查结果": {
+            "type": "string",
+            "enum": ["通过", "部分不一致", "超出诉讼请求"]
+          },
+          "具体问题": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "诉讼请求": {"type": "string"},
+                "判决主文": {"type": "string"},
+                "比对结论": {"type": "string"},
+                "问题": {"type": "string"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "标准8": {
+      "name": "引用条文与判决主文一致性",
+      "description": "检查引用的法律条文是否与判决主文相对应",
+      "check_points": [
+        "引用法律条文，应引用请求权、抗辩权基础法律条文",
+        "引用的条文必须与所有判决主文能够相对应",
+        "如有具体条款可以引用，不应引用诚实信用、公序良俗等一般性条款和概念性法条"
+      ],
+      "check_result": {
+        "type": "object",
+        "properties": {
+          "检查结果": {
+            "type": "string",
+            "enum": ["通过", "多引法条", "漏引法条", "引用不准确"]
+          },
+          "具体问题": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "判决主文": {"type": "string"},
+                "引用条文": {"type": "string"},
+                "比对结论": {"type": "string"},
+                "问题": {"type": "string"}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "quality_assessment_schema": {
+    "overall_quality_assessment": {
+      "type": "object",
+      "properties": {
+        "八个一致性评分": {
+          "type": "object",
+          "patternProperties": {
+            "检查[1-8]": {
+              "type": "string",
+              "enum": ["通过", "基本合格", "不合格", "部分一致", "不一致"]
+            }
+          }
+        },
+        "主要问题总结": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "改进建议": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    }
+  },
+  "hallucination_detection_schema": {
+    "fact_hallucination_check": {
+      "type": "object",
+      "properties": {
+        "check_items": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "case_check_result": {"type": "string"}
+      }
+    },
+    "legal_hallucination_check": {
+      "type": "object",
+      "properties": {
+        "check_items": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "case_check_result": {"type": "string"}
+      }
+    },
+    "logic_hallucination_check": {
+      "type": "object",
+      "properties": {
+        "check_items": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "case_check_result": {"type": "string"}
+      }
+    }
+  },
+  "enums": {
+    "check_result_types": ["通过", "基本合格", "不合格", "部分一致", "不一致", "争点归纳过于笼统", "举证质证认证过程过于简略", "论证理由不充分", "多引法条", "漏引法条"],
+    "problem_types": ["诉讼请求变更过程未体现", "被告认诺未体现", "合同有效要件未主张", "争点归纳过于笼统", "举证质证认证过程过于简略", "事实争点未作出认定", "论证理由不充分", "超出诉讼请求", "多引法条", "漏引法条"]
+  },
+  "validation_rules": {
+    "rule_1": "八个一致标准必须全部检查，不能遗漏",
+    "rule_2": "每个标准的检查结果必须明确",
+    "rule_3": "具体问题必须提供充分的证据和对比",
+    "rule_4": "改进建议必须具体可操作"
+  },
+  "notes": [
+    "本Schema定义了八个一致质量检查的数据结构",
+    "适用于裁判文书质量检查和AI生成内容的幻觉检测",
+    "八个一致标准与九步法相辅相成，共同构成法律审判的质量控制体系"
+  ]
+}

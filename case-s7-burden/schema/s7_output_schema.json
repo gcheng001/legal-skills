@@ -1,0 +1,225 @@
+{
+  "schema_name": "S7举证责任输出Schema",
+  "schema_version": "1.0.0",
+  "schema_purpose": "定义S7举证责任分配的输出结构，包含心证公开结构和证明资源审查",
+  "step_id": "S7",
+  "step_name": "要件事实证明",
+  "output_fields": {
+    "step_id": {
+      "type": "string",
+      "description": "步骤标识符",
+      "required": true,
+      "default": "S7"
+    },
+    "burden_allocation": {
+      "type": "object",
+      "description": "举证责任分配",
+      "required": true,
+      "properties": {
+        "proof_matrix_by_issue": {
+          "type": "object",
+          "description": "按争点的举证矩阵",
+          "patternProperties": {
+            "争点.*": {
+              "type": "object",
+              "properties": {
+                "issue": {
+                  "type": "string",
+                  "description": "争点描述"
+                },
+                "rights_basis": {
+                  "type": "string",
+                  "description": "请求权基础"
+                },
+                "element": {
+                  "type": "string",
+                  "description": "要件事实"
+                },
+                "preliminary_judgment": {
+                  "type": "string",
+                  "description": "初步心证判断"
+                },
+                "burden_allocated_to": {
+                  "type": "string",
+                  "description": "举证责任分配给"
+                },
+                "proof_requirement": {
+                  "type": "string",
+                  "description": "证明要求"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "evidence_status_assessment": {
+      "type": "object",
+      "description": "证据状态评估",
+      "required": true,
+      "properties": {
+        "plaintiff_evidence_status": {
+          "type": "string",
+          "description": "原告证据状态",
+          "enum": ["充分", "基本充分", "不足", "举证而不能"]
+        },
+        "defendant_evidence_status": {
+          "type": "string",
+          "description": "被告证据状态",
+          "enum": ["充分", "基本充分", "不足", "举证而不能"]
+        },
+        "fatal_gaps": {
+          "type": "array",
+          "description": "致命缺口列表",
+          "items": {
+            "type": "object",
+            "properties": {
+              "issue": {
+                "type": "string",
+                "description": "存在缺口的争点"
+              },
+              "responsible_party": {
+                "type": "string",
+                "description": "责任方"
+              },
+              "gap_description": {
+                "type": "string",
+                "description": "缺口描述"
+              },
+              "risk_level": {
+                "type": "string",
+                "description": "风险等级",
+                "enum": ["致命", "严重", "一般", "轻微"]
+              }
+            }
+          }
+        }
+      }
+    },
+    "judicial_disclosure": {
+      "type": "object",
+      "description": "心证公开（新增）",
+      "required": true,
+      "properties": {
+        "disclosure_made": {
+          "type": "boolean",
+          "description": "是否已进行心证公开"
+        },
+        "disclosure_content": {
+          "type": "string",
+          "description": "心证公开内容"
+        },
+        "disclosure_purpose": {
+          "type": "string",
+          "description": "心证公开目的"
+        },
+        "party_response": {
+          "type": "string",
+          "description": "当事人回应"
+        },
+        "additional_evidence_prompted": {
+          "type": "boolean",
+          "description": "是否促使当事人补充证据"
+        },
+        "disclosure_records": {
+          "type": "array",
+          "description": "心证公开记录",
+          "items": {
+            "type": "object",
+            "properties": {
+              "stage": {
+                "type": "string",
+                "description": "公开阶段"
+              },
+              "content": {
+                "type": "string",
+                "description": "公开内容"
+              },
+              "response": {
+                "type": "string",
+                "description": "当事人回应"
+              }
+            }
+          }
+        }
+      }
+    },
+    "proof_resource_review": {
+      "type": "object",
+      "description": "证明资源审查（新增）",
+      "required": true,
+      "properties": {
+        "review_conducted": {
+          "type": "boolean",
+          "description": "是否已进行证明资源审查"
+        },
+        "proof_methods_exhausted": {
+          "type": "boolean",
+          "description": "当事人是否已用尽证明资源及证明方法"
+        },
+        "available_proof_methods": {
+          "type": "array",
+          "description": "可用的证明方法列表",
+          "items": {
+            "type": "string",
+            "description": "证明方法"
+          }
+        },
+        "unused_proof_methods": {
+          "type": "array",
+          "description": "未使用的证明方法列表",
+          "items": {
+            "type": "string",
+            "description": "未使用的证明方法"
+          }
+        },
+        "review_conclusion": {
+          "type": "string",
+          "description": "审查结论"
+        },
+        "additional_guidance": {
+          "type": "string",
+          "description": "进一步指导"
+        }
+      }
+    }
+  },
+  "judicial_disclosure_structure": {
+    "disclosure_components": {
+      "content": "心证公开内容",
+      "purpose": "促使当事人补充证据",
+      "timing": "在证据调查终结前适时公开"
+    },
+    "disclosure_benefits": {
+      "benefit_1": "促使当事人围绕心证结论收集和补充证据",
+      "benefit_2": "提高事实认定的准确性",
+      "benefit_3": "避免突袭性裁判"
+    }
+  },
+  "proof_resource_review_structure": {
+    "review_components": {
+      "component_1": "审查当事人是否已用尽证明资源",
+      "component_2": "审查当事人是否已用尽证明方法",
+      "component_3": "识别可用的证明方法",
+      "component_4": "提供进一步指导"
+    },
+    "review_criteria": {
+      "criterion_1": "当事人是否已申请所有必要的证据保全",
+      "criterion_2": "当事人是否已申请所有必要的司法鉴定",
+      "criterion_3": "当事人是否已申请调查取证",
+      "criterion_4": "当事人是否已提供所有相关证人名单"
+    }
+  },
+  "validation_rules": {
+    "rule_1": "所有required字段必须提供",
+    "rule_2": "fatal_gaps必须列出所有致命缺口",
+    "rule_3": "judicial_disclosure和proof_resource_review必须包含完整的审查记录",
+    "rule_4": "举证责任分配必须对齐S6争点矩阵"
+  },
+  "notes": [
+    "本Schema定义了S7举证责任分配的输出结构",
+    "心证公开结构：促使当事人补充证据",
+    "证明资源审查：审查当事人是否已用尽证明资源及证明方法",
+    "输出采用JSON frontmatter + Markdown正文格式"
+  ]
+}

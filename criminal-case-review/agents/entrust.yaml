@@ -1,0 +1,4 @@
+interface:
+  display_name: "委托律师"
+  short_description: "面向委托案件的阅卷笔录制作、证据归属核验与归档规范执行技能"
+  default_prompt: "根据案卷材料生成规范阅卷笔录，校验证据归属、页码标注、讯问信息与程序表述的完整准确性。"

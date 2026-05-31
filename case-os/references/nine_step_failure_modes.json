@@ -1,0 +1,551 @@
+{
+  "version": "v1.0",
+  "created_at": "2026-05-21",
+  "description": "九步法各步骤可能的失败模式和风险点",
+  "failure_modes": {
+    "S1": {
+      "step_id": "S1",
+      "step_name": "固定权利请求",
+      "failure_modes": [
+        {
+          "mode_id": "S1_FM_01",
+          "name": "诉请未固定",
+          "description": "原告诉请模糊、矛盾或不完整，未通过释明予以固定",
+          "severity": "HIGH",
+          "detection_method": "检查诉讼请求的明确性、完整性和无矛盾性",
+          "consequences": [
+            "审理对象不明确",
+            "后续步骤无法进行",
+            "可能造成裁判错误"
+          ],
+          "prevention": [
+            "加强庭审释明",
+            "要求原告明确诉请",
+            "记录释明过程"
+          ],
+          "recovery": "暂停审理，进行补充释明"
+        },
+        {
+          "mode_id": "S1_FM_02",
+          "name": "诉请理解错误",
+          "description": "法官对原告诉请的理解与原告真实意思不符",
+          "severity": "MEDIUM",
+          "detection_method": "与原告核对诉请理解",
+          "consequences": [
+            "审理方向错误",
+            "当事人不服"
+          ],
+          "prevention": [
+            "充分询问原告",
+            "要求原告确认理解"
+          ],
+          "recovery": "重新确认诉请"
+        }
+      ]
+    },
+    "S2": {
+      "step_id": "S2",
+      "step_name": "确定权利请求基础规范",
+      "failure_modes": [
+        {
+          "mode_id": "S2_FM_01",
+          "name": "法律关系识别错误",
+          "description": "错误识别原告主张的法律关系性质",
+          "severity": "HIGH",
+          "detection_method": "对照诉请和理由分析法律关系",
+          "consequences": [
+            "适用法律错误",
+            "裁判结果错误"
+          ],
+          "prevention": [
+            "充分听取原告陈述",
+            "必要时进行法律释明"
+          ],
+          "recovery": "重新识别法律关系"
+        },
+        {
+          "mode_id": "S2_FM_02",
+          "name": "释明不充分",
+          "description": "法律关系性质不明确时未充分释明",
+          "severity": "MEDIUM",
+          "detection_method": "检查释明记录",
+          "consequences": [
+            "当事人未明确法律关系",
+            "审理依据不充分"
+          ],
+          "prevention": [
+            "规范释明流程",
+            "记录释明内容"
+          ],
+          "recovery": "补充释明"
+        },
+        {
+          "mode_id": "S2_FM_03",
+          "name": "请求权基础错误",
+          "description": "确定的权利请求基础规范不正确",
+          "severity": "HIGH",
+          "detection_method": "对照法律关系核对请求权基础",
+          "consequences": [
+            "适用法律错误",
+            "要件分析错误"
+          ],
+          "prevention": [
+            "仔细核对法律条文",
+            "确认法条性质"
+          ],
+          "recovery": "重新确定请求权基础"
+        }
+      ]
+    },
+    "S3": {
+      "step_id": "S3",
+      "step_name": "确定抗辩权基础规范",
+      "failure_modes": [
+        {
+          "mode_id": "S3_FM_01",
+          "name": "抗辩识别遗漏",
+          "description": "遗漏被告提出的实体法抗辩权",
+          "severity": "HIGH",
+          "detection_method": "对照答辩意见核对抗辩权",
+          "consequences": [
+            "审理不完整",
+            "可能影响裁判公正"
+          ],
+          "prevention": [
+            "系统审查答辩内容",
+            "询问被告抗辩依据"
+          ],
+          "recovery": "补充审查抗辩权"
+        },
+        {
+          "mode_id": "S3_FM_02",
+          "name": "反诉识别错误",
+          "description": "将反诉误认为答辩，或相反",
+          "severity": "MEDIUM",
+          "detection_method": "分析答辩内容的独立性",
+          "consequences": [
+            "程序处理错误",
+            "影响当事人权利"
+          ],
+          "prevention": [
+            "仔细分析答辩性质",
+            "进行反诉释明"
+          ],
+          "recovery": "重新识别并处理反诉"
+        },
+        {
+          "mode_id": "S3_FM_03",
+          "name": "抗辩权基础错误",
+          "description": "确定的抗辩权基础规范不正确",
+          "severity": "HIGH",
+          "detection_method": "对照抗辩内容核对法条",
+          "consequences": [
+            "抗辩要件分析错误",
+            "影响裁判结果"
+          ],
+          "prevention": [
+            "仔细核对法条内容",
+            "确认抗辩权性质"
+          ],
+          "recovery": "重新确定抗辩权基础"
+        }
+      ]
+    },
+    "S4": {
+      "step_id": "S4",
+      "step_name": "基础规范构成要件分析",
+      "failure_modes": [
+        {
+          "mode_id": "S4_FM_01",
+          "name": "法条性质错误",
+          "description": "将倡导性法条误认为完全性法条",
+          "severity": "HIGH",
+          "detection_method": "分析法条结构和内容",
+          "consequences": [
+            "要件提取错误",
+            "无法进行要件归入"
+          ],
+          "prevention": [
+            "掌握法条性质鉴别标准",
+            "确认法条构成要件"
+          ],
+          "recovery": "重新选择完全性法条"
+        },
+        {
+          "mode_id": "S4_FM_02",
+          "name": "要件提取不完整",
+          "description": "未完整提取法条的构成要件",
+          "severity": "HIGH",
+          "detection_method": "对照法条原文核对要件",
+          "consequences": [
+            "要件分析不完整",
+            "影响后续步骤"
+          ],
+          "prevention": [
+            "逐条分析法条",
+            "确认所有要件"
+          ],
+          "recovery": "补充要件分析"
+        },
+        {
+          "mode_id": "S4_FM_03",
+          "name": "要件理解错误",
+          "description": "对构成要件的含义理解错误",
+          "severity": "MEDIUM",
+          "detection_method": "对照法条解释和案例",
+          "consequences": [
+            "要件归入错误",
+            "影响裁判结果"
+          ],
+          "prevention": [
+            "参考法条解释",
+            "研究相关案例"
+          ],
+          "recovery": "重新理解要件含义"
+        }
+      ]
+    },
+    "S5": {
+      "step_id": "S5",
+      "step_name": "诉讼主张的检索",
+      "failure_modes": [
+        {
+          "mode_id": "S5_FM_01",
+          "name": "主张完备性审查遗漏",
+          "description": "未发现诉讼主张的不完备之处",
+          "severity": "MEDIUM",
+          "detection_method": "对照要件检查诉讼主张",
+          "consequences": [
+            "主张不完整",
+            "可能影响权利保护"
+          ],
+          "prevention": [
+            "系统检查主张完备性",
+            "进行释明补充"
+          ],
+          "recovery": "补充释明，补充主张"
+        },
+        {
+          "mode_id": "S5_FM_02",
+          "name": "矛盾主张未发现",
+          "description": "未发现诉讼主张之间的矛盾",
+          "severity": "MEDIUM",
+          "detection_method": "分析各主张之间的关系",
+          "consequences": [
+            "审理依据矛盾",
+            "影响裁判逻辑"
+          ],
+          "prevention": [
+            "仔细分析主张关系",
+            "要求当事人明确选择"
+          ],
+          "recovery": "释明并要求当事人明确"
+        }
+      ]
+    },
+    "S6": {
+      "step_id": "S6",
+      "step_name": "争点整理",
+      "failure_modes": [
+        {
+          "mode_id": "S6_FM_01",
+          "name": "争点归纳不完整",
+          "description": "遗漏重要的案件争点",
+          "severity": "HIGH",
+          "detection_method": "对照诉辩意见和要件",
+          "consequences": [
+            "审理不全面",
+            "影响裁判质量"
+          ],
+          "prevention": [
+            "系统梳理诉辩意见",
+            "按要件逐一排查"
+          ],
+          "recovery": "补充争点"
+        },
+        {
+          "mode_id": "S6_FM_02",
+          "name": "争点分类错误",
+          "description": "将事实争点误认为法律争点，或相反",
+          "severity": "MEDIUM",
+          "detection_method": "分析争点性质",
+          "consequences": [
+            "审理方法不当",
+            "影响审理效率"
+          ],
+          "prevention": [
+            "掌握争点分类标准",
+            "仔细分析争点内容"
+          ],
+          "recovery": "重新分类争点"
+        },
+        {
+          "mode_id": "S6_FM_03",
+          "name": "非争点争点化",
+          "description": "将无争议的内容作为争点",
+          "severity": "LOW",
+          "detection_method": "对照当事人意见",
+          "consequences": [
+            "审理范围扩大",
+            "影响审理效率"
+          ],
+          "prevention": [
+            "核对当事人一致意见",
+            "聚焦真正争议"
+          ],
+          "recovery": "排除非争点"
+        }
+      ]
+    },
+    "S7": {
+      "step_id": "S7",
+      "step_name": "要件事实证明",
+      "failure_modes": [
+        {
+          "mode_id": "S7_FM_01",
+          "name": "举证责任分配错误",
+          "description": "错误分配举证责任",
+          "severity": "HIGH",
+          "detection_method": "对照举证规则和要件",
+          "consequences": [
+            "事实认定错误",
+            "裁判结果错误"
+          ],
+          "prevention": [
+            "掌握举证责任分配规则",
+            "按要件性质分配"
+          ],
+          "recovery": "重新分配举证责任"
+        },
+        {
+          "mode_id": "S7_FM_02",
+          "name": "心证公开不足",
+          "description": "未充分公开心证，当事人未充分举证",
+          "severity": "MEDIUM",
+          "detection_method": "检查心证公开记录",
+          "consequences": [
+            "举证不充分",
+            "影响事实认定"
+          ],
+          "prevention": [
+            "及时公开心证",
+            "记录心证内容"
+          ],
+          "recovery": "补充心证公开"
+        },
+        {
+          "mode_id": "S7_FM_03",
+          "name": "证明资源审查不严",
+          "description": "未审查当事人是否用尽证明资源",
+          "severity": "MEDIUM",
+          "detection_method": "询问当事人举证情况",
+          "consequences": [
+            "事实认定不完整",
+            "可能影响裁判公正"
+          ],
+          "prevention": [
+            "主动询问举证情况",
+            "引导补充举证"
+          ],
+          "recovery": "补充举证"
+        }
+      ]
+    },
+    "S8": {
+      "step_id": "S8",
+      "step_name": "事实认定",
+      "failure_modes": [
+        {
+          "mode_id": "S8_FM_01",
+          "name": "证据评价错误",
+          "description": "对证据的证明力大小判断错误",
+          "severity": "HIGH",
+          "detection_method": "对照证据规则",
+          "consequences": [
+            "事实认定错误",
+            "裁判结果错误"
+          ],
+          "prevention": [
+            "掌握证据评价标准",
+            "充分说明理由"
+          ],
+          "recovery": "重新评价证据"
+        },
+        {
+          "mode_id": "S8_FM_02",
+          "name": "事实认定缺乏依据",
+          "description": "认定的事实缺乏证据支持",
+          "severity": "HIGH",
+          "detection_method": "对照证据和事实认定",
+          "consequences": [
+            "事实认定错误",
+            "裁判被撤销"
+          ],
+          "prevention": [
+            "严格依据证据认定",
+            "说明认定依据"
+          ],
+          "recovery": "补充证据或修正认定"
+        },
+        {
+          "mode_id": "S8_FM_03",
+          "name": "真伪不明处理错误",
+          "description": "事实真伪不明时未正确适用举证责任规则",
+          "severity": "HIGH",
+          "detection_method": "对照举证责任分配",
+          "consequences": [
+            "举证责任适用错误",
+            "裁判结果错误"
+          ],
+          "prevention": [
+            "掌握举证责任适用规则",
+            "明确说明适用理由"
+          ],
+          "recovery": "重新适用举证责任规则"
+        }
+      ]
+    },
+    "S9": {
+      "step_id": "S9",
+      "step_name": "要件归入并作出裁判",
+      "failure_modes": [
+        {
+          "mode_id": "S9_FM_01",
+          "name": "要件归入错误",
+          "description": "错误认定事实符合或不符合要件",
+          "severity": "HIGH",
+          "detection_method": "对照事实和要件",
+          "consequences": [
+            "裁判结果错误",
+            "裁判被撤销"
+          ],
+          "prevention": [
+            "逐项比对事实和要件",
+            "充分说明归入理由"
+          ],
+          "recovery": "重新进行要件归入"
+        },
+        {
+          "mode_id": "S9_FM_02",
+          "name": "法律适用错误",
+          "description": "归入后的法律适用结果错误",
+          "severity": "HIGH",
+          "detection_method": "对照法条的法律效果",
+          "consequences": [
+            "裁判结果错误",
+            "当事人不服"
+          ],
+          "prevention": [
+            "准确理解法条效果",
+            "充分说明适用理由"
+          ],
+          "recovery": "重新适用法律"
+        },
+        {
+          "mode_id": "S9_FM_03",
+          "name": "裁判主文错误",
+          "description": "裁判主文与归入结论不一致",
+          "severity": "HIGH",
+          "detection_method": "对照归入结论和裁判主文",
+          "consequences": [
+            "裁判主文错误",
+            "执行困难"
+          ],
+          "prevention": [
+            "仔细核对裁判主文",
+            "确保与归入结论一致"
+          ],
+          "recovery": "修正裁判主文"
+        }
+      ]
+    },
+    "S10": {
+      "step_id": "S10",
+      "step_name": "幻觉校验和八个一致",
+      "failure_modes": [
+        {
+          "mode_id": "S10_FM_01",
+          "name": "法条幻觉未检测",
+          "description": "引用不存在的法条或错误的法条内容",
+          "severity": "CRITICAL",
+          "detection_method": "法条真实性验证",
+          "consequences": [
+            "裁判依据错误",
+            "司法公信力受损"
+          ],
+          "prevention": [
+            "使用权威法条数据库",
+            "人工复核关键法条"
+          ],
+          "recovery": "重新检索并确认法条"
+        },
+        {
+          "mode_id": "S10_FM_02",
+          "name": "案例幻觉未检测",
+          "description": "引用不存在的案例或扭曲案例内容",
+          "severity": "HIGH",
+          "detection_method": "案例真实性验证",
+          "consequences": [
+            "说理依据错误",
+            "裁判被质疑"
+          ],
+          "prevention": [
+            "使用权威案例数据库",
+            "核对案例原文"
+          ],
+          "recovery": "删除或更正案例引用"
+        },
+        {
+          "mode_id": "S10_FM_03",
+          "name": "一致性检查遗漏",
+          "description": "未进行八个一致性检查或检查不充分",
+          "severity": "HIGH",
+          "detection_method": "八个一致性逐项检查",
+          "consequences": [
+            "裁判文书质量问题",
+            "可能被发回重审"
+          ],
+          "prevention": [
+            "建立一致性检查清单",
+            "逐项核对检查"
+          ],
+          "recovery": "补充一致性检查并修改"
+        },
+        {
+          "mode_id": "S10_FM_04",
+          "name": "逻辑谬误未检测",
+          "description": "裁判说理存在逻辑谬误",
+          "severity": "MEDIUM",
+          "detection_method": "逻辑有效性检查",
+          "consequences": [
+            "说理不成立",
+            "裁判被质疑"
+          ],
+          "prevention": [
+            "掌握逻辑规则",
+            "检查推理过程"
+          ],
+          "recovery": "修正说理逻辑"
+        }
+      ]
+    }
+  },
+  "severity_levels": {
+    "CRITICAL": "严重影响裁判正确性，必须避免",
+    "HIGH": "严重影响案件质量，必须防范",
+    "MEDIUM": "影响案件质量或效率，应当注意",
+    "LOW": "轻微影响，可以优化"
+  },
+  "prevention_strategies": {
+    "process_control": "建立标准化流程和检查清单",
+    "training": "加强法官方法论培训",
+    "technology": "利用辅助工具进行校验",
+    "peer_review": "建立同行评审机制"
+  },
+  "recovery_strategies": {
+    "early_detection": "在早期阶段发现问题",
+    "immediate_correction": "发现错误立即纠正",
+    "documentation": "记录问题和纠正过程",
+    "quality_control": "加强质量控制环节"
+  }
+}

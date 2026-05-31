@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>九步法双视图确认表</title>
+<style>
+  :root {
+    --bg: #0a0a0b; --surface: #111113; --surface2: #1a1a1f;
+    --border: rgba(255,255,255,0.08); --text: #e2e2e6;
+    --dim: #6b7280; --green: #10b981; --amber: #f59e0b;
+    --red: #ef4444; --cyan: #22d3ee; --blue: #3b82f6;
+    --amber-glow: rgba(245,158,11,0.3);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: -apple-system, "PingFang SC", sans-serif; font-size: 13px; line-height: 1.6; padding: 24px; }
+
+  .header { margin-bottom: 24px; }
+  .header h1 { font-size: 18px; font-weight: 700; color: #fff; }
+  .header .sub { font-size: 11px; color: var(--dim); margin-top: 6px; }
+  .header .meta { display: flex; gap: 16px; margin-top: 10px; flex-wrap: wrap; }
+  .meta-item { font-size: 11px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 4px 12px; color: var(--dim); }
+  .meta-item span { color: var(--text); font-weight: 600; }
+
+  /* 一键确认按钮 */
+  .action-bar { display: flex; gap: 12px; margin-bottom: 16px; align-items: center; }
+  .btn-all { font-size: 12px; padding: 8px 20px; border-radius: 10px; border: 1px solid var(--green); background: rgba(16,185,129,0.1); color: var(--green); cursor: pointer; font-family: inherit; font-weight: 600; transition: all 0.15s; }
+  .btn-all:hover { background: var(--green); color: #000; }
+  .btn-reset { font-size: 11px; padding: 6px 14px; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: var(--dim); cursor: pointer; font-family: inherit; transition: all 0.15s; }
+  .btn-reset:hover { border-color: var(--amber); color: var(--amber); }
+
+  .legend { display: flex; gap: 16px; margin-bottom: 20px; font-size: 11px; color: var(--dim); }
+  .leg { display: flex; align-items: center; gap: 6px; }
+  .leg-dot { width: 8px; height: 8px; border-radius: 2px; }
+
+  .step-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 12px; overflow: hidden; transition: border-color 0.2s; }
+  .step-card:hover { border-color: rgba(34,211,238,0.2); }
+  .step-card.confirmed { border-color: rgba(16,185,129,0.3); }
+
+  .step-header { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--surface2); border-bottom: 1px solid var(--border); cursor: pointer; }
+  .step-num { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: var(--dim); }
+  .step-name { font-size: 13px; font-weight: 700; color: #fff; flex: 1; }
+  .step-risk { font-size: 11px; font-weight: 600; padding: 2px 10px; border-radius: 20px; }
+  .risk-p0 { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+  .risk-p1 { background: rgba(245,158,11,0.12); color: var(--amber); border: 1px solid rgba(245,158,11,0.25); }
+  .risk-p2 { background: rgba(16,185,129,0.12); color: var(--green); border: 1px solid rgba(16,185,129,0.25); }
+  .confirm-btn { font-size: 11px; padding: 4px 14px; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: var(--dim); cursor: pointer; font-family: inherit; transition: all 0.15s; }
+  .confirm-btn:hover { border-color: var(--green); color: var(--green); }
+  .confirm-btn.done { background: rgba(16,185,129,0.12); border-color: var(--green); color: var(--green); }
+  .chevron { font-size: 10px; color: var(--dim); transition: transform 0.2s; }
+  .step-card.open .chevron { transform: rotate(90deg); }
+
+  .step-body { display: none; padding: 16px; }
+  .step-card.open .step-body { display: block; }
+
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .col { }
+  .col-label { font-size: 10px; font-weight: 700; letter-spacing: 2px; color: var(--dim); text-transform: uppercase; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 6px; }
+  .col-label.plaintiff::before { content: ''; width: 3px; height: 10px; background: var(--red); border-radius: 2px; }
+  .col-label.defendant::before { content: ''; width: 3px; height: 10px; background: var(--cyan); border-radius: 2px; }
+
+  .point { background: var(--surface2); border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; border-left: 2px solid transparent; }
+  .point.danger { border-left-color: var(--red); }
+  .point.warn { border-left-color: var(--amber); }
+  .point.safe { border-left-color: var(--green); }
+  .point.info { border-left-color: var(--cyan); }
+  .point-title { font-size: 11px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .point-body { font-size: 11px; color: var(--dim); line-height: 1.5; }
+  .point-body strong { color: var(--text); font-weight: 600; }
+
+  .todos { margin-top: 12px; padding: 10px 12px; background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.2); border-radius: 8px; }
+  .todos-title { font-size: 10px; font-weight: 700; color: var(--amber); letter-spacing: 1px; margin-bottom: 6px; }
+  .todo-item { font-size: 11px; color: var(--dim); display: flex; gap: 6px; margin-bottom: 4px; }
+  .todo-item::before { content: '◻'; color: var(--amber); flex-shrink: 0; }
+
+  .shared-badge { display: inline-block; font-size: 10px; background: rgba(59,130,246,0.12); color: var(--blue); border: 1px solid rgba(59,130,246,0.25); border-radius: 6px; padding: 2px 8px; margin-left: 8px; }
+
+  .conclusion { margin-top: 12px; padding: 10px 14px; background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.2); border-radius: 8px; font-size: 11px; color: var(--green); }
+  .conclusion strong { color: #fff; }
+
+  .progress-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .pb-track { flex: 1; height: 4px; background: var(--surface2); border-radius: 2px; }
+  .pb-fill { height: 100%; background: var(--green); border-radius: 2px; transition: width 0.3s; }
+  .pb-label { font-size: 11px; color: var(--dim); }
+
+  /* 待填充提示 */
+  .placeholder { color: var(--amber); font-style: italic; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📐 九步法双视图确认表</h1>
+  <div class="sub" id="caseSub"><span class="placeholder">【案件名称】（案由）· AI草拟 → 律师必审确认</span></div>
+  <div class="meta" id="caseMeta">
+    <div class="meta-item">案号 <span class="placeholder">【待填充】</span></div>
+    <div class="meta-item">开庭 <span class="placeholder">【待填充】</span></div>
+    <div class="meta-item">诉讼标的 <span class="placeholder">【待填充】</span></div>
+  </div>
+</div>
+
+<div class="action-bar">
+  <button class="btn-all" onclick="confirmAll()">✓ 一键全部确认</button>
+</div>
+
+<div class="progress-bar">
+  <div class="pb-track"><div class="pb-fill" id="progressFill" style="width:0%"></div></div>
+  <div class="pb-label" id="progressLabel">0 / 9 已确认</div>
+</div>
+
+<div class="legend">
+  <div class="leg"><div class="leg-dot" style="background:var(--red)"></div>原告九步法（AI预判）</div>
+  <div class="leg"><div class="leg-dot" style="background:var(--cyan)"></div>被告九步法（AI草拟）</div>
+</div>
+
+<!-- S1-S9 卡片（由数据动态填充） -->
+<div id="stepsContainer"></div>
+
+<script src="NineStepsConfirm-data.js"></script>
+<script>
+// ========== 数据填充 ==========
+// 使用时将此文件复制到案件目录，创建 NineStepsConfirm-data.js
+// 数据格式：
+// window.CONFIRM_TABLE_DATA = {
+//   caseName: '范裕伟 vs 杨露露',
+//   caseType: '买卖合同纠纷',
+//   caseNumber: '(2025)豫1625民初10367号',
+//   courtDate: '2026.4.27 09:10',
+//   amount: '183.4万',
+//   steps: [
+//     { id: 'S1', name: '固定权利请求', risk: 'p0',
+//       plaintiff: { points: [...] },
+//       defendant: { points: [...] },
+//       todos: [...] }
+//     ...
+//   ]
+// };
+
+var D = window.CONFIRM_TABLE_DATA || null;
+var confirmed = JSON.parse(localStorage.getItem('九步法确认_' + (D?.caseName || 'default')) || '{}');
+
+function init() {
+  if (!D) {
+    // 无数据时显示占位
+    document.getElementById('stepsContainer').innerHTML =
+      '<div style="text-align:center;padding:40px;color:var(--dim);font-size:12px;">' +
+      '⚠️ 数据未加载。请创建 <code style="background:var(--surface2);padding:2px 6px;border-radius:4px;">NineStepsConfirm-data.js</code> 文件' +
+      '</div>';
+    return;
+  }
+
+  // 填充头部信息
+  document.getElementById('caseSub').innerHTML =
+    D.caseName + '（' + D.caseType + '）· AI草拟 → <strong style="color:var(--amber)">律师必审确认</strong>';
+  document.getElementById('caseMeta').innerHTML =
+    '<div class="meta-item">案号 <span>' + D.caseNumber + '</span></div>' +
+    '<div class="meta-item">开庭 <span>' + D.courtDate + '</span></div>' +
+    '<div class="meta-item">诉讼标的 <span>' + D.amount + '</span></div>';
+
+  // 渲染步骤卡片
+  var html = '';
+  D.steps.forEach(function(step) {
+    var isConfirmed = confirmed[step.id];
+    html += '<div class="step-card ' + (isConfirmed ? 'confirmed' : '') + '" id="card-' + step.id + '">' +
+      '<div class="step-header" onclick="toggle(\'' + step.id + '\')">' +
+        '<div class="step-num">' + step.id + '</div>' +
+        '<div class="step-name">' + step.name + '</div>' +
+        '<div class="step-risk risk-' + step.risk + '">' + (step.risk === 'p0' ? '核心战场' : step.risk === 'p1' ? '次要战场' : '结论层') + '</div>' +
+        '<button class="confirm-btn ' + (isConfirmed ? 'done' : '') + '" id="btn-' + step.id + '" onclick="confirm(\'' + step.id + '\', event)">' + (isConfirmed ? '✓ 已确认' : '确认') + '</button>' +
+        '<div class="chevron">▶</div>' +
+      '</div>' +
+      '<div class="step-body">' +
+        '<div class="cols">' +
+          '<div class="col">' +
+            '<div class="col-label plaintiff">原告视角（AI预判）</div>' +
+            (step.plaintiff?.points || []).map(function(p) {
+              return '<div class="point ' + p.type + '">' +
+                '<div class="point-title">' + p.title + '</div>' +
+                '<div class="point-body">' + p.body + '</div>' +
+              '</div>';
+            }).join('') +
+          '</div>' +
+          '<div class="col">' +
+            '<div class="col-label defendant">被告视角（AI草拟）</div>' +
+            (step.defendant?.points || []).map(function(p) {
+              return '<div class="point ' + p.type + '">' +
+                '<div class="point-title">' + p.title + '</div>' +
+                '<div class="point-body">' + p.body + '</div>' +
+              '</div>';
+            }).join('') +
+          '</div>' +
+        '</div>' +
+        (step.todos ? '<div class="todos"><div class="todos-title">⚠️ 待核实</div>' +
+          step.todos.map(function(t) { return '<div class="todo-item">' + t + '</div>'; }).join('') +
+        '</div>' : '') +
+        (step.conclusion ? '<div class="conclusion">' + step.conclusion + '</div>' : '') +
+      '</div>' +
+    '</div>';
+  });
+  document.getElementById('stepsContainer').innerHTML = html;
+
+  // 恢复已确认状态
+  updateProgress();
+}
+
+function toggle(id) {
+  var card = document.getElementById('card-' + id);
+  card.classList.toggle('open');
+}
+
+function confirm(id, e) {
+  e.stopPropagation();
+  var btn = document.getElementById('btn-' + id);
+  var card = document.getElementById('card-' + id);
+  if (confirmed[id]) {
+    delete confirmed[id];
+    btn.textContent = '确认';
+    btn.classList.remove('done');
+    card.classList.remove('confirmed');
+  } else {
+    confirmed[id] = true;
+    btn.textContent = '✓ 已确认';
+    btn.classList.add('done');
+    card.classList.add('confirmed');
+  }
+  saveState();
+  updateProgress();
+}
+
+function confirmAll() {
+  if (!D) return;
+  D.steps.forEach(function(step) {
+    confirmed[step.id] = true;
+    var btn = document.getElementById('btn-' + step.id);
+    var card = document.getElementById('card-' + step.id);
+    if (btn) { btn.textContent = '✓ 已确认'; btn.classList.add('done'); }
+    if (card) { card.classList.add('confirmed'); }
+  });
+  saveState();
+  updateProgress();
+}
+
+function resetAll() {
+  if (!confirm('重置全部确认状态？')) return;
+  confirmed = {};
+  D.steps.forEach(function(step) {
+    var btn = document.getElementById('btn-' + step.id);
+    var card = document.getElementById('card-' + step.id);
+    if (btn) { btn.textContent = '确认'; btn.classList.remove('done'); }
+    if (card) { card.classList.remove('confirmed'); }
+  });
+  saveState();
+  updateProgress();
+}
+
+function saveState() {
+  localStorage.setItem('九步法确认_' + (D?.caseName || 'default'), JSON.stringify(confirmed));
+}
+
+function updateProgress() {
+  if (!D) return;
+  var count = Object.keys(confirmed).length;
+  var total = D.steps.length;
+  document.getElementById('progressFill').style.width = (count / total * 100) + '%';
+  document.getElementById('progressLabel').textContent = count + ' / ' + total + ' 已确认';
+}
+
+// 初始化
+init();
+// 默认展开第一个
+if (D) document.getElementById('card-S1')?.classList.add('open');
+</script>
+
+<!-- 外部数据文件 -->
+
+</body>
+</html>

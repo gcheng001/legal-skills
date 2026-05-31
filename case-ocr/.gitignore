@@ -1,0 +1,18 @@
+# 备份文件
+*.backup
+*.bak
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# 临时文件
+*.tmp
+*.log
+*~
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class

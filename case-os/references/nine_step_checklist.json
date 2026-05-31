@@ -1,0 +1,336 @@
+{
+  "checklist_version": "v1.0",
+  "created_at": "2026-05-21",
+  "source": "PDF附件二",
+  "total_items": 31,
+  "steps": {
+    "S1": {
+      "step_id": "S1",
+      "step_name": "固定权利请求",
+      "description": "通过询问、告知、必要的释明等方式，弄清原告诉请的真实意思，剔除、更正不正确的诉请，明确诉请中包含的权利请求基础",
+      "checklist_items": [
+        {
+          "item_id": 1,
+          "content": "通过询问、告知、必要的释明等方式，弄清原告诉请的真实意思，剔除、更正不正确的诉请，明确诉请中包含的权利请求基础",
+          "source_line": "PDF附件二 第1项",
+          "confidence": 1.0,
+          "executable": true,
+          "verification_method": "庭审释明记录核对"
+        },
+        {
+          "item_id": 2,
+          "content": "原告请求确认民事行为效力的，应明确是有效、无效还是未生效、撤销",
+          "source_line": "PDF附件二 第2项",
+          "confidence": 1.0,
+          "executable": true,
+          "verification_method": "诉讼请求与案由核对"
+        },
+        {
+          "item_id": 3,
+          "content": "原告请求确定权利归属的，应明确权利主体、性质、内容",
+          "source_line": "PDF附件二 第3项",
+          "confidence": 1.0,
+          "executable": true,
+          "verification_method": "权利归属要素完整性检查"
+        },
+        {
+          "item_id": 4,
+          "content": "原告请求给付钱款或实物的，应明确给付的责任主体、种类、金额、数量",
+          "source_line": "PDF附件二 第4项",
+          "confidence": 1.0,
+          "executable": true,
+          "verification_method": "给付请求要素完整性检查"
+        },
+        {
+          "item_id": 5,
+          "content": "原告请求履行一定行为的，应明确行为的履行主体、履行内容、履行方式",
+          "source_line": "PDF附件二 第5项",
+          "confidence": 1.0,
+          "executable": true,
+          "verification_method": "行为履行请求要素完整性检查"
+        }
+      ]
+    },
+    "S2": {
+      "step_id": "S2",
+      "step_name": "确定权利请求基础规范",
+      "description": "从诉讼请求及诉讼理由中寻找原告主张的法律关系",
+      "checklist_items": [
+        {
+          "item_id": 6,
+          "content": "从诉讼请求及诉讼理由中寻找原告主张的法律关系",
+          "source_line": "PDF附件二 第6项",
+          "confidence": 1.0,
+          "executable": true,
+          "verification_method": "诉请与法律关系对应性检查"
+        },
+        {
+          "item_id": 7,
+          "content": "原告主张的法律关系性质明确的，根据该法律关系进行审理",
+          "source_line": "PDF附件二 第7项",
+          "confidence": 1.0,
+          "executable": true,
+          "verification_method": "法律关系性质明确性检查"
+        },
+        {
+          "item_id": 8,
+          "content": "原告主张的法律关系性质不明确、理由含糊不清、诉请与理由出现矛盾时，应予以释明，让原告明确表态",
+          "source_line": "PDF附件二 第8项",
+          "confidence": 1.0,
+          "executable": true,
+          "verification_method": "矛盾或模糊点的释明记录检查"
+        },
+        {
+          "item_id": 9,
+          "content": "释明后原告仍不明确的，可依据诉请及事实理由，由法院认定法律关系，并询问原告意见；原告确认的，按该法律关系进行审理",
+          "source_line": "PDF附件二 第9项",
+          "confidence": 1.0,
+          "executable": true,
+          "verification_method": "法院认定法律关系程序的合规性检查"
+        },
+        {
+          "item_id": 10,
+          "content": "原告拒绝确认法院认定的法律关系又不予明确的，裁定驳回原告起诉",
+          "source_line": "PDF附件二 第10项",
+          "confidence": 1.0,
+          "executable": true,
+          "verification_method": "驳回裁定条件符合性检查"
+        },
+        {
+          "item_id": 11,
+          "content": "原告主张的法律关系性质与法院认定不一致的，应予以释明，并告知不予变更可能导致的后果；原告变更的，按变更后的法律关系进行审理",
+          "source_line": "PDF附件二 第11项",
+          "confidence": 1.0,
+          "executable": true,
+          "verification_method": "法律关系变更释明的完整记录检查"
+        }
+      ]
+    },
+    "S3": {
+      "step_id": "S3",
+      "step_name": "确定抗辩权基础规范",
+      "description": "要求被告对原告提出的诉讼请求、事实主张、法律关系性质等作出有针对性的答辩",
+      "checklist_items": [
+        {
+          "item_id": 12,
+          "content": "要求被告对原告提出的诉讼请求、事实主张、法律关系性质等作出有针对性的答辩",
+          "source_line": "PDF附件二 第12项",
+          "confidence": 1.0,
+          "executable": true,
+          "verification_method": "答辩针对性检查"
+        },
+        {
+          "item_id": 13,
+          "content": "如被告的答辩包含实体法上的抗辩权的，应找到相对应的具体法条",
+          "source_line": "PDF附件二 第13项",
+          "confidence": 1.0,
+          "executable": true,
+          "verification_method": "抗辩权法条匹配性检查"
+        },
+        {
+          "item_id": 14,
+          "content": "如被告提出的答辩属反诉的，对于反诉部分，应予以释明，让其明确是否提起反诉",
+          "source_line": "PDF附件二 第14项",
+          "confidence": 1.0,
+          "executable": true,
+          "verification_method": "反诉释明记录检查"
+        }
+      ]
+    },
+    "S4": {
+      "step_id": "S4",
+      "step_name": "基础规范构成要件分析",
+      "description": "在原告主张的法律关系得到明确后，法院寻找对应的实体法上的法律根据，寻找实体法律规范",
+      "checklist_items": [
+        {
+          "item_id": 15,
+          "content": "在原告主张的法律关系得到明确后，法院寻找对应的实体法上的法律根据，寻找实体法律规范",
+          "source_line": "PDF附件二 第15项",
+          "confidence": 1.0,
+          "executable": true,
+          "verification_method": "请求权基础规范查找完整性检查"
+        },
+        {
+          "item_id": 16,
+          "content": "对应的法律条文应当首先是含有实体权利处理的完全性法条，而不是倡导性法条",
+          "source_line": "PDF附件二 第16项",
+          "confidence": 1.0,
+          "executable": true,
+          "verification_method": "法条性质（完全性vs倡导性）鉴别检查"
+        },
+        {
+          "item_id": 17,
+          "content": "完全性法条是具有构成要件及法律效果的规定",
+          "source_line": "PDF附件二 第17项",
+          "confidence": 1.0,
+          "executable": true,
+          "verification_method": "法条构成要件完整性检查"
+        }
+      ]
+    },
+    "S5": {
+      "step_id": "S5",
+      "step_name": "诉讼主张的检索",
+      "description": "比较当事人的诉讼主张是否与基础法律规范相对应，审查诉讼主张的完备性",
+      "checklist_items": [
+        {
+          "item_id": 18,
+          "content": "比较当事人的诉讼主张是否与基础法律规范相对应，审查诉讼主张的完备性",
+          "source_line": "PDF附件二 第18项",
+          "confidence": 1.0,
+          "executable": true,
+          "verification_method": "诉讼主张与基础规范对应性检查"
+        },
+        {
+          "item_id": 19,
+          "content": "诉讼主张与请求权相互矛盾、与请求权构成要件不匹配或者遗漏诉讼主张的，法院应当予以释明，要求其补充或明确",
+          "source_line": "PDF附件二 第19项",
+          "confidence": 1.0,
+          "executable": true,
+          "verification_method": "矛盾、不匹配或遗漏的释明记录检查"
+        }
+      ]
+    },
+    "S6": {
+      "step_id": "S6",
+      "step_name": "争点整理",
+      "description": "在审理中注意归纳案件的事实争点和法律争点",
+      "checklist_items": [
+        {
+          "item_id": 20,
+          "content": "在审理中注意归纳案件的事实争点和法律争点",
+          "source_line": "PDF附件二 第20项",
+          "confidence": 1.0,
+          "executable": true,
+          "verification_method": "争点归纳完整性检查"
+        },
+        {
+          "item_id": 21,
+          "content": "事实争点包括法律关系发生、变更、消灭的事实，民事主体、行为等及其请求权基础规范相关事实",
+          "source_line": "PDF附件二 第21项",
+          "confidence": 1.0,
+          "executable": true,
+          "verification_method": "事实争点要素完整性检查"
+        },
+        {
+          "item_id": 22,
+          "content": "法律争点包括实体法律适用争点和程序法律适用争点",
+          "source_line": "PDF附件二 第22项",
+          "confidence": 1.0,
+          "executable": true,
+          "verification_method": "法律争点分类完整性检查"
+        }
+      ]
+    },
+    "S7": {
+      "step_id": "S7",
+      "step_name": "要件事实证明",
+      "description": "指导并要求当事人围绕事实争点，厘清举证、质证的基本任务和要求",
+      "checklist_items": [
+        {
+          "item_id": 23,
+          "content": "指导并要求当事人围绕事实争点，厘清举证、质证的基本任务和要求",
+          "source_line": "PDF附件二 第23项",
+          "confidence": 1.0,
+          "executable": true,
+          "verification_method": "举证质证指导记录检查"
+        },
+        {
+          "item_id": 24,
+          "content": "根据证据规则有关规定分配举证责任",
+          "source_line": "PDF附件二 第24项",
+          "confidence": 1.0,
+          "executable": true,
+          "verification_method": "举证责任分配合规性检查"
+        },
+        {
+          "item_id": 25,
+          "content": "心证公开，促使当事人围绕心证结论收集和补充证据",
+          "source_line": "PDF附件二 第25项",
+          "confidence": 1.0,
+          "executable": true,
+          "verification_method": "心证公开记录检查"
+        },
+        {
+          "item_id": 26,
+          "content": "审查当事人是否已用尽证明资源及证明方法，是否已经就其主张的所有要件事实完成证明",
+          "source_line": "PDF附件二 第26项",
+          "confidence": 1.0,
+          "executable": true,
+          "verification_method": "证明资源用尽性检查"
+        }
+      ]
+    },
+    "S8": {
+      "step_id": "S8",
+      "step_name": "事实认定",
+      "description": "如原告主张的事实证据充分的，则支持原告",
+      "checklist_items": [
+        {
+          "item_id": 27,
+          "content": "如原告主张的事实证据充分的，则支持原告",
+          "source_line": "PDF附件二 第27项",
+          "confidence": 1.0,
+          "executable": true,
+          "verification_method": "原告事实证据充分性检查"
+        },
+        {
+          "item_id": 28,
+          "content": "如被告主张的事实证据充分的，则支持被告",
+          "source_line": "PDF附件二 第28项",
+          "confidence": 1.0,
+          "executable": true,
+          "verification_method": "被告事实证据充分性检查"
+        },
+        {
+          "item_id": 29,
+          "content": "如证据穷尽后案件事实仍处于真伪不明状态，则根据举证责任分配规则作出认定",
+          "source_line": "PDF附件二 第29项",
+          "confidence": 1.0,
+          "executable": true,
+          "verification_method": "真伪不明时的举证责任适用检查"
+        }
+      ]
+    },
+    "S9": {
+      "step_id": "S9",
+      "step_name": "要件归入并作出裁判",
+      "description": "如认定的事实与原告主张所依据的法律规范要件完全符合，则支持原告的诉请",
+      "checklist_items": [
+        {
+          "item_id": 30,
+          "content": "如认定的事实与原告主张所依据的法律规范要件完全符合，则支持原告的诉请",
+          "source_line": "PDF附件二 第30项",
+          "confidence": 1.0,
+          "executable": true,
+          "verification_method": "事实与法律规范要件归入完整性检查"
+        },
+        {
+          "item_id": 31,
+          "content": "如认定的事实与被告的抗辩权基础规范构成要件完全符合，则认定被告抗辩成立，判决驳回原告的诉请",
+          "source_line": "PDF附件二 第31项",
+          "confidence": 1.0,
+          "executable": true,
+          "verification_method": "抗辩权成立要件符合性检查"
+        }
+      ]
+    }
+  },
+  "statistics": {
+    "total_items": 31,
+    "items_by_step": {
+      "S1": 5,
+      "S2": 6,
+      "S3": 3,
+      "S4": 3,
+      "S5": 2,
+      "S6": 3,
+      "S7": 4,
+      "S8": 3,
+      "S9": 2
+    },
+    "executable_items": 31,
+    "high_confidence_items": 31,
+    "needs_review_items": 0
+  }
+}

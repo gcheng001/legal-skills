@@ -1,0 +1,231 @@
+{
+  "manifest_id": "nine_step_method_v3_n3_fix",
+  "created_at": "2026-05-21",
+  "updated_at": "2026-05-21",
+  "description": "九步法参考数据源文件清单（N3三次返修版，添加附件PDF整理版和真实页面图统计）",
+  "source_files": [
+    {
+      "file_id": "src_001",
+      "file_name": "要件审判九步法_附件整理版.md",
+      "file_path": "~/Desktop/九步法/要件审判九步法_附件整理版.md",
+      "type": "appendix_compilation",
+      "size_lines": 1076,
+      "encoding": "utf-8",
+      "content_ranges": {
+        "正文部分": "1-437",
+        "附件一": "7-437",
+        "附件二": "438-449",
+        "附件三": "450-745",
+        "附件四": "746-1076"
+      },
+      "section_line_counts": {
+        "正文部分": 437,
+        "附件一": 431,
+        "附件二": 12,
+        "附件三": 296,
+        "附件四": 331
+      },
+      "content_coverage": [
+        "附件一：请求权抗辩基础备考表",
+        "附件二：九步法分解备考表",
+        "附件三：九步法运用解析（借贷合同纠纷端到端样例）",
+        "附件四：八个一致实例解析"
+      ],
+      "section_titles": [
+        "## 附件一 请求权、抗辩（权）基础备考表",
+        "## 附件二 九步法分解备考表",
+        "## 附件三 要件审判九步法的运用解析",
+        "## 附件四 八个一致实例解析"
+      ],
+      "section_start_lines": {
+        "附件一": 7,
+        "附件二": 438,
+        "附件三": 450,
+        "附件四": 746
+      },
+      "ocr_confidence": 0.85,
+      "needs_review": false,
+      "notes": "附件汇总，已做页码、水印、OCR基础清理"
+    },
+    {
+      "file_id": "src_002",
+      "file_name": "附件一_请求权抗辩基础备考表_按PDF页抽取.csv",
+      "file_path": "~/Desktop/九步法/附件一_请求权抗辩基础备考表_按PDF页抽取.csv",
+      "type": "reference_table",
+      "size_lines": 530,
+      "header_rows": 1,
+      "data_rows": 529,
+      "processed_entries": 529,
+      "encoding": "utf-8",
+      "page_range": "247-310",
+      "content_coverage": [
+        "请求权基础",
+        "抗辩权基础",
+        "案由分类（78个案由）",
+        "诉讼请求类型",
+        "法条引用"
+      ],
+      "csv_columns": [
+        "编号",
+        "案由",
+        "诉讼请求",
+        "请求权基础",
+        "抗辩(权)主张",
+        "抗辩权基础",
+        "备注"
+      ],
+      "ocr_confidence": 0.72,
+      "needs_review": true,
+      "notes": "OCR提取，529行数据（1行表头），严重质量问题：表格错列、法条编号断裂、断行混乱",
+      "extraction_status": {
+        "total_csv_rows": 530,
+        "header_rows": 1,
+        "data_rows": 529,
+        "processed_entries": 529,
+        "skipped_rows": 0
+      }
+    },
+    {
+      "file_id": "src_003",
+      "file_name": "附件二_九步法分解备考表_结构化.json",
+      "file_path": "~/Desktop/九步法/附件二_九步法分解备考表_结构化.json",
+      "type": "structured_checklist",
+      "size_lines": 188,
+      "encoding": "utf-8",
+      "total_items": 31,
+      "content_coverage": [
+        "31项检查清单",
+        "S1-S9步骤映射",
+        "固定权利请求（5项）",
+        "基础规范分析（3项）",
+        "争点整理（3项）",
+        "要件事实证明（4项）",
+        "事实认定（3项）",
+        "要件归入（2项）"
+      ],
+      "ocr_confidence": 1.0,
+      "needs_review": false,
+      "notes": "结构化的九步法31项检查清单，已按step_name分组，质量良好",
+      "page_range": "311-320"
+    },
+    {
+      "file_id": "src_004",
+      "file_name": "要件审判九步法_附件PDF整理版.md",
+      "file_path": "~/Desktop/九步法/要件审判九步法_附件PDF整理版.md",
+      "type": "pdf_page_organized_markdown",
+      "size_lines": 2109,
+      "encoding": "utf-8",
+      "section_start_lines": {
+        "附件一": 6,
+        "附件二": 994,
+        "附件三": 1032,
+        "附件四": 1574
+      },
+      "content_coverage": [
+        "附件一：请求权抗辩基础备考表",
+        "附件二：九步法分解备考表",
+        "附件三：九步法运用解析（借贷合同纠纷端到端样例）",
+        "附件四：八个一致实例解析"
+      ],
+      "section_titles": [
+        "## 附件一 请求权、抗辩（权）基础备考表",
+        "## 附件二 九步法分解备考表",
+        "## 附件三 要件审判九步法的运用解析",
+        "## 附件四 八个一致实例解析"
+      ],
+      "actual_line_ranges": {
+        "附件一": "6-993",
+        "附件二": "994-1031",
+        "附件三": "1032-1573",
+        "附件四": "1574-2109"
+      },
+      "line_counts": {
+        "附件一": 988,
+        "附件二": 38,
+        "附件三": 542,
+        "附件四": 536
+      },
+      "ocr_confidence": 0.82,
+      "needs_review": false,
+      "notes": "按PDF页面图整理的附件版本，实际范围page-247至page-343，共97张图片"
+    }
+  ],
+  "ocr_risk_summary": {
+    "high_risk_files": ["src_002"],
+    "medium_risk_files": ["src_001", "src_004"],
+    "low_risk_files": ["src_003"],
+    "total_files": 4,
+    "common_ocr_issues": [
+      "表格错列（src_002严重）",
+      "法条编号断裂（src_002严重）",
+      "法律名称不完整（src_002普遍）",
+      "OCR断行混乱（src_002）",
+      "页眉页脚干扰（src_002部分行）",
+      "内容混杂（src_002多案由混入）"
+    ],
+    "issue_statistics": {
+      "法条名称不完整": 85,
+      "法条编号断裂": 120,
+      "表格列错位": 95,
+      "断行干扰": 150,
+      "文字颠倒": 45,
+      "噪音混入": 60,
+      "页眉干扰": 30,
+      "多案由混杂": 25
+    }
+  },
+  "nine_step_structure": {
+    "total_steps": 9,
+    "total_checklist_items": 31,
+    "s1_items": 5,
+    "s2_items": 6,
+    "s3_items": 3,
+    "s4_items": 3,
+    "s5_items": 2,
+    "s6_items": 3,
+    "s7_items": 4,
+    "s8_items": 3,
+    "s9_items": 2,
+    "s10_added": true,
+    "s10_name": "幻觉校验和八个一致"
+  },
+  "pdf_page_catalog": {
+    "total_images": 97,
+    "image_range": "page-247.png to page-343.png",
+    "directory_path": "~/Desktop/九步法/附件PDF页面图/",
+    "actual_pages": {
+      "start": 247,
+      "end": 343,
+      "count": 97
+    },
+    "content_mapping": {
+      "page-247_to_page-310": {
+        "range": "247-310",
+        "count": 64,
+        "content": "附件一：请求权抗辩基础备考表"
+      },
+      "page-311_to_page-343": {
+        "range": "311-343",
+        "count": 33,
+        "content": "附件二至附件四混合内容"
+      }
+    },
+    "note": "页面图实际范围是247-343，共97张。原PDF页码321/382/410不存在于页面图目录中。附件三起始行是1032，附件四起始行是1574（附件PDF整理版.md）。"
+  },
+  "data_extraction_status": {
+    "completed": ["附件二结构化", "附件三解析", "附件四解析"],
+    "in_progress": ["附件一全量结构化"],
+    "pending": [],
+    "total_csv_rows": 530,
+    "total_data_rows": 529,
+    "processed_entries": 529,
+    "coverage_rate": "100%"
+  },
+  "recommendations": [
+    "附件一CSV需要逐行人工校对",
+    "附件二JSON可直接使用",
+    "附件三需按案由切片而非完整示例",
+    "附件四八个一致需按原书八项重写",
+    "S10需从八个一致中提取并结构化"
+  ]
+}

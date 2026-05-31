@@ -1,0 +1,154 @@
+{
+  "schema_name": "S3抗辩规范输出Schema",
+  "schema_version": "1.0.0",
+  "schema_purpose": "定义S3抗辩规范的输出结构，包含三类抗辩和反诉识别",
+  "step_id": "S3",
+  "step_name": "确定抗辩权基础规范",
+  "output_fields": {
+    "step_id": {
+      "type": "string",
+      "description": "步骤标识符",
+      "required": true,
+      "default": "S3"
+    },
+    "defense_analysis": {
+      "type": "object",
+      "description": "抗辩分析",
+      "required": true,
+      "properties": {
+        "initial_defense_statements": {
+          "type": "object",
+          "description": "初步抗辩陈述",
+          "properties": {
+            "被告陈述": {
+              "type": "string",
+              "description": "被告的抗辩陈述"
+            },
+            "法官释明": {
+              "type": "string",
+              "description": "法官的释明"
+            }
+          }
+        },
+        "identified_defense_claims": {
+          "type": "object",
+          "description": "识别的抗辩权主张",
+          "patternProperties": {
+            "defense_.*": {
+              "type": "object",
+              "properties": {
+                "defendant": {
+                  "type": "string",
+                  "description": "被告名称"
+                },
+                "defense_type": {
+                  "type": "string",
+                  "description": "抗辩类型（对齐nine_step_core_schema.json）",
+                  "enum": ["权利阻碍性抗辩", "权利消灭性抗辩", "权利妨碍性抗辩"]
+                },
+                "defense_claim": {
+                  "type": "string",
+                  "description": "抗辩主张"
+                },
+                "legal_basis": {
+                  "type": "string",
+                  "description": "法律依据"
+                },
+                "提出概率": {
+                  "type": "string",
+                  "description": "实际提出概率",
+                  "enum": ["高", "中", "低"]
+                },
+                "威胁等级": {
+                  "type": "string",
+                  "description": "威胁等级",
+                  "enum": ["致命", "严重", "一般", "轻微"]
+                },
+                "应对策略": {
+                  "type": "string",
+                  "description": "如何反驳"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "counterclaim_identification": {
+      "type": "object",
+      "description": "反诉识别（新增）",
+      "required": false,
+      "properties": {
+        "has_counterclaim": {
+          "type": "boolean",
+          "description": "是否存在反诉"
+        },
+        "counterclaim_claims": {
+          "type": "array",
+          "description": "反诉主张列表",
+          "items": {
+            "type": "object",
+            "properties": {
+              "反诉被告": {
+                "type": "string",
+                "description": "反诉被告（通常为本诉原告）"
+              },
+              "反诉请求": {
+                "type": "string",
+                "description": "反诉请求内容"
+              },
+              "法律依据": {
+                "type": "string",
+                "description": "反诉法律依据"
+              },
+              "事实依据": {
+                "type": "string",
+                "description": "反诉事实依据"
+              },
+              "释明记录": {
+                "type": "string",
+                "description": "法官释明记录"
+              }
+            }
+          }
+        },
+        "clarification_needed": {
+          "type": "boolean",
+          "description": "是否需要释明（法官询问被告是否提起反诉）"
+        },
+        "clarification_record": {
+          "type": "string",
+          "description": "释明记录"
+        }
+      }
+    }
+  },
+  "defense_types": {
+    "权利阻碍性抗辩": {
+      "correction": "从'权利阻止抗辩'修正为'权利阻碍性抗辩'",
+      "description": "阻碍权利发生的抗辩，如无代理权、无权处分等",
+      "examples": ["明知无代理权", "无权处分", "无权代理"]
+    },
+    "权利消灭性抗辩": {
+      "description": "消灭已存在权利的抗辩",
+      "examples": ["已清偿", "抵销", "免除", "提存"]
+    },
+    "权利妨碍性抗辩": {
+      "description": "妨碍权利行使的抗辩",
+      "examples": ["同时履行抗辩", "不安抗辩", "诉讼时效抗辩"]
+    }
+  },
+  "validation_rules": {
+    "rule_1": "所有required字段必须提供",
+    "rule_2": "defense_type枚举值必须为'权利阻碍性抗辩'、'权利消灭性抗辩'、'权利妨碍性抗辩'之一",
+    "rule_3": "不得使用'权利阻止抗辩'，应修正为'权利阻碍性抗辩'",
+    "rule_4": "如has_counterclaim为true，必须提供counterclaim_claims"
+  },
+  "notes": [
+    "本Schema定义了S3抗辩规范的输出结构",
+    "抗辩类型修正：权利阻止抗辩 → 权利阻碍性抗辩",
+    "新增反诉识别功能",
+    "defense_type枚举值对齐nine_step_core_schema.json",
+    "输出采用JSON frontmatter + Markdown正文格式"
+  ]
+}

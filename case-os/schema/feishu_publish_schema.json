@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "feishu_publish_schema.json",
+  "title": "Case OS Feishu publish whitelist snapshot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "case_id",
+    "case_name",
+    "publish_status",
+    "current_phase",
+    "current_step",
+    "step_status",
+    "pending_confirmation_types",
+    "blocker_types",
+    "deadlines",
+    "updated_at"
+  ],
+  "properties": {
+    "schema_version": {"const": "feishu-publish-v1"},
+    "case_id": {"type": "string", "format": "uuid"},
+    "case_name": {"type": "string"},
+    "publish_status": {"enum": ["publishable", "validation_required"]},
+    "current_phase": {"type": ["string", "null"], "enum": ["A", "B", "FINAL", null]},
+    "current_step": {"type": ["string", "null"]},
+    "step_status": {
+      "type": ["string", "null"],
+      "enum": ["pending", "in_progress", "pending_review", "completed", "blocked", "shared", null]
+    },
+    "pending_confirmation_types": {"type": "array", "items": {"type": "string"}},
+    "blocker_types": {"type": "array", "items": {"type": "string"}},
+    "deadlines": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["task_id", "type", "due_date", "status"],
+        "properties": {
+          "task_id": {"type": "string", "format": "uuid"},
+          "type": {"type": "string"},
+          "due_date": {"type": "string", "format": "date"},
+          "status": {"enum": ["open", "completed", "cancelled"]}
+        }
+      }
+    },
+    "updated_at": {"type": "string", "format": "date-time"}
+  }
+}

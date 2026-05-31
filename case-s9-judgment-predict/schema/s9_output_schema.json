@@ -1,0 +1,210 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "S9 Judgment Predict Output Schema",
+  "description": "JSON frontmatter schema for S9-要件归入与裁判预测 output, v1.1",
+  "type": "object",
+  "required": ["step_id", "status", "case_id", "case_name", "generated_at", "syllogistic_reasoning", "element_imputation", "judgment_conclusion", "rationale", "handoff_to_s10"],
+  "properties": {
+    "step_id": {
+      "type": "string",
+      "const": "S9",
+      "description": "Step identifier, must be S9"
+    },
+    "status": {
+      "type": "string",
+      "const": "pending_review",
+      "description": "Global status flag"
+    },
+    "case_id": {
+      "type": "string"
+    },
+    "case_name": {
+      "type": "string"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "input_refs": {
+      "type": "object",
+      "properties": {
+        "s2_path": {"type": "string"},
+        "s4_path": {"type": "string"},
+        "s8_path": {"type": "string"},
+        "s8_defendant_path": {"type": "string"},
+        "s8_reference_status": {"type": "string", "enum": ["resolved", "unresolved"]},
+        "s4_fallback": {"type": "boolean"}
+      }
+    },
+    "syllogistic_reasoning": {
+      "type": "array",
+      "description": "Structured syllogistic reasoning array for S10 validation",
+      "items": {
+        "type": "object",
+        "required": ["element_id", "major_premise", "minor_premise", "preliminary_conclusion", "review_status"],
+        "properties": {
+          "element_id": {"type": "string"},
+          "major_premise": {"type": "string"},
+          "minor_premise": {"type": "string"},
+          "preliminary_conclusion": {"type": "string"},
+          "review_status": {"type": "string", "const": "pending_review"}
+        }
+      }
+    },
+    "element_imputation": {
+      "type": "array",
+      "description": "Fact-to-element mapping results",
+      "items": {
+        "type": "object",
+        "required": ["element_id", "element_source", "element_description", "matched_fact_ids", "matching_facts", "fact_match", "match_level", "gap_analysis", "review_status", "basis"],
+        "properties": {
+          "element_id": {"type": "string"},
+          "element_source": {"type": "string", "enum": ["claim_basis", "defense"]},
+          "element_description": {"type": "string"},
+          "matched_fact_ids": {
+            "type": "array",
+            "items": {"type": "string"}
+          },
+          "matching_facts": {
+            "type": "array",
+            "items": {"type": "string"}
+          },
+          "fact_match": {"type": "string", "enum": ["supported", "not_supported", "unclear", "undetermined"]},
+          "match_level": {"type": "string", "enum": ["high", "medium", "low", "unclear", "none"]},
+          "gap_analysis": {"type": "string"},
+          "review_status": {"type": "string", "const": "pending_review"},
+          "basis": {"type": "string"}
+        }
+      }
+    },
+    "judgment_conclusion": {
+      "type": "object",
+      "required": ["judgment_type", "plaintiff_claim", "defendant_defense", "amount_recommendation", "judgment_content", "review_status", "predict_marker"],
+      "properties": {
+        "judgment_type": {
+          "type": "string",
+          "const": "preliminary",
+          "description": "Must be 'preliminary' — AI cannot finalize judgment"
+        },
+        "plaintiff_claim": {
+          "type": "object",
+          "required": ["preliminary_result", "review_status", "basis"],
+          "properties": {
+            "preliminary_result": {"type": "string"},
+            "review_status": {"type": "string", "const": "pending_review"},
+            "basis": {"type": "string"}
+          }
+        },
+        "defendant_defense": {
+          "type": "object",
+          "required": ["preliminary_result", "review_status", "basis"],
+          "properties": {
+            "preliminary_result": {"type": "string"},
+            "review_status": {"type": "string", "const": "pending_review"},
+            "basis": {"type": "string"}
+          }
+        },
+        "amount_recommendation": {
+          "type": "object",
+          "required": ["preliminary_amount", "currency", "calculation", "review_status", "basis"],
+          "properties": {
+            "preliminary_amount": {
+              "type": "number",
+              "description": "Preliminary recommended amount; can be 0, not final judgment amount"
+            },
+            "currency": {"type": "string"},
+            "calculation": {"type": "string"},
+            "review_status": {"type": "string", "const": "pending_review"},
+            "basis": {"type": "string"}
+          }
+        },
+        "judgment_content": {
+          "type": "object",
+          "required": ["draft_text", "review_status", "basis"],
+          "properties": {
+            "draft_text": {"type": "string"},
+            "review_status": {"type": "string", "const": "pending_review"},
+            "basis": {"type": "string"}
+          }
+        },
+        "review_status": {
+          "type": "string",
+          "const": "pending_review"
+        },
+        "predict_marker": {
+          "type": "string",
+          "const": "predict",
+          "description": "Required marker for S10 validation — must be present"
+        }
+      }
+    },
+    "rationale": {
+      "type": "string",
+      "description": "Human-readable reasoning narrative"
+    },
+    "risk_assessment": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["risk_id", "risk_type", "risk_description", "risk_level", "impact", "source", "mitigation", "review_status"],
+        "properties": {
+          "risk_id": {"type": "string"},
+          "risk_type": {"type": "string", "enum": ["factual_uncertainty", "evidentiary_gap", "legal_ambiguity"]},
+          "risk_description": {"type": "string"},
+          "risk_level": {"type": "string", "enum": ["high", "medium", "low"]},
+          "impact": {"type": "string"},
+          "source": {"type": "string"},
+          "mitigation": {"type": "string"},
+          "review_status": {"type": "string", "const": "pending_review"}
+        }
+      }
+    },
+    "strategy_suggestions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["strategy_type", "strategy_content", "basis", "review_status"],
+        "properties": {
+          "strategy_type": {"type": "string", "enum": ["主攻方向", "防守重点", "和解建议"]},
+          "strategy_content": {"type": "string"},
+          "basis": {"type": "string"},
+          "review_status": {"type": "string", "const": "pending_review"}
+        }
+      }
+    },
+    "review_required": {
+      "type": "object",
+      "properties": {
+        "element_imputation_needs_review": {"type": "boolean"},
+        "judgment_conclusion_needs_review": {"type": "boolean"},
+        "risk_assessment_needs_review": {"type": "boolean"},
+        "strategy_suggestions_needs_review": {"type": "boolean"}
+      }
+    },
+    "handoff_to_s10": {
+      "type": "object",
+      "required": ["target_step", "output_fields", "purpose", "s10_check_items", "blocking_conditions"],
+      "properties": {
+        "target_step": {"type": "string", "const": "S10"},
+        "output_fields": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "purpose": {"type": "string"},
+        "s10_check_items": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "blocking_conditions": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "defendant_version_marker": {
+      "type": "string",
+      "const": "predict",
+      "description": "Present only in defendant-side S9 output"
+    }
+  }
+}

@@ -1,0 +1,71 @@
+# 案件仓库 .gitignore（案件OS v5.1 Git 底座模板）
+# 原则：只追踪 Markdown 主线，二进制文件不进 Git
+
+# ========== 二进制大文件（原件不进 Git） ==========
+*.pdf
+*.docx
+*.doc
+*.xlsx
+*.xls
+*.ppt
+*.pptx
+*.rtf
+*.pages
+*.numbers
+*.key
+
+# ========== 图片（扫描件体积大，不进 Git） ==========
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.bmp
+*.tiff
+*.tif
+*.heic
+*.webp
+
+# ========== 音视频 ==========
+*.mp3
+*.mp4
+*.mov
+*.m4a
+*.wav
+*.aac
+*.flac
+*.avi
+*.mkv
+
+# ========== 例外：保留 Markdown 转换件和 SVG（体积小+可 diff） ==========
+!markdown/**/*.md
+!**/*.svg
+
+# ========== macOS / 工具产物 ==========
+.DS_Store
+._.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+Icon?
+
+# ========== 编辑器/工作区元数据 ==========
+.obsidian/
+.trash/
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ========== 同步盘元数据 ==========
+.ccloud/
+.nutstore/
+.sync/
+
+# ========== 仪表盘数据文件（自动生成） ==========
+案件仪表盘-data.js
+
+# ========== 敏感配置 ==========
+.env
+.env.local
+secrets/
+credentials.json
