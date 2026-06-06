@@ -12,7 +12,7 @@ SCAN_ROOTS = [
     # 根据实际情况添加更多扫描根目录
 ]
 
-QUEUE_FILE = Path.home() / ".claude" / "skills" / "case-os" / "data" / "pending-files.json"
+QUEUE_FILE = Path.home() / ".codex" / "skills" / "case-os" / "data" / "pending-files.json"
 
 def find_case_folders():
     """扫描所有有CLAUDE.md的案件文件夹"""

@@ -1,11 +1,11 @@
-# 案件OS — Claude Code 智能案件操作系统
+# 民事案件OS — Codex 智能民事案件操作系统
 
-一套基于 Claude Code 的完整法律案件分析系统，涵盖材料处理、九步法分析、文书生成的全流程。
+一套基于 Codex 的完整民事案件分析系统，涵盖材料处理、九步法分析、文书生成的全流程。
 
 ## 系统架构
 
 ```
-案件OS（总控 case-os）
+民事案件OS（总控 case-os）
 ├── Phase A：材料处理（A1-A9）
 │   ├── A1 Git初始化（case-git-init）
 │   ├── A2 材料扫描+OCR（case-ocr）
@@ -85,7 +85,7 @@ chmod +x install.sh
 # 1. 克隆仓库
 git clone https://github.com/goacheng001/case-os.git /tmp/case-os-install
 
-# 2. 复制 skills 到 Claude Code 技能目录
+# 2. 复制skills到Codex技能目录
 cp -r /tmp/case-os-install/skills/* ~/.claude/skills/
 
 # 3. 复制参考文件
@@ -97,25 +97,28 @@ cp /tmp/case-os-install/references/* ~/.claude/references/
 # 或参考其内容自行配置
 ```
 
-### Claude Code 适配
+### Codex 适配
 
-Claude Code 使用相同目录结构，确保 `~/.claude/skills/` 和 `~/.claude/references/` 下有对应文件即可。
+Codex 使用相同目录结构，确保 `~/.claude/skills/` 和 `~/.claude/references/` 下有对应文件即可。
 
 ## 使用方法
 
-### 触发案件OS
+### 触发民事案件OS
 
-在 Claude Code 中输入以下任意触发词：
+在 Codex 中输入以下任意触发词：
 
 ```
+民事案件OS
 案件OS
 case-os
 case os
 ```
 
+其中“案件OS”为历史兼容入口，默认指向民事案件OS；刑事案件专项流程使用 `criminal-case-os`。
+
 ### 工作流程
 
-1. **初始化案件**：在案件目录下触发案件OS，自动创建 Git 仓库和目录结构
+1. **初始化案件**：在案件目录下触发民事案件OS，自动创建 Git 仓库和目录结构
 2. **Phase A（材料处理）**：放入材料文件，系统自动 OCR、归档、提取信息、生成证据卡片
 3. **Phase B（九步法分析）**：按 S1→S10 逐步分析，每步完成后自动更新仪表盘
 4. **事件驱动**：随时可用起诉状生成、法院短信处理、案件讨论等功能
@@ -158,6 +161,7 @@ case os
 
 | 工具 | 路径 | 用途 | 缺失影响 |
 |------|------|------|----------|
+| VisionOCR | `/Applications/办案工具集/VisionOCR转Markdown.app` | PDF转Markdown | A2步骤需手动提供OCR结果 |
 | 微信取证 | `/Applications/办案工具集/微信录屏取证导出.app` | 微信录屏取证 | 微信取证功能不可用 |
 | 企查查 | `~/.local/bin/qcc-query` | 企业信息查询 | 企业背调需手动进行 |
 | 模型切换 | `~/.local/bin/cc-switch-to.sh` | Phase A/B模型切换 | 需手动切换模型 |

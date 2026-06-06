@@ -28,7 +28,7 @@ STATE_SCHEMA_PATH = ROOT_DIR / "schema" / "case_os_state_schema.json"
 PUBLISH_SCHEMA_PATH = ROOT_DIR / "schema" / "feishu_publish_schema.json"
 STATE_NAME = "case-os-state.json"
 PUBLISH_NAME = "feishu-publish.json"
-CONFIRMATION_REQUIRED_A = {"A4", "A5"}
+CONFIRMATION_REQUIRED_A = {"A4", "A5", "A6"}
 CONFIRMATION_REQUIRED_B = {"S1", "S5", "S6", "S8", "S9"}
 S10_FILES = (
     "intermediate/原告九步法/S10-幻觉校验和八个一致报告.md",
@@ -105,7 +105,7 @@ def blank_state(case_path: Path, migration_mode: str = "new") -> dict[str, Any]:
         "workflow": {
             "current_phase": "A",
             "current_step": "A1",
-            "phase_a": {step: blank_step() for step in ("A1", "A2", "A3", "A4", "A5", "A6")},
+            "phase_a": {step: blank_step() for step in ("A1", "A2", "A3", "A4", "A5", "A6", "A7")},
             "phase_b": {},
             "final_gate": {"is_blocked": None, "can_enter_final": None, "source": None},
         },
@@ -211,11 +211,11 @@ def resolve_confirmed_migration_conflicts(state: dict[str, Any]) -> None:
         state["validation_status"] = "valid"
 
 
-def complete_internal_a6_if_ready(state: dict[str, Any]) -> None:
+def complete_internal_a7_if_ready(state: dict[str, Any]) -> None:
     phase_a = state["workflow"]["phase_a"]
     if all(phase_a[step]["confirmed"] for step in CONFIRMATION_REQUIRED_A):
-        phase_a["A6"] = {"status": "completed", "confirmed": True}
-        clear_pending_for_step(state, "A6")
+        phase_a["A7"] = {"status": "completed", "confirmed": True}
+        clear_pending_for_step(state, "A7")
 
 
 def normalize_status(status: Any) -> str:
@@ -284,7 +284,7 @@ def sync_final_gate(case_path: Path, state: dict[str, Any]) -> None:
 def refresh_state(case_path: Path, step: str | None) -> None:
     state = load_or_initialize(case_path)
     resolve_confirmed_migration_conflicts(state)
-    complete_internal_a6_if_ready(state)
+    complete_internal_a7_if_ready(state)
     sync_phase_b_index(case_path, state)
     sync_final_gate(case_path, state)
     if step and step != "unknown":
@@ -296,12 +296,12 @@ def refresh_state(case_path: Path, step: str | None) -> None:
                 if not phase_a[step]["confirmed"]:
                     phase_a[step]["status"] = "pending_review"
                     mark_pending_item(state, f"{step}_律师确认", step)
-            elif step == "A6":
+            elif step == "A7":
                 if all(phase_a[required]["confirmed"] for required in CONFIRMATION_REQUIRED_A):
                     phase_a[step] = {"status": "completed", "confirmed": True}
                 else:
                     phase_a[step] = {"status": "pending_review", "confirmed": False}
-                    mark_pending_item(state, "A6_前置确认不足", step)
+                    mark_pending_item(state, "A7_前置确认不足", step)
             else:
                 phase_a[step] = {"status": "completed", "confirmed": True}
         elif step.startswith("S"):
@@ -327,7 +327,7 @@ def validate_case(case_path: Path) -> None:
 
 def confirmation_input(path: Path, expected_step: str) -> dict[str, Any]:
     data = load_json(path)
-    allowed = {"step", "confirmed", "confirmed_at", "source", "case", "deadlines"}
+    allowed = {"step", "confirmed", "confirmed_at", "source", "case", "deadlines", "sync_result"}
     unexpected = set(data) - allowed
     if unexpected:
         raise ValueError(f"Confirmation contains unsupported fields: {sorted(unexpected)}")
@@ -350,7 +350,20 @@ def confirm_state(case_path: Path, step: str, confirmation_file: Path) -> None:
     state["confirmations"].append(record)
     clear_pending_for_step(state, step)
     if step in state["workflow"]["phase_a"]:
-        state["workflow"]["phase_a"][step] = {"status": "completed", "confirmed": True}
+        if step == "A5":
+            # A5飞书同步步骤，存储同步结果
+            sync_result = confirmation.get("sync_result", {})
+            state["workflow"]["phase_a"][step] = {
+                "status": "completed",
+                "confirmed": True,
+                "synced_at": confirmation.get("confirmed_at"),
+                "feishu_doc_url": sync_result.get("feishu_doc_url"),
+                "feishu_doc_title": sync_result.get("feishu_doc_title"),
+                "bitable_record_id": sync_result.get("bitable_record_id"),
+                "sync_errors": sync_result.get("sync_errors", []),
+            }
+        else:
+            state["workflow"]["phase_a"][step] = {"status": "completed", "confirmed": True}
     case_update = confirmation.get("case")
     if case_update is not None:
         if step != "A4" or not isinstance(case_update, dict):
@@ -379,7 +392,7 @@ def confirm_state(case_path: Path, step: str, confirmation_file: Path) -> None:
             )
         state["deadlines"] = normalized
     resolve_confirmed_migration_conflicts(state)
-    complete_internal_a6_if_ready(state)
+    complete_internal_a7_if_ready(state)
     write_outputs(case_path, state)
 
 
@@ -400,8 +413,8 @@ def scan_existing(case_path: Path) -> None:
                 entry = steps.get(step)
                 if isinstance(entry, dict) and entry.get("status") == "completed":
                     conflicts.append(f"{step} 历史状态为 completed 但无新契约明确确认记录")
-        if any(step not in {"A1", "A2", "A3", "A4", "A5", "A6"} for step in steps):
-            conflicts.append("历史 Phase A 含旧编号步骤，需按 A1-A6 口径核认")
+        if any(step not in {"A1", "A2", "A3", "A4", "A5", "A6", "A7"} for step in steps):
+            conflicts.append("历史 Phase A 含旧编号步骤，需按 A1-A7 口径核认")
     sync_phase_b_index(case_path, state)
     sync_final_gate(case_path, state)
     state["migration"]["source_conflicts"] = conflicts

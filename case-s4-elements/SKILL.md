@@ -153,11 +153,11 @@ mcp__pkulaw-law-search__search_article(text="民法典 第577条 违约责任构
 
 保存到 `intermediate/原告九步法/S4-要件拆解/`
 
-**⚠️ MD-JSON 双向同步（强制执行）**：
-- JSON 中的 `statute_nature_verification` 对象必须同步到 MD 正文的"法条性质验证"章节
-- MD 正文中必须包含法条性质验证表格（法条名称、法条性质、来源），与 JSON 中 `statute_nature_verification.已验证法条` 数组内容一致
-- 常见错误：JSON 中有完整的 `statute_nature_verification` 但 MD 正文遗漏该章节 → 必须补全
-- 生成完成后自检：JSON 中 `verification_passed` 的值与 MD 中的验证结论一致
+**MD-JSON 双向同步（强制执行）**：
+- JSON 中的 `statute_nature_verification` 对象必须同步到 MD 正文的“法条性质验证”章节。
+- MD 正文中必须包含法条性质验证表格（法条名称、法条性质、来源），并与 JSON 中 `statute_nature_verification.已验证法条` 数组一致。
+- 常见错误：JSON 中有完整的 `statute_nature_verification`，但 MD 正文遗漏该章节；必须补全。
+- 生成完成后自检：JSON 中 `verification_passed` 的值与 MD 中的验证结论一致。
 
 ### 第七步：律师确认
 
@@ -210,6 +210,20 @@ mcp__pkulaw-law-search__search_article(text="民法典 第577条 违约责任构
 - `examples/s4_elements_example.md` — 要件拆解示例
 
 ---
+
+## 九步法资源接入（强制）
+
+执行 S4 前必须读取 live `case-os` 的九步法资源，引用而不复制：
+
+1. 读取 `../case-os/references/nine_step_output_schemas.json` 中 `steps.S4` 的 `input_schema`、`output_schema`、`handoff_to_next` 与 `blocking_conditions`。
+2. 读取 `../case-os/references/nine_step_checklist.json` 中 `steps.S4` 的检查清单，并在 Markdown 正文中逐项说明覆盖、缺失或不适用。
+3. 读取 `../case-os/references/nine_step_failure_modes.json` 中 `failure_modes.S4` 的失败模式；命中 HIGH/CRITICAL 风险时必须阻断或标记待律师处理。
+4. 按需读取 `../case-os/references/nine_step_chunks.jsonl` 中 `step_id == "S4"` 或 `skill_target` 指向本步骤的切片；未找到匹配切片时记录 `chunks_reference_status: "none_found"`，不得因此跳过步骤。
+5. 读取 `../case-os/examples/nine_step_loan_case/expected_s4_elements.json` 作为结构参考；如本 skill 有 `schema/s4_output_schema.json`，同时按本地 schema 校验输出。
+- 本 skill 本地示例（如存在）：`examples/s4_*.md`。
+
+输出必须采用合法 JSON frontmatter + Markdown 正文。JSON 顶层 `step_id`、`status`/`review_status`、引用来源、律师确认口径、hook 写回状态必须与 `case-os` 总控一致。
+- S1/S5/S6/S8/S9 只能进入 `pending_review`；S2/S4/S7 需完成权威复验/律师确认口径后才可交接；S10 只作 FINAL 阻断门禁，不得改写 S9 结论。
 
 ## 输出
 

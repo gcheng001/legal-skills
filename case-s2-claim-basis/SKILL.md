@@ -182,11 +182,11 @@ mcp__pkulaw-law-search__get_article(title="中华人民共和国民法典", numb
 
 保存到 `intermediate/原告九步法/S2-请求权基础/`
 
-**⚠️ MD-JSON 双向同步（强制执行）**：
-- JSON 中的 `statute_nature` 字段必须同步到 MD 正文的"法条性质验证"章节
-- MD 正文中不得出现 JSON 未包含的法条引用（如 MD 额外引用了民法典791条、793条，但 JSON 未包含 → 必须在 JSON 中补充对应条目，或从 MD 中移除）
-- 生成完成后必须自检：JSON 中的每个法条都能在 MD 中找到对应行，反之亦然
-- 常见错误：法条性质验证数据在 JSON 中完整，但 MD 正文遗漏"法条性质验证"章节 → 必须补全
+**MD-JSON 双向同步（强制执行）**：
+- JSON 中的 `statute_nature` 字段必须同步到 MD 正文的“法条性质验证”章节。
+- MD 正文中不得出现 JSON 未包含的核心法条引用；正文新增法条时，必须同步补入 JSON `legal_articles`。
+- 生成完成后必须自检：JSON 中每个核心法条都能在 MD 中找到对应行，MD 中核心法条也能在 JSON 中找到对应条目。
+- 常见错误：JSON 中有完整的法条性质验证数据，但 MD 正文遗漏“法条性质验证”章节；必须补全后才能进入下一步。
 
 ### 第六步：律师终选确认
 
@@ -209,36 +209,14 @@ mcp__pkulaw-law-search__get_article(title="中华人民共和国民法典", numb
 - ❌ **必须法条复验**（优先使用元典），复验徽章方可 ✅
 - ❌ 律师终选确认后才能进入下一步
 
-### 多请求权结构化红线（新增）
+### 多请求权结构化红线（强制）
 
 **绝对要求**：所有请求权基础必须结构化到 JSON frontmatter 的 `legal_articles` 数组中。
 
-1. **读取 S1 所有诉讼请求**：
-   - 必须完整读取 S1 中的每一项诉讼请求
-   - 不得遗漏任何一项请求权
-
-2. **每项请求权基础都必须进入 `legal_articles`**：
-   - 追偿权请求：《民法典》第1191条
-   - 保险合同请求：《民法典》第1213条
-   - 其他请求权基础：根据案情确定
-   - **正文出现的核心法条，JSON `legal_articles` 中必须同步出现**
-
-3. **每条法律依据必须包含完整字段**：
-   - `法律名称`
-   - `条款号`
-   - `法条内容`
-   - `法条性质`
-   - `statute_nature`
-   - `constitutive_elements`
-   - `legal_effect`
-   - `needs_replacement`
-   - `元典复验结果`
-
-4. **自检要求**：
-   - 生成后检查 JSON `legal_articles` 数组
-   - 确认所有请求权基础都已录入
-   - 确认正文核心法条与 JSON 一致
-   - 不一致必须修复，否则 S2 不得完成
+1. 完整读取 S1 的每一项诉讼请求，不得遗漏任何一项请求权。
+2. 每项请求权基础都必须进入 `legal_articles`；正文出现的核心法条必须同步出现在 JSON 中。
+3. 每条法律依据必须包含：`法律名称`、`条款号`、`法条内容`、`法条性质`、`statute_nature`、`constitutive_elements`、`legal_effect`、`needs_replacement`、`元典复验结果`。
+4. 生成后检查 JSON `legal_articles` 数组与 Markdown 正文核心法条是否双向一致；不一致必须修复，否则 S2 不得完成。
 
 ---
 
@@ -265,6 +243,20 @@ mcp__pkulaw-law-search__get_article(title="中华人民共和国民法典", numb
 - `examples/s2_statute_nature_example.md` — 法条性质鉴别示例
 
 ---
+
+## 九步法资源接入（强制）
+
+执行 S2 前必须读取 live `case-os` 的九步法资源，引用而不复制：
+
+1. 读取 `../case-os/references/nine_step_output_schemas.json` 中 `steps.S2` 的 `input_schema`、`output_schema`、`handoff_to_next` 与 `blocking_conditions`。
+2. 读取 `../case-os/references/nine_step_checklist.json` 中 `steps.S2` 的检查清单，并在 Markdown 正文中逐项说明覆盖、缺失或不适用。
+3. 读取 `../case-os/references/nine_step_failure_modes.json` 中 `failure_modes.S2` 的失败模式；命中 HIGH/CRITICAL 风险时必须阻断或标记待律师处理。
+4. 按需读取 `../case-os/references/nine_step_chunks.jsonl` 中 `step_id == "S2"` 或 `skill_target` 指向本步骤的切片；未找到匹配切片时记录 `chunks_reference_status: "none_found"`，不得因此跳过步骤。
+5. 读取 `../case-os/examples/nine_step_loan_case/expected_s2_claim_bases.json` 作为结构参考；如本 skill 有 `schema/s2_output_schema.json`，同时按本地 schema 校验输出。
+- 本 skill 本地示例（如存在）：`examples/s2_*.md`。
+
+输出必须采用合法 JSON frontmatter + Markdown 正文。JSON 顶层 `step_id`、`status`/`review_status`、引用来源、律师确认口径、hook 写回状态必须与 `case-os` 总控一致。
+- S1/S5/S6/S8/S9 只能进入 `pending_review`；S2/S4/S7 需完成权威复验/律师确认口径后才可交接；S10 只作 FINAL 阻断门禁，不得改写 S9 结论。
 
 ## 输出
 

@@ -11,7 +11,7 @@ description: 起诉状/答辩状生成。基于九步法分析结果生成立案
 
 **触发条件**：S10门禁通过后，律师确认
 **必须确认**：**是**（确认后才生成）
-**门禁**：必须先通过 S10 blocking_result.is_blocked=false 且 can_enter_final=true，方可生成诉讼文书
+**门禁**：必须先通过 S10 blocking_result.is_blocked=false 且 can_enter_final=true，方可生成诉讼文书。S10 未执行视同门禁失败。
 
 ---
 
@@ -66,6 +66,7 @@ description: 起诉状/答辩状生成。基于九步法分析结果生成立案
 
 - ❌ **S10 门禁不通过不得生成**
 - ❌ **律师确认后才生成**
+- ❌ 不得绕过 `check_final_gate.py` 直接调用生成脚本
 - ❌ 修改时必须追问原因
 
 ---

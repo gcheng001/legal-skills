@@ -2,8 +2,8 @@
 """
 S4 要件拆解 — 三段式要件矩阵生成器
 Step A: 加载 YAML 模板（基础要件）
-Step B: AI 补充案情特色（由 Claude Code 调用时动态填充）
-Step C: 北大法宝复验标记（由 Claude Code 调用 MCP 后回写）
+Step B: AI 补充案情特色（由 Codex 调用时动态填充）
+Step C: 北大法宝复验标记（由 Codex 调用 MCP 后回写）
 
 用法:
     python3 build_element_matrix.py [案件文件夹路径] [--case-type 案由名称]
@@ -254,8 +254,8 @@ def main():
 
     # Step B/C 提示
     print()
-    print("📝 Step B: 请让 Claude Code 根据案情材料补充证据来源和证据状态")
-    print("📝 Step C: 请让 Claude Code 调用北大法宝 MCP 复验法律依据")
+    print("📝 Step B: 请让 Codex 根据案情材料补充证据来源和证据状态")
+    print("📝 Step C: 请让 Codex 调用北大法宝 MCP 复验法律依据")
 
 
 if __name__ == "__main__":

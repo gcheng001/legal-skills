@@ -1,12 +1,12 @@
 #!/bin/bash
-# 案件OS每周定期扫描 - launchd 调用入口
+# 民事案件OS每周定期扫描 - launchd 调用入口
 # 扫描所有案件文件夹，输出结果到文件，通过微信推送
 
-SCAN_SCRIPT="$HOME/.claude/skills/case-os/scripts/scan_case_folders.py"
-RESULT_FILE="$HOME/.claude/skills/case-os/data/last-scan-result.txt"
-LOG_FILE="$HOME/.claude/skills/case-os/data/scan.log"
+SCAN_SCRIPT="$HOME/.codex/skills/case-os/scripts/scan_case_folders.py"
+RESULT_FILE="$HOME/.codex/skills/case-os/data/last-scan-result.txt"
+LOG_FILE="$HOME/.codex/skills/case-os/data/scan.log"
 
-echo "=== 案件OS定期扫描 $(date '+%Y-%m-%d %H:%M:%S') ===" >> "$LOG_FILE"
+echo "=== 民事案件OS定期扫描 $(date '+%Y-%m-%d %H:%M:%S') ===" >> "$LOG_FILE"
 
 # 运行扫描脚本，输出到结果文件
 python3 "$SCAN_SCRIPT" > "$RESULT_FILE" 2>&1
@@ -39,7 +39,7 @@ if not content:
     print('无扫描结果，跳过发送')
     exit(0)
 
-# 读取微信配置：Claude Code 独立配置优先；若用户仍沿用旧桥接配置，则兼容读取。
+# 读取微信配置：Codex 独立配置优先；若用户仍沿用旧桥接配置，则兼容读取。
 candidate_files = [
     os.path.expanduser('~/.claude-to-im/data/weixin-accounts.json'),
     os.path.join(os.path.expanduser('~'), '.claude' + '-to-im', 'data', 'weixin-accounts.json'),
@@ -67,7 +67,7 @@ if not bot_token or not user_id:
     exit(1)
 
 # 构造消息
-msg_text = f"📋 案件OS每周扫描报告\n\n{content}"
+msg_text = f"📋 民事案件OS每周扫描报告\n\n{content}"
 
 # 发送消息
 import random
@@ -93,7 +93,7 @@ payload = {
         ]
     },
     "base_info": {
-        "channel_version": "claude-case-os-weekly-scan/1.0"
+        "channel_version": "codex-case-os-weekly-scan/1.0"
     }
 }
 

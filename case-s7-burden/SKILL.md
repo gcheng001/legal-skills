@@ -45,9 +45,9 @@ description: '九步法S7-举证责任。分配每个争点的举证责任，评
 
 **心证公开目的**：促使当事人围绕心证结论收集和补充证据
 
-**⚠️ 概念区分（重要）**：
+**概念区分（重要）**：
 - **心证公开（judicial_disclosure）**：法官基于现有证据形成初步心证（临时判断），公开心证促使当事人补充证据、避免证据突袭。内容包括：初步心证结论、哪些争点举证不足、补证方向、当事人回应。
-- **司法公开信息核查（public_record_check）**：在公开平台（裁判文书网、庭审公开网、执行信息网、破产重整网）排查双方当事人涉诉/被执行/破产信息。**这是完全不同的概念，不得占用 judicial_disclosure 字段。**
+- **司法公开信息核查（public_record_check）**：在公开平台（裁判文书网、庭审公开网、执行信息网、破产重整网）排查双方当事人涉诉、被执行、破产信息。这是完全不同的概念，不得占用 `judicial_disclosure` 字段。
 
 **心证公开内容**：
 1. 根据现有证据形成初步心证
@@ -64,12 +64,11 @@ description: '九步法S7-举证责任。分配每个争点的举证责任，评
 ```json
 {
   "judicial_disclosure": {
-    "description": "心证公开——法官基于现有证据形成初步心证，提示举证不足，促使当事人补充证据",
-    "disclosure_made": true,
-    "disclosure_content": "基于现有证据的初步心证结论",
-    "disclosure_purpose": "促使双方当事人围绕初步心证补充证据，避免证据突袭",
-    "party_response": "待律师确认后补录",
-    "additional_evidence_prompted": true,
+    "disclosure_made": true/false,
+    "disclosure_content": "心证公开内容",
+    "disclosure_purpose": "促使当事人补充证据",
+    "party_response": "当事人回应",
+    "additional_evidence_prompted": true/false,
     "disclosure_records": [
       {
         "争点": "争点名称",
@@ -80,9 +79,9 @@ description: '九步法S7-举证责任。分配每个争点的举证责任，评
     ]
   },
   "public_record_check": {
-    "description": "司法公开信息核查——排查双方当事人在公开平台上的涉诉/被执行/破产信息（可选，独立字段）",
-    "checked_platforms": [...],
-    "findings": {...},
+    "description": "司法公开信息核查，可选独立字段，不得混入 judicial_disclosure",
+    "checked_platforms": [],
+    "findings": {},
     "note": "建议开庭前完成核查"
   }
 }
@@ -248,6 +247,20 @@ mcp__pkulaw-law-search__search_article(text="举证责任倒置 建设工程")
 - `examples/s7_disclosure_example.md` — 心证公开和证明资源审查示例
 
 ---
+
+## 九步法资源接入（强制）
+
+执行 S7 前必须读取 live `case-os` 的九步法资源，引用而不复制：
+
+1. 读取 `../case-os/references/nine_step_output_schemas.json` 中 `steps.S7` 的 `input_schema`、`output_schema`、`handoff_to_next` 与 `blocking_conditions`。
+2. 读取 `../case-os/references/nine_step_checklist.json` 中 `steps.S7` 的检查清单，并在 Markdown 正文中逐项说明覆盖、缺失或不适用。
+3. 读取 `../case-os/references/nine_step_failure_modes.json` 中 `failure_modes.S7` 的失败模式；命中 HIGH/CRITICAL 风险时必须阻断或标记待律师处理。
+4. 按需读取 `../case-os/references/nine_step_chunks.jsonl` 中 `step_id == "S7"` 或 `skill_target` 指向本步骤的切片；未找到匹配切片时记录 `chunks_reference_status: "none_found"`，不得因此跳过步骤。
+5. 读取 `../case-os/examples/nine_step_loan_case/expected_s7_proof_matrix.json` 作为结构参考；如本 skill 有 `schema/s7_output_schema.json`，同时按本地 schema 校验输出。
+- 本 skill 本地示例（如存在）：`examples/s7_*.md`。
+
+输出必须采用合法 JSON frontmatter + Markdown 正文。JSON 顶层 `step_id`、`status`/`review_status`、引用来源、律师确认口径、hook 写回状态必须与 `case-os` 总控一致。
+- S1/S5/S6/S8/S9 只能进入 `pending_review`；S2/S4/S7 需完成权威复验/律师确认口径后才可交接；S10 只作 FINAL 阻断门禁，不得改写 S9 结论。
 
 ## 输出
 

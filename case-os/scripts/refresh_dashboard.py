@@ -1311,7 +1311,7 @@ def main():
     # 同步仪表盘操作记录到 LOG.md
     sync_dashboard_ops(case_root)
 
-    # 读取 AI 争议焦点评估（由 Claude Code 分析案卷后写入）
+    # 读取 AI 争议焦点评估（由 Codex 分析案卷后写入）
     assessments = []
     assessment_path = case_root / "_archive" / "dispute-assessments.json"
     if assessment_path.exists():

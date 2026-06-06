@@ -5,7 +5,7 @@ type: 答辩点 | 检索 | 证据补强 | 文书段落 | 其他
 status: open
 created: YYYY-MM-DD
 closed:
-assignee: Claude Code | 主办律师 | 助理
+assignee: Codex | 主办律师 | 助理
 ---
 
 ## 问题描述

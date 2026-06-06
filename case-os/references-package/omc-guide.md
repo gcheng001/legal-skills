@@ -1,6 +1,6 @@
 # OMC 命令速查
 
-> 案件OS使用的OMC多Agent调度命令参考。
+> 民事案件OS使用的OMC多Agent调度命令参考。
 
 ---
 
@@ -18,5 +18,5 @@
 
 ## 配置说明
 
-- **Claude Code适配说明**：本文件仅作 OMC 旧命令速查；在 Claude Code 中优先使用当前会话可用的 Claude Code 工具、内置图像生成、前端预览和本地脚本能力。
+- **Codex适配说明**：本文件仅作 OMC 旧命令速查；在 Codex 中优先使用当前会话可用的 Codex 工具、内置图像生成、前端预览和本地脚本能力。
 - **模型路由**（OMC自动）：简单→Haiku / 标准→Sonnet / 复杂→Opus

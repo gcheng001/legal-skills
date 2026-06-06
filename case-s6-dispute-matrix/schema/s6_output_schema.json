@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "S6 Dispute Matrix",
+  "type": "object",
+  "required": [
+    "step_id",
+    "status",
+    "fact_disputes",
+    "law_disputes"
+  ],
+  "properties": {
+    "step_id": {
+      "const": "S6"
+    },
+    "status": {
+      "const": "pending_review"
+    },
+    "case_id": {
+      "type": "string"
+    },
+    "fact_disputes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "dispute_id",
+          "dispute_content",
+          "party_positions"
+        ],
+        "properties": {
+          "dispute_id": {
+            "pattern": "^S6-FD\\d{3}$"
+          },
+          "dispute_content": {
+            "type": "string"
+          },
+          "related_element": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "party_positions": {
+            "type": "object"
+          },
+          "mapping_status": {
+            "enum": [
+              "resolved",
+              "partial",
+              "unresolved"
+            ]
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "law_disputes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "dispute_id",
+          "dispute_type",
+          "dispute_content"
+        ],
+        "properties": {
+          "dispute_id": {
+            "pattern": "^S6-LD\\d{3}$"
+          },
+          "dispute_type": {
+            "enum": [
+              "实体法律适用",
+              "程序法律适用"
+            ]
+          },
+          "dispute_content": {
+            "type": "string"
+          },
+          "related_statute": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "mapping_status": {
+            "enum": [
+              "resolved",
+              "partial",
+              "unresolved"
+            ]
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "non_dispute_exclusions": {
+      "type": "array"
+    },
+    "priority_allocation": {
+      "type": "array"
+    }
+  },
+  "additionalProperties": true
+}

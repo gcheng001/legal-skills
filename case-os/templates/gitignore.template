@@ -1,4 +1,4 @@
-# 案件仓库 .gitignore（案件OS v5.1 Git 底座模板）
+# 案件仓库 .gitignore（民事案件OS v5.1 Git 底座模板）
 # 原则：只追踪 Markdown 主线，二进制文件不进 Git
 
 # ========== 二进制大文件（原件不进 Git） ==========

@@ -120,7 +120,7 @@ def init_s0_template(case_root: Path) -> str:
     files = scan_markdown(case_root)
 
     if not files:
-        return "⚠️  未找到 Markdown 文件，请先执行 OCR 转换"
+        return "⚠️  未找到 Markdown 文件，请先执行 VisionOCR 转换"
 
     inter_dir = case_root / "intermediate"
     inter_dir.mkdir(exist_ok=True)

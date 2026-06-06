@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "S5 Claim Completeness Check",
+  "type": "object",
+  "required": [
+    "step_id",
+    "status",
+    "claim_completeness_check",
+    "supplement_records",
+    "references"
+  ],
+  "properties": {
+    "step_id": {
+      "const": "S5"
+    },
+    "status": {
+      "const": "pending_review"
+    },
+    "case_id": {
+      "type": "string"
+    },
+    "claim_completeness_check": {
+      "type": "object",
+      "required": [
+        "corresponds_to_basis",
+        "missing_claims",
+        "contradictory_claims",
+        "needs_supplement"
+      ],
+      "properties": {
+        "corresponds_to_basis": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "missing_claims": {
+          "type": "array"
+        },
+        "contradictory_claims": {
+          "type": "array"
+        },
+        "needs_supplement": {
+          "type": "boolean"
+        },
+        "upstream_parse_status": {
+          "enum": [
+            "resolved",
+            "partial",
+            "unresolved"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "supplement_records": {
+      "type": "array"
+    },
+    "supporting_research": {
+      "type": "array"
+    },
+    "references": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": true
+}

@@ -46,14 +46,15 @@
         "phase_a": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["A1", "A2", "A3", "A4", "A5", "A6"],
+          "required": ["A1", "A2", "A3", "A4", "A5", "A6", "A7"],
           "properties": {
             "A1": {"$ref": "#/$defs/stepState"},
             "A2": {"$ref": "#/$defs/stepState"},
             "A3": {"$ref": "#/$defs/stepState"},
             "A4": {"$ref": "#/$defs/stepState"},
-            "A5": {"$ref": "#/$defs/stepState"},
-            "A6": {"$ref": "#/$defs/stepState"}
+            "A5": {"$ref": "#/$defs/feishuSyncState"},
+            "A6": {"$ref": "#/$defs/stepState"},
+            "A7": {"$ref": "#/$defs/stepState"}
           }
         },
         "phase_b": {
@@ -154,6 +155,20 @@
       "properties": {
         "status": {"enum": ["pending", "in_progress", "pending_review", "completed", "blocked", "shared"]},
         "confirmed": {"type": "boolean"}
+      }
+    },
+    "feishuSyncState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "confirmed"],
+      "properties": {
+        "status": {"enum": ["pending", "in_progress", "pending_review", "completed", "blocked", "shared"]},
+        "confirmed": {"type": "boolean"},
+        "synced_at": {"type": ["string", "null"], "format": "date-time"},
+        "feishu_doc_url": {"type": ["string", "null"], "format": "uri"},
+        "feishu_doc_title": {"type": ["string", "null"]},
+        "bitable_record_id": {"type": ["string", "null"]},
+        "sync_errors": {"type": "array", "items": {"type": "string"}}
       }
     }
   }

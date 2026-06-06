@@ -582,7 +582,7 @@ def generate_overview(case_root: Path, index: dict = None) -> None:
 
     lines.append(f"")
     lines.append(f"---")
-    lines.append(f"*此文件由案件OS自动生成，每次运行 sync 后自动更新*")
+    lines.append(f"*此文件由民事案件OS自动生成，每次运行 sync 后自动更新*")
 
     # 写入
     overview_path.parent.mkdir(parents=True, exist_ok=True)
