@@ -1,0 +1,210 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Handoff Package Schema",
+  "description": "刑事案件OS步骤间交接包的数据结构定义",
+  "version": "1.0.0",
+  "type": "object",
+  "required": [
+    "handoff_version",
+    "source_skill",
+    "target_skill",
+    "package_type",
+    "content_format",
+    "contains_original_materials",
+    "material_count",
+    "upstream_summary",
+    "materials",
+    "handoff_notes"
+  ],
+  "properties": {
+    "handoff_version": {
+      "type": "string",
+      "description": "交接协议版本号",
+      "const": "1.0"
+    },
+    "source_skill": {
+      "type": "string",
+      "description": "上游步骤名称",
+      "enum": [
+        "case-git-init",
+        "case-info-extract",
+        "criminal-investigation",
+        "criminal-case-review",
+        "criminal-defense-strategy",
+        "criminal-non-prosecution",
+        "criminal-plea-bargain",
+        "criminal-meeting",
+        "criminal-trial-examination",
+        "criminal-defense-statement",
+        "criminal-case-visualization",
+        "criminal-client-comm"
+      ]
+    },
+    "target_skill": {
+      "type": "string",
+      "description": "下游步骤名称",
+      "enum": [
+        "case-git-init",
+        "case-info-extract",
+        "criminal-investigation",
+        "criminal-case-review",
+        "criminal-defense-strategy",
+        "criminal-non-prosecution",
+        "criminal-plea-bargain",
+        "criminal-meeting",
+        "criminal-trial-examination",
+        "criminal-defense-statement",
+        "criminal-case-visualization",
+        "criminal-client-comm"
+      ]
+    },
+    "package_type": {
+      "type": "string",
+      "description": "包类型",
+      "const": "criminal_analysis"
+    },
+    "content_format": {
+      "type": "string",
+      "description": "内容格式",
+      "const": "markdown"
+    },
+    "contains_original_materials": {
+      "type": "boolean",
+      "description": "是否包含原始输入材料"
+    },
+    "material_count": {
+      "type": "integer",
+      "description": "原始材料数量",
+      "minimum": 0
+    },
+    "upstream_summary": {
+      "type": "object",
+      "description": "上游判断摘要",
+      "required": [
+        "step",
+        "conclusion",
+        "key_findings",
+        "pending_review"
+      ],
+      "properties": {
+        "step": {
+          "type": "string",
+          "description": "步骤名称"
+        },
+        "conclusion": {
+          "type": "string",
+          "description": "本步骤结论"
+        },
+        "key_findings": {
+          "type": "array",
+          "description": "关键发现列表",
+          "items": {
+            "type": "string"
+          }
+        },
+        "pending_review": {
+          "type": "boolean",
+          "description": "是否待律师确认"
+        },
+        "confirmation_status": {
+          "type": "string",
+          "description": "确认状态",
+          "enum": ["pending", "confirmed", "rejected"],
+          "default": "pending"
+        }
+      }
+    },
+    "materials": {
+      "type": "array",
+      "description": "原始输入材料列表",
+      "items": {
+        "type": "object",
+        "required": [
+          "material_id",
+          "material_type",
+          "title",
+          "file_path",
+          "use_mode"
+        ],
+        "properties": {
+          "material_id": {
+            "type": "string",
+            "description": "材料唯一标识"
+          },
+          "material_type": {
+            "type": "string",
+            "description": "材料类型",
+            "enum": [
+              "court_document",
+              "evidence",
+              "confession",
+              "witness_statement",
+              "expert_opinion",
+              "physical_evidence",
+              "video_audio",
+              "defense_material"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "description": "材料标题"
+          },
+          "file_path": {
+            "type": "string",
+            "description": "文件路径"
+          },
+          "use_mode": {
+            "type": "string",
+            "description": "用途",
+            "enum": ["primary", "supplementary"]
+          },
+          "excerpt": {
+            "type": "string",
+            "description": "摘录内容（可选）"
+          },
+          "full_text_included": {
+            "type": "boolean",
+            "description": "是否包含全文",
+            "default": false
+          },
+          "page_reference": {
+            "type": "string",
+            "description": "页码引用（如：第3-5页）"
+          }
+        }
+      }
+    },
+    "handoff_notes": {
+      "type": "object",
+      "description": "交接备注",
+      "required": [
+        "missing_info",
+        "risk_alerts",
+        "next_step_hints"
+      ],
+      "properties": {
+        "missing_info": {
+          "type": "array",
+          "description": "缺失信息列表",
+          "items": {
+            "type": "string"
+          }
+        },
+        "risk_alerts": {
+          "type": "array",
+          "description": "风险提醒列表",
+          "items": {
+            "type": "string"
+          }
+        },
+        "next_step_hints": {
+          "type": "array",
+          "description": "下一步提示列表",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
