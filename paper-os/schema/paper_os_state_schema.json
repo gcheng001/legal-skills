@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Paper OS State",
+  "description": "论文写作操作系统状态文件 schema",
+  "type": "object",
+  "required": ["paper_title", "current_step", "updated_at", "steps"],
+  "properties": {
+    "paper_title": {
+      "type": "string",
+      "description": "论文题目"
+    },
+    "current_step": {
+      "type": "string",
+      "enum": ["S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8"],
+      "description": "当前执行步骤"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "最后更新时间"
+    },
+    "steps": {
+      "type": "object",
+      "properties": {
+        "S1": { "$ref": "#/$defs/stepStatus" },
+        "S2": { "$ref": "#/$defs/stepStatus" },
+        "S3": { "$ref": "#/$defs/stepStatus" },
+        "S4": { "$ref": "#/$defs/stepStatus" },
+        "S5": { "$ref": "#/$defs/stepStatus" },
+        "S6": { "$ref": "#/$defs/stepStatus" },
+        "S7": { "$ref": "#/$defs/stepStatus" },
+        "S8": { "$ref": "#/$defs/stepStatus" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "stepStatus": {
+      "type": "object",
+      "required": ["status", "output", "confirmed_at"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["pending", "in_progress", "pending_review", "confirmed", "reported"],
+          "description": "步骤状态"
+        },
+        "output": {
+          "type": "string",
+          "description": "产物文件路径"
+        },
+        "confirmed_at": {
+          "type": ["string", "null"],
+          "format": "date-time",
+          "description": "用户确认时间（null=未确认）"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "paper_title": "",
+  "current_step": "S1",
+  "updated_at": "",
+  "steps": {
+    "S1": { "status": "pending", "output": "", "confirmed_at": null },
+    "S2": { "status": "pending", "output": "", "confirmed_at": null },
+    "S3": { "status": "pending", "output": "", "confirmed_at": null },
+    "S4": { "status": "pending", "output": "", "confirmed_at": null },
+    "S5": { "status": "pending", "output": "", "confirmed_at": null },
+    "S6": { "status": "pending", "output": "", "confirmed_at": null },
+    "S7": { "status": "pending", "output": "", "confirmed_at": null },
+    "S8": { "status": "pending", "output": "", "confirmed_at": null }
+  }
+}

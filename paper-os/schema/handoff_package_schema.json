@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Handoff Package",
+  "description": "论文写作OS步骤交接包 schema（产物文件 YAML frontmatter）",
+  "type": "object",
+  "required": ["step_id", "status", "key_conclusions", "depends_on"],
+  "properties": {
+    "step_id": {
+      "type": "string",
+      "enum": ["S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8"],
+      "description": "步骤编号"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["pending_review", "reported", "confirmed"],
+      "description": "产物状态：pending_review=硬门禁待确认，reported=软确认已汇报，confirmed=用户已确认"
+    },
+    "key_conclusions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "maxItems": 3,
+      "description": "本步骤核心结论，≤3条，每条一句话"
+    },
+    "depends_on": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8"]
+      },
+      "description": "前置步骤编号列表"
+    },
+    "deliverables": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "本步骤产出的文件路径列表（可选）"
+    }
+  },
+  "additionalProperties": false
+}
