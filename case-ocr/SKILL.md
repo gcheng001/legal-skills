@@ -240,11 +240,24 @@ mv "$OCR_TMP_DIR"/*.md "[案件根目录]/_archive/markdown/"
 mv ~/Desktop/录屏取证输出/*.pdf "[案件根目录]/截图证据/"
 ```
 
-### 第九步：清理桌面
+### 第九步：清理残留文件
 
 ```bash
 rm -rf "$OCR_TMP_DIR"
 rm -rf ~/Desktop/录屏取证输出
+
+# 清理MinerU OCR过程中产生的残留目录（无用的图片碎片）
+# MinerU从PDF提取图片时会在当前工作目录生成images/，内容为文档中的图标、水印等装饰元素，无案件分析价值
+if [ -d "[案件根目录]/images" ]; then
+    rm -rf "[案件根目录]/images"
+    echo "✅ 已清理MinerU残留目录: images/"
+fi
+
+# 同时清理MinerU可能在工作目录产生的其他残留
+if [ -d "[案件根目录]/output" ]; then
+    rm -rf "[案件根目录]/output"
+    echo "✅ 已清理MinerU残留目录: output/"
+fi
 ```
 
 ### 第十步：Git提交
