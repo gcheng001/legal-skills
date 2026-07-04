@@ -22,12 +22,30 @@ except ImportError:
 
 # ==================== 配置 ====================
 SMS_DB_PATH = Path.home() / "Library" / "SMS" / "sms.db"
-SCAN_ROOTS = [
-    Path.home() / "Documents" / Documents / cases / "案件",
-]
+# case-os 物理根 = 脚本在 agents/court-sms-monitor/ 下，往上 3 层。
+# 不依赖 ~/.codex 或 ~/.claude 软链存在（两者都可能被清理）。
+_SKILL_ROOT = Path(__file__).resolve().parents[2]
+_DATA_DIR = _SKILL_ROOT / "data"
+# 扫描根从配置文件读取，路径迁移后只改一处（每行一个绝对路径，# 注释、空行忽略）。
+SCAN_ROOTS_FILE = _DATA_DIR / "scan-roots.txt"
+
+def _load_scan_roots():
+    if not SCAN_ROOTS_FILE.exists():
+        print(f"⚠️  case-os：扫描根配置缺失 → {SCAN_ROOTS_FILE}", file=sys.stderr)
+        return []
+    roots = []
+    for line in SCAN_ROOTS_FILE.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        roots.append(Path(line))
+    return roots
+
+SCAN_ROOTS = _load_scan_roots()
+
 ARCHIVE_DIR = "_archive"
 COURT_SMS_FILE = "court-sms.json"
-STATE_FILE = Path.home() / ".claude" / "skills" / "case-os" / "data" / "sms-monitor-state.json"
+STATE_FILE = _DATA_DIR / "sms-monitor-state.json"
 
 # 飞书配置（从环境变量读取）
 FEISHU_APP_TOKEN = os.getenv("FEISHU_APP_TOKEN", "")

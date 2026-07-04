@@ -4,6 +4,18 @@
 
 Claude Code 安全边界：本目录在 Claude Code 中仅作为可选源码安装，不随常规更新自动启用。启用任何 LaunchAgent、短信监控或飞书同步前，必须先确认用户明确要求，并先阅读 `CLAUDE-SAFETY.md`。
 
+## 路径定位（2026-07-04 起）
+
+三处路径在运行时**等价可调**，不必限定从哪条调用：
+
+| 别名 | 物理位置 |
+|------|---------|
+| `~/.claude/skills/case-os` | 软链 → `~/.shared-skills/case-os` |
+| `~/.codex/skills/case-os` | 软链 → `~/.shared-skills/case-os` |
+| `~/.shared-skills/case-os` | 物理目录（"Shared Skills Hub"） |
+
+**所有脚本必须自定位**，禁止写死 `~/.claude/...` 或 `~/.codex/...`。详见 `memory/daily/2026-07-04.md` §case-os 路径迁移 + MEMORY.md A 类 2026-07-04 条。
+
 ## 系统架构
 
 ```

@@ -92,8 +92,11 @@ permissions:
 ## 配置文件路径
 
 ```yaml
-扫描根目录:
-  - ~/Documents/百度网盘/高澄/案件
+扫描根目录（每行一个绝对路径，# 注释）:
+  配置文件: ~/.claude/skills/case-os/data/scan-roots.txt
+  当前值:   /Volumes/移动硬盘/我的坚果云/工作文件/案件材料
+  # 案件已于 2026-07 由内置盘迁至移动硬盘；路径再变只改这一个 txt。
+  # 硬盘未连接时脚本会醒目警告并跳过，不会静默报 0 案。
 
 状态文件:
   扫描记录: ~/.claude/skills/case-os/data/last-scan-result.txt

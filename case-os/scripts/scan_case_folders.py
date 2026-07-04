@@ -7,18 +7,39 @@ import sys
 from pathlib import Path
 from datetime import datetime
 
-SCAN_ROOTS = [
-    Path.home() / "Documents" / Documents / cases / "案件",
-    # 根据实际情况添加更多扫描根目录
-]
+# case-os 物理根 = 脚本所在 scripts/ 的上级。
+# 不依赖 ~/.codex 或 ~/.claude 软链存在（两者都可能被清理）。
+_SKILL_ROOT = Path(__file__).resolve().parent.parent
+_DATA_DIR = _SKILL_ROOT / "data"
 
-QUEUE_FILE = Path.home() / ".codex" / "skills" / "case-os" / "data" / "pending-files.json"
+# 扫描根从配置文件读取，路径迁移后只改一处。
+# 配置每行一个绝对路径（# 注释、空行忽略）。
+SCAN_ROOTS_FILE = _DATA_DIR / "scan-roots.txt"
+
+def _load_scan_roots():
+    if not SCAN_ROOTS_FILE.exists():
+        print(f"⚠️  case-os：扫描根配置缺失 → {SCAN_ROOTS_FILE}", file=sys.stderr)
+        return []
+    roots = []
+    for line in SCAN_ROOTS_FILE.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        roots.append(Path(line))
+    return roots
+
+SCAN_ROOTS = _load_scan_roots()
+
+QUEUE_FILE = _DATA_DIR / "pending-files.json"
 
 def find_case_folders():
     """扫描所有有CLAUDE.md的案件文件夹"""
+    if not SCAN_ROOTS:
+        print(f"⚠️  case-os：未配置扫描根，请检查 {SCAN_ROOTS_FILE}", file=sys.stderr)
     cases = []
     for root in SCAN_ROOTS:
         if not root.exists():
+            print(f"⚠️  扫描根不可访问（跳过）：{root}", file=sys.stderr)
             continue
         for item in root.rglob("CLAUDE.md"):
             case_dir = item.parent
@@ -55,6 +76,12 @@ def main():
     known_files.update(item["file"] + "|" + item["case"] for item in queue["skipped_permanently"])
 
     cases = find_case_folders()
+
+    # 所有扫描根都不可访问（典型：移动硬盘未连接）→ 醒目提示，避免伪装成"无新文件"
+    if SCAN_ROOTS and not any(r.exists() for r in SCAN_ROOTS):
+        print("⚠️  所有扫描根不可访问——移动硬盘是否未连接？本次扫描视为未执行。")
+        return
+
     new_items = []
 
     for case_dir in cases:

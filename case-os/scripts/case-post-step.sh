@@ -6,7 +6,8 @@ set -euo pipefail
 
 CASE_PATH="${1:?用法: case-post-step.sh <案件路径> [步骤名称]}"
 STEP_NAME="${2:-unknown}"
-SCRIPTS_DIR="$HOME/.codex/skills/case-os/scripts"
+# 基于脚本自身位置定位，不依赖 ~/.codex 或 ~/.claude 软链存在。
+SCRIPTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 STATE_SCRIPT="$SCRIPTS_DIR/manage_integration_state.py"
 FEISHU_SYNC_SCRIPT="$HOME/.local/bin/sync-claude-md-to-feishu.py"
 

@@ -17,8 +17,11 @@ import json
 import os
 import sys
 import subprocess
+from pathlib import Path
 
-TEMPLATE = os.path.expanduser("~/.claude/skills/case-os/templates/evidence-portal.html")
+# 自定位：不依赖 ~/.codex 或 ~/.claude 软链（两处物理上都是软链 → ~/.shared-skills/case-os）
+_SKILL_ROOT = Path(__file__).resolve().parent.parent
+TEMPLATE = _SKILL_ROOT / "templates" / "evidence-portal.html"
 
 def main():
     if len(sys.argv) < 2:

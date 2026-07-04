@@ -10,7 +10,7 @@ metadata:
     - criminal-case-os
 ---
 
-# criminal-case-os 刑事案件操作系统（总控）v3.1
+# criminal-case-os 刑事案件操作系统（总控）v3.2
 
 ## 工作定位
 
@@ -67,7 +67,7 @@ metadata:
 
 > 仅在用户明确提出"刑事案件OS""刑事OS"或要求启动刑事专项流程时使用，不要仅因泛称"刑事案件"而触发。
 
-### 类型选择（首次触发时必须执行）
+### 类型选择（首次确定，全系统继承）
 
 类型尚未从用户描述中确定时，必须先询问用户选择案件类型：
 
@@ -79,6 +79,10 @@ B. 委托类（委托人、当事人/家属委托）
 
 请输入 A 或 B：
 ```
+
+**类型继承铁律**（详见 `references/redlines.md`）：
+- 类型一经确定，**写入案件目录 `CLAUDE.md` 的 `case_type: A|B` 字段**，全系统所有子 skill 继承，**不得重复询问**。
+- 子 skill 直接被调用（绕过总控）时：先读案件目录 `CLAUDE.md` 的 `case_type`；有则继承；无则问一次并写回。
 
 **重要**：类型选择后，所有后续步骤中的称谓、模板、流程必须严格对应所选类型。
 
@@ -100,6 +104,7 @@ B. 委托类（委托人、当事人/家属委托）
 |----------|------|----------|
 | `case-git-init` | 案件初始化 | 否 |
 | `case-info-extract` | 案件基础信息提取 | **是** |
+| `criminal-dossier-processor` | 卷宗PDF拆解（阅卷前物料准备，可选） | **是**（律师复核索引） |
 
 ### 一、侦查阶段（拘留→批捕，无卷阶段）
 
@@ -188,6 +193,8 @@ B. 委托类（委托人、当事人/家属委托）
 
 【准备】
 0. 案件初始化 + 基础信息提取
+0.5 卷宗拆解（criminal-dossier-processor，可选）——把混编PDF拆成12类目+索引，阅卷前物料准备
+    ⚠️ 拆解完成后必须复核「00_索引目录.md」分类，确认无大错再进入阅卷
 
 【一、侦查阶段（拘留→批捕，无卷阶段）】
 1. 侦查文书 — 无卷会见提纲与辅导、取保/不批捕意见书、羁押必要性审查申请
@@ -252,6 +259,7 @@ criminal-case-os/
 
 - `case-git-init`：案件初始化
 - `case-info-extract`：案件基础信息提取
+- `criminal-dossier-processor`：卷宗PDF拆解（阅卷前物料准备，外部引入 2026-05-29）
 - `criminal-investigation`：侦查阶段文书
 - `criminal-case-review`：刑事阅卷笔录制作
 - `criminal-defense-strategy`：辩护方案与策略路径
@@ -268,6 +276,7 @@ criminal-case-os/
 
 ## 版本历史
 
+- v3.2 - **接入卷宗拆解前置**：准备组新增 criminal-dossier-processor（外部引入 2026-05-29），作为阅卷前可选物料准备；交互菜单新增「0.5 卷宗拆解」；workflow.md 同步登记为可选前置；律师复核索引为强制确认点。
 - v3.1 - **归入分析增强轨道**：接入第三方 skill `gutachten-criminal-case`（鉴定式刑法案例研习，作者游初 Apache-2.0）为"贯穿全程·分析增强轨道"，交互菜单新增第 11 项（原 11/12 顺延为 12/13），依赖清单登记；明确其与诉讼文书子 skill 正交、不替代辩护词/阅卷，经本 OS 调度时叠加全局规则。
 - v3.0 - **四件套改造**：按DEV/HANDOFF/ORCHESTRATION/EVALUATION规范重构，外迁7个references文件，新增handoff_package_schema.json和evaluation-guide.md
 - v2.0 - **四阶段结构**：按诉讼阶段+交付物组织，不再用C1-C8串联

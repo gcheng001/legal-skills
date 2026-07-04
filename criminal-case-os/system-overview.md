@@ -6,12 +6,13 @@
 
 本系统采用**四阶段双层结构**，全部模块已就绪、无任何待建项；**二审阶段已明确排除，不在本系统范围内**。
 
-**双轨体系**是本系统的核心维度：
+**双轨 + 一增强**是本系统的核心维度：
 
 - **对内轨道（办案文书，9个刑事skill）**：服务于律师办案，输出阅卷笔录、辩护方案、质证发问、辩护词等专业文书，要求专业、犀利、底牌完整。
 - **对外轨道（客户可视化，criminal-client-comm）**：服务于客户沟通，输出服务计划书、工作通报、可视化时间轴、庭审简报等。最高红线是**脱敏不泄底牌**——可以让客户感知工作进展与价值，但绝不暴露辩护策略与诉讼底牌。
+- **分析增强轨道（gutachten-criminal-case）**：鉴定式全要件检视（三阶层犯罪论），输出学术品位案例分析底稿，正交于诉讼文书，不替代阅卷/辩护词。
 
-全系统共 **10个刑事子skill + 2个通用准备skill + 5份共享资源**。
+全系统共 **11个刑事子skill（含 gutachten）+ 2个通用准备skill + criminal-dossier-processor（阅卷前物料准备）+ 5份共享资源**。
 
 ---
 
@@ -22,7 +23,8 @@ criminal-case-os（总控）
     ↓
 准备组
   ├── 案件初始化（case-git-init）
-  └── 基础信息提取（case-info-extract）
+  ├── 基础信息提取（case-info-extract）
+  └── 卷宗拆解（criminal-dossier-processor，可选·阅卷前物料准备）
 
 一、侦查阶段（拘留→批捕，无卷）
   └── criminal-investigation（无卷会见提纲与辅导、取保/不批捕意见书、
@@ -44,6 +46,9 @@ criminal-case-os（总控）
 贯穿全程·对外轨道
   └── criminal-client-comm（客户沟通与服务可视化：服务计划书/工作通报/
         可视化时间轴/决策辅助/庭审简报；最高红线=脱敏不泄底牌）
+
+贯穿全程·分析增强轨道（正交于诉讼文书，非辩护词/阅卷）
+  └── gutachten-criminal-case（鉴定式全要件检视·三阶层犯罪论；作者游初 Apache-2.0）
 
 共享资源（references/）
   ├── 庭审当日时间线.md
@@ -343,6 +348,50 @@ criminal-case-visualization/
 
 ---
 
+### 12. gutachten-criminal-case（鉴定式全要件检视·分析增强轨道）
+
+**文件**：`~/.claude/skills/gutachten-criminal-case/SKILL.md`
+
+**功能**：
+- 鉴定式刑法案例研习：三阶层犯罪论（构成要件该当性→违法性→有责性）+ 鉴定式写作
+- 输出学术品位案例分析报告/理论检视底稿
+
+**触发词**：
+- 鉴定式案例分析
+- 三阶层
+- gutachten
+
+**核心特点**：
+- **正交于诉讼文书**——产出案例研习/理论底稿，**非**辩护词/阅卷笔录/起诉意见
+- 适用于复杂竞合·共犯的理论论证、无罪/罪轻的深度学说论证、案例研究文章
+- 第三方 skill（作者游初，Apache-2.0，源自 ailaw.cn）；经刑事OS调度时叠加全局规则
+- 法条须经元典MCP实时校验（本skill铁律）
+
+---
+
+### 13. criminal-dossier-processor（卷宗拆解·阅卷前物料准备）
+
+**文件**：`~/.claude/skills/criminal-dossier-processor/SKILL.md`
+
+**功能**：
+- 把一大本混编刑事卷宗PDF拆解为12个标准类目的独立PDF + 索引目录
+- 内置 OCR（tesseract + chi_sim）、水印清洗、关键词分类
+
+**触发词**：
+- 卷宗拆解
+- 拆卷宗
+- 卷宗分类
+- 卷宗OCR
+
+**核心特点**：
+- 纯本地运行，不联网，卷宗不外传
+- 12类目划分对应阅卷顺序（程序性文书/供述/证人/书证/鉴定…）
+- **律师复核索引为强制确认点**：分类靠关键词匹配，置信度<50%会在索引标记，分类错会致阅卷漏材料=Hard Fail
+- 外部引入（2026-05-29原版，2026-07-04接入刑事OS）
+- 输出落点：被OS调度时落案件文件夹，独立调用出桌面
+
+---
+
 ## 类型差异（A类 vs B类）
 
 | 项目 | A类：法律援助类 | B类：委托类 |
@@ -379,6 +428,11 @@ criminal-case-visualization/
    - 提取当事人、案号、罪名等信息
    - 调用 `case-info-extract` skill
    - **必须律师确认**
+
+3. **卷宗拆解（可选）**
+   - 混编卷宗PDF拆为12类目独立PDF + 索引目录
+   - 调用 `criminal-dossier-processor` skill
+   - **律师必须复核索引分类**（分类错误会致阅卷漏材料）
 
 ### 一、侦查阶段（拘留→批捕，无卷）
 
@@ -538,6 +592,10 @@ criminal-case-visualization/
 | 图表模板规范 | `criminal-case-visualization/references/chart-templates.md` | 各图表详细模板 |
 | SVG踩坑记录 | `criminal-case-visualization/references/svg-pitfalls.md` | 排版问题与解决方案 |
 | 客户沟通与服务可视化规范 | `criminal-client-comm/SKILL.md` | 对外轨道：服务计划书/通报/简报 |
+| 鉴定式全要件检视 | `gutachten-criminal-case/SKILL.md` | 分析增强轨道：三阶层+鉴定式（第三方skill，作者游初） |
+| 卷宗拆解 | `criminal-dossier-processor/SKILL.md` | 阅卷前物料准备：12类目PDF+索引（外部引入） |
+| 阅卷方法论（反哺） | `criminal-case-review/references/*.md` | 七要素表/多轨时间轴/突破口表/9类质证要点 |
+| 辩护词方法论（反哺） | `criminal-defense-statement/references/*.md` | Word格式/反推论证/类案检索 |
 
 ---
 
@@ -545,19 +603,21 @@ criminal-case-visualization/
 
 | 模块 | 当前版本 | 最后更新 |
 |------|----------|----------|
-| criminal-case-os | v3.0 | 2026-05-30 |
+| criminal-case-os | v3.2 | 2026-07-04 |
 | criminal-investigation | v1.0 | 2026-05-30 |
-| criminal-case-review | v2.0 | 2026-05-30 |
-| criminal-defense-strategy | v1.0 | 2026-05-30 |
+| criminal-case-review | v2.1 | 2026-07-04（反哺4个reference+阅卷顺序/三遍阅卷法/供述变化追踪） |
+| criminal-defense-strategy | v1.1 | 2026-07-04（反哺量刑预估公式） |
 | criminal-non-prosecution | v1.0 | 2026-05-30 |
 | criminal-plea-bargain | v1.0 | 2026-05-30 |
 | criminal-meeting | v1.0 | 2026-05-27 |
 | criminal-trial-examination | v1.0 | 2026-05-30 |
-| criminal-defense-statement | v1.0 | 2026-05-30 |
+| criminal-defense-statement | v1.1 | 2026-07-04（反哺3个reference+扩充质量清单） |
 | criminal-case-visualization | v1.1 | 2026-05-29 |
 | criminal-client-comm | v1.0 | 2026-05-30 |
+| gutachten-criminal-case | v3.1接入 | 2026-06 |
+| criminal-dossier-processor | v1.0（外部引入） | 2026-07-04 |
 
 ---
 
 **作者**：高澄（微信cheng715）
-**最后更新**：2026-05-30
+**最后更新**：2026-07-04

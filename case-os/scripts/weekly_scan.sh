@@ -2,9 +2,12 @@
 # 民事案件OS每周定期扫描 - launchd 调用入口
 # 扫描所有案件文件夹，输出结果到文件，通过微信推送
 
-SCAN_SCRIPT="$HOME/.codex/skills/case-os/scripts/scan_case_folders.py"
-RESULT_FILE="$HOME/.codex/skills/case-os/data/last-scan-result.txt"
-LOG_FILE="$HOME/.codex/skills/case-os/data/scan.log"
+# 基于脚本自身位置定位，不依赖 ~/.codex 或 ~/.claude 软链存在。
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DATA_DIR="$(cd "$SCRIPT_DIR/.." && pwd)/data"
+SCAN_SCRIPT="$SCRIPT_DIR/scan_case_folders.py"
+RESULT_FILE="$DATA_DIR/last-scan-result.txt"
+LOG_FILE="$DATA_DIR/scan.log"
 
 echo "=== 民事案件OS定期扫描 $(date '+%Y-%m-%d %H:%M:%S') ===" >> "$LOG_FILE"
 
@@ -23,6 +26,8 @@ RESULT=$(cat "$RESULT_FILE")
 
 # 通过微信 API 直接发送消息
 if [ -n "$RESULT" ]; then
+    # 扫描结果通过环境变量传入 python，避免在 python 里硬编码 data 路径。
+    export CASE_OS_SCAN_RESULT="$RESULT"
     python3 << 'PYTHON_SCRIPT' >> "$LOG_FILE" 2>&1
 import json
 import os
@@ -30,10 +35,8 @@ import time
 import urllib.request
 import urllib.error
 
-# 读取扫描结果
-result_file = os.path.expanduser('~/.claude/skills/case-os/data/last-scan-result.txt')
-with open(result_file, 'r') as f:
-    content = f.read().strip()
+# 读取扫描结果（由 shell 通过环境变量传入）
+content = os.environ.get('CASE_OS_SCAN_RESULT', '').strip()
 
 if not content:
     print('无扫描结果，跳过发送')

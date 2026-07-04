@@ -5,10 +5,16 @@ set -e
 
 AGENTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 HOME_PATH="/Users/Apple"  # 使用绝对路径
+# 自定位 case-os data 目录（不依赖 ~/.codex 或 ~/.claude 软链）
+DATA_DIR="$AGENTS_DIR/../data"
+# 字段格式: agent_name:label_prefix:plist_label:desc:schedule
+# agent_name = agents/<name>/ 目录名（start 找 install.sh 用）
+# label_prefix = launchd label 前缀（status 查询拼 com.claude.<prefix>）
+# plist_label = Library/LaunchAgents/ 下的 plist 文件名后缀（agent_name 与 plist label 不一定一致，如 court-sms-monitor → sms-monitor）
 AGENT_LIST=(
-    "weekly-scan:case-os.weekly-scan:案件周度扫描Agent:每周一早上8点"
-    "court-sms-monitor:caseos.sms-monitor:法院短信实时监控Agent:实时监控"
-    "batch-evidence::批量证据提取Agent:手动触发"
+    "weekly-scan:caseos.weekly-scan:weekly-scan:案件周度扫描Agent:每周一早上8点"
+    "court-sms-monitor:caseos.sms-monitor:sms-monitor:法院短信实时监控Agent:实时监控"
+    "batch-evidence::::批量证据提取Agent:手动触发"
 )
 
 # 颜色定义
@@ -47,8 +53,10 @@ print_header() {
 get_agent_status() {
     local agent_name=$1
     local label_prefix=$2
-    local plist_file="$HOME_PATH/Library/LaunchAgents/com.${label_prefix}.plist"
-    local label=$(launchctl list | grep "com.${label_prefix}" | awk '{print $1}')
+    local plist_label=$3
+    local plist_file="$HOME_PATH/Library/LaunchAgents/com.claude.caseos.${plist_label}.plist"
+    # launchctl list 每行格式: PID<TAB>Status<TAB>Label；用 awk 第 3 列精确匹配 label
+    local label=$(launchctl list | awk -v target="com.claude.${label_prefix}" '$3 == target {print $1; exit}')
 
     if [ ! -f "$plist_file" ]; then
         echo "未安装"
@@ -67,9 +75,9 @@ list_agents() {
     printf "%-25s %-30s %-15s\n" "---------" "----" "----"
 
     for agent_info in "${AGENT_LIST[@]}"; do
-        IFS=':' read -r agent_name label_prefix desc schedule <<< "$agent_info"
+        IFS=':' read -r agent_name label_prefix plist_label desc _ <<< "$agent_info"
 
-        status=$(get_agent_status "$agent_name" "$label_prefix")
+        status=$(get_agent_status "$agent_name" "$label_prefix" "$plist_label")
         printf "%-25s %-30s %-15s\n" "$agent_name" "$desc" "$status"
     done
 
@@ -81,7 +89,7 @@ start_all_agents() {
     print_header "启动所有Agent"
 
     for agent_info in "${AGENT_LIST[@]}"; do
-        IFS=':' read -r agent_name desc schedule <<< "$agent_info"
+        IFS=':' read -r agent_name _label_prefix _plist_label desc _ <<< "$agent_info"
 
         # 跳过手动触发的Agent
         if [ "$agent_name" = "batch-evidence" ]; then
@@ -107,14 +115,14 @@ stop_all_agents() {
     print_header "停止所有Agent"
 
     for agent_info in "${AGENT_LIST[@]}"; do
-        IFS=':' read -r agent_name desc schedule <<< "$agent_info"
+        IFS=':' read -r agent_name _label_prefix plist_label desc _ <<< "$agent_info"
 
         # 跳过手动触发的Agent
         if [ "$agent_name" = "batch-evidence" ]; then
             continue
         fi
 
-        plist_file="$HOME/Library/LaunchAgents/com.claude.caseos.${agent_name}.plist"
+        plist_file="~/Library/LaunchAgents/com.claude.caseos.${plist_label}.plist"
 
         if [ -f "$plist_file" ]; then
             print_info "停止 $agent_name..."
@@ -146,16 +154,16 @@ view_logs() {
         echo ""
         echo "可用的Agent:"
         for agent_info in "${AGENT_LIST[@]}"; do
-            IFS=':' read -r agent_name desc schedule <<< "$agent_info"
+            IFS=':' read -r agent_name _ _ _ _ <<< "$agent_info"
             echo "  - $agent_name"
         done
         return 1
     fi
 
-    log_file="$HOME/.claude/skills/case-os/data/${agent_name}.log"
+    log_file="$DATA_DIR/${agent_name}.log"
 
     if [ ! -f "$log_file" ]; then
-        log_file="$HOME/.claude/skills/case-os/data/${agent_name}-stdout.log"
+        log_file="$DATA_DIR/${agent_name}-stdout.log"
     fi
 
     if [ ! -f "$log_file" ]; then

@@ -3,10 +3,14 @@
 
 set -e
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 AGENT_DIR="$SCRIPT_DIR"
 SCAN_SCRIPT="$AGENT_DIR/scan.py"
-PLIST_FILE="$HOME/Library/LaunchAgents/com.claude.caseos.weekly-scan.plist"
+# 自定位 case-os 物理根（不依赖 ~/.codex 或 ~/.claude 软链）
+CASE_OS_ROOT="$(cd -P "$SCRIPT_DIR/../.." && pwd -P)"
+DATA_DIR="$CASE_OS_ROOT/data"
+# 用绝对 HOME，避免 sandbox $HOME=/var/folders/... 错位
+PLIST_FILE="~/Library/LaunchAgents/com.claude.caseos.weekly-scan.plist"
 
 echo "🔧 安装案件周度扫描Agent..."
 
@@ -45,10 +49,10 @@ cat > "$PLIST_FILE" << EOF
     </dict>
 
     <key>StandardOutPath</key>
-    <string>$HOME/.claude/skills/case-os/data/launchd-stdout.log</string>
+    <string>$DATA_DIR/launchd-stdout.log</string>
 
     <key>StandardErrorPath</key>
-    <string>$HOME/.claude/skills/case-os/data/launchd-stderr.log</string>
+    <string>$DATA_DIR/launchd-stderr.log</string>
 
     <key>RunAtLoad</key>
     <false/>
@@ -70,7 +74,7 @@ echo "✅ LaunchAgent已加载"
 echo ""
 echo "📋 调度信息："
 echo "   - 运行时间：每周一早上8点"
-echo "   - 日志路径：~/.claude/skills/case-os/data/launchd-*.log"
+echo "   - 日志路径：$DATA_DIR/launchd-*.log"
 echo ""
 echo "🧪 手动测试："
 echo "   python3 $SCAN_SCRIPT"

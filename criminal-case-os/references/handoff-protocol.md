@@ -110,10 +110,25 @@ use_mode: primary
 
 ---
 
+## 历史编号映射（v2.0 前 → v3.0 四阶段）
+
+| 旧编号 | 现步骤 |
+|--------|--------|
+| C2 | 准备·案件基础信息提取 |
+| C3 | 审查起诉·刑事阅卷 |
+| C4 | 审查起诉·辩护方案 |
+| C7 | 一审·辩护词 |
+| C10 | 对外轨道·客户沟通 |
+
+> v3.0 起改用四阶段结构，旧 C 编号仅见于历史文档与示例，新文档统一用阶段名。
+
+---
+
 ## 步骤间交接映射
 
 | 上游 | 下游 | 交接内容 |
 |------|------|----------|
+| criminal-dossier-processor | criminal-case-review | 拆解后的12类目独立PDF + 00_索引目录.md（可选前置；律师须复核索引分类） |
 | case-info-extract | criminal-case-review | 案件基础信息、案号、罪名、当事人信息 |
 | criminal-case-review | criminal-defense-strategy | 阅卷笔录、证据分析、疑点清单 |
 | criminal-defense-strategy | criminal-defense-statement | 辩护方案、辩点矩阵、主攻方向 |
@@ -122,6 +137,7 @@ use_mode: primary
 | criminal-case-review | criminal-trial-examination | 阅卷笔录、证据清单、质证要点 |
 | criminal-defense-strategy | criminal-trial-examination | 辩护方案、发问策略 |
 | criminal-defense-strategy | criminal-defense-statement | 辩护方案、辩点强度评估 |
+| criminal-case-review ↔ gutachten-criminal-case | （正交·双向） | 阅卷成果 ↔ 鉴定式全要件检视底稿（分析增强轨道，非诉讼文书，不替代阅卷/辩护词） |
 
 ---
 
@@ -170,8 +186,30 @@ use_mode: primary
 
 ---
 
+## 校验
+
+交接包生成后，用 `scripts/validate_handoff.py` 自检是否符合 schema：
+
+```bash
+# 校验 JSON 交接包
+python3 scripts/validate_handoff.py handoff-package.json
+
+# 校验 YAML 交接包（需 PyYAML）
+python3 scripts/validate_handoff.py handoff-package.yaml
+
+# 校验 markdown 里嵌的 YAML 代码块
+python3 scripts/validate_handoff.py 案件备忘录.md
+```
+
+通过则输出 source/target/material_count/pending_review 摘要；失败则定位到违规字段。
+
+> schema 不是摆设：跨 skill 交接时跑一次校验，能拦住"缺材料""target_skill 写错""enum 不匹配"等常见交接错误。
+
+---
+
 ## 变更历史
 
 | 版本 | 日期 | 更新内容 |
 |------|------|----------|
+| v1.1.0 | 2026-07-04 | 新增 validate_handoff.py 校验脚本与用法；步骤映射补 dossier/gutachten；加历史编号映射 |
 | v1.0.0 | 2026-06-07 | 初始版本，定义步骤间交接契约规范 |

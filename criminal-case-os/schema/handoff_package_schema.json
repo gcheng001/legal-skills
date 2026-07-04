@@ -28,6 +28,7 @@
       "enum": [
         "case-git-init",
         "case-info-extract",
+        "criminal-dossier-processor",
         "criminal-investigation",
         "criminal-case-review",
         "criminal-defense-strategy",
@@ -37,7 +38,8 @@
         "criminal-trial-examination",
         "criminal-defense-statement",
         "criminal-case-visualization",
-        "criminal-client-comm"
+        "criminal-client-comm",
+        "gutachten-criminal-case"
       ]
     },
     "target_skill": {
@@ -46,6 +48,7 @@
       "enum": [
         "case-git-init",
         "case-info-extract",
+        "criminal-dossier-processor",
         "criminal-investigation",
         "criminal-case-review",
         "criminal-defense-strategy",
@@ -55,7 +58,8 @@
         "criminal-trial-examination",
         "criminal-defense-statement",
         "criminal-case-visualization",
-        "criminal-client-comm"
+        "criminal-client-comm",
+        "gutachten-criminal-case"
       ]
     },
     "package_type": {

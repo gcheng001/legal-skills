@@ -3,6 +3,8 @@ name: criminal-defense-statement
 description: 辩护词、庭审辩论提纲与最后陈述辅导生成。用户说"辩护词""辩护意见""庭审辩论""最后陈述辅导"或由 criminal-case-os 调度时使用；必须在律师明确说"可以出了"之后才生成辩护词。
 metadata:
   author: Legal Skills Project
+  version: v1.1
+  last_updated: 2026-07-04
   trigger:
     - 辩护词
     - 辩护意见
@@ -65,7 +67,7 @@ metadata:
 | A类（法律援助） | XX法律援助中心指派 | 受援人 |
 | B类（委托） | 被告人或家属委托 | 委托人 |
 
-**首次调用时必须确认类型**，类型影响辩护词抬头、称谓及部分程序性表述。
+**类型继承规则**：先读案件目录 `CLAUDE.md` 的 `case_type` 字段；已定义则继承（**不重复询问**）；未定义则问一次并写回。类型影响辩护词抬头、称谓及部分程序性表述。
 
 ---
 
@@ -257,6 +259,23 @@ XXXX年XX月XX日
 - [ ] 与阅卷笔录、质证意见的论点一致（如有变化已说明原因）
 - [ ] 引用的法律条文已经元典核验，无幻觉风险
 - [ ] A/B类型已确认，称谓正确
+- [ ] 标题编号连续无跳号（大标题/一级/二级/三级规范见 `references/statement-word-format.md`）
+- [ ] 所有金额展示完整计算过程（公式→代入→来源→结论，见 `references/argumentation-methods.md`）
+- [ ] 数据前后一致，同一数字全文统一
+- [ ] 无英文标点混入中文文本
+- [ ] 无情绪化、攻击性表达，不评价被告人"反复无常"
+- [ ] 同一论证点不重复出现
+- [ ] Word导出格式映射清晰，不残留Markdown项目符号和分隔线
+
+### 方法论参考（按需加载 references/）
+
+| Reference | 用途 |
+|-----------|------|
+| `references/statement-word-format.md` | 辩护词专用 Markdown→Word 格式映射、标题编号规范、字体字号 |
+| `references/argumentation-methods.md` | 反推论证法、数据精确性原则、论证禁忌 |
+| `references/precedent-search-guide.md` | 类案检索要素、效力层级、元典MCP用法、量刑计算参考公式（与 criminal-defense-strategy 共用） |
+
+> 以上三个 reference 反哺自 defense-workflow（2026-07-04），原件存档于 `learned/external-skills/criminal-defense-workflow-原件-20260703/`
 
 ---
 

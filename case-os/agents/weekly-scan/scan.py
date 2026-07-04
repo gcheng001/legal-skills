@@ -14,11 +14,28 @@ from typing import Dict, List, Any
 
 
 # ==================== 配置 ====================
-SCAN_ROOTS = [
-    Path.home() / "Documents" / Documents / cases / "案件",
-]
+# case-os 物理根 = 脚本在 agents/weekly-scan/ 下，往上 3 层。
+# 不依赖 ~/.codex 或 ~/.claude 软链存在（两者都可能被清理）。
+_SKILL_ROOT = Path(__file__).resolve().parents[2]
+STATE_DIR = _SKILL_ROOT / "data"
 
-STATE_DIR = Path.home() / ".claude" / "skills" / "case-os" / "data"
+# 扫描根从配置文件读取，路径迁移后只改一处（每行一个绝对路径，# 注释、空行忽略）。
+SCAN_ROOTS_FILE = STATE_DIR / "scan-roots.txt"
+
+def _load_scan_roots():
+    if not SCAN_ROOTS_FILE.exists():
+        print(f"⚠️  case-os：扫描根配置缺失 → {SCAN_ROOTS_FILE}", file=sys.stderr)
+        return []
+    roots = []
+    for line in SCAN_ROOTS_FILE.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        roots.append(Path(line))
+    return roots
+
+SCAN_ROOTS = _load_scan_roots()
+
 LAST_SCAN_FILE = STATE_DIR / "last-scan-result.txt"
 PENDING_QUEUE_FILE = STATE_DIR / "pending-files.json"
 OUTPUT_DIR = Path.home() / "Desktop"
@@ -54,9 +71,12 @@ class CaseItem:
 # ==================== 核心扫描函数 ====================
 def find_case_folders() -> List[CaseItem]:
     """扫描所有案件文件夹（查找CLAUDE.md）"""
+    if not SCAN_ROOTS:
+        print(f"⚠️  case-os：未配置扫描根，请检查 {SCAN_ROOTS_FILE}", file=sys.stderr)
     cases = []
     for root in SCAN_ROOTS:
         if not root.exists():
+            print(f"⚠️  扫描根不可访问（跳过）：{root}", file=sys.stderr)
             continue
         for item in root.rglob("CLAUDE.md"):
             case_dir = item.parent
@@ -307,6 +327,17 @@ def main():
 
     # 扫描所有案件
     cases = find_case_folders()
+
+    # 所有扫描根都不可访问（典型：移动硬盘未连接）→ 写入状态文件并退出，
+    # 避免伪装成"0 个案件"或覆盖上一次的有效结果。
+    if SCAN_ROOTS and not any(r.exists() for r in SCAN_ROOTS):
+        msg = (f"⚠️ 案件周度扫描未执行 @ {datetime.now().strftime('%Y-%m-%d %H:%M')}\n"
+               f"原因：所有扫描根不可访问，移动硬盘是否未连接？\n"
+               + "\n".join(f"  - {r}" for r in SCAN_ROOTS))
+        print(msg)
+        save_scan_result(msg)
+        return
+
     print(f"发现 {len(cases)} 个案件文件夹")
 
     for case in cases:
