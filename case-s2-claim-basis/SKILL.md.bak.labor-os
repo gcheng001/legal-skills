@@ -5,19 +5,6 @@ description: '九步法S2-请求权基础。确定每项请求权所依据的法
 
 # case-s2-claim-basis（S2）请求权基础
 
-## 劳动案由扩展（条件触发）
-
-**触发条件**：案件 `CLAUDE.md` 的"案由"字段包含任一关键词："劳动争议""劳动合同""劳动报酬""解除劳动合同""经济补偿""加班费""工伤""竞业限制"。
-
-**触发后动作**：
-1. 检测 `~/.claude/skills/labor-os/SKILL.md` 是否存在；不存在 → 静默继续，不报错；
-2. 加载 `~/.claude/skills/labor-os/references/redlines-labor.md`（红线总账，只读引用）；
-3. 加载知识库：`~/.claude/skills/labor-os/references/knowledge/合同条款设计要点.md`、`浙江口径汇编.md`；
-4. 前置输出补充："**依浙江口径**：本结论引用了浙江省地方规定/裁判口径（详见浙江口径汇编）。"
-
-**不写 case-os-state.json 字段**；不阻塞主流程。
-劳动案件专属产物路径 `intermediate/劳动覆盖层/L*/`，详见 `~/.claude/skills/labor-os/SKILL.md`。
-
 ## 工作定位
 
 确定每项请求权所依据的法律规范（精确到条款号），鉴别法条性质（完全性法条 vs 倡导性法条），拆解构成要件。
