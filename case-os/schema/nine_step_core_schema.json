@@ -18,7 +18,10 @@
       "optional_fields": [
         "third_parties",
         "claim_amount",
-        "case_status"
+        "case_status",
+        "tense",
+        "material_maturity",
+        "agency_stance"
       ],
       "field_definitions": {
         "case_id": {
@@ -62,6 +65,21 @@
               "agent": {"type": "string"}
             }
           }
+        },
+        "tense": {
+          "type": "string",
+          "description": "时态（ADR-001 融合字段）：前瞻=一审前 / 回溯=二审再审。决定分析读数方向，mqc 双时态切换",
+          "enum": ["前瞻", "回溯"]
+        },
+        "material_maturity": {
+          "type": "string",
+          "description": "材料成熟度（ADR-001 融合字段）：S8 读此字段，材料薄时 fact_findings 自动标'待定+缺口'，吸收 mqc'分级不拒跑'铁律",
+          "enum": ["口述", "部分材料", "完整卷宗"]
+        },
+        "agency_stance": {
+          "type": "string",
+          "description": "代理立场（ADR-001 融合字段）：从我方当事人身份推出，不强制显式录。原告向/被告向，仅末端立场出口使用，不进主链分析（保法官中性）",
+          "enum": ["原告向", "被告向"]
         }
       }
     },
@@ -124,11 +142,14 @@
                 "party": {"type": "string"},
                 "legal_relationship": {"type": "string"},
                 "role": {"type": "string"},
-                "rights_basis": {"type": "string"}
+                "rights_basis": {"type": "string"},
+                "verification_status": {"type": "string", "enum": ["未验过", "已验过"], "description": "复验状态（ADR-002），未验过拦死不进S3"},
+                "qualitative_risk": {"type": "string", "description": "定性风险（ADR-002），基础站不住的原因"}
               }
             }
           }
-        }
+        },
+        "competition_choice": {"type": "string", "description": "请求权竞合初选（ADR-014），影响时效与举证"}
       }
     },
     "s3_defense_bases": {
@@ -152,11 +173,15 @@
                   "enum": ["权利阻碍性抗辩", "权利消灭性抗辩", "权利妨碍性抗辩"]
                 },
                 "defense_claim": {"type": "string"},
-                "legal_basis": {"type": "string"}
+                "legal_basis": {"type": "string"},
+                "defense_nature": {"type": "string", "enum": ["抗辩", "抗辩权"], "description": "抗辩/抗辩权二分（ADR-003），抗辩权须主张才生效"},
+                "assertion_required": {"type": "boolean", "description": "须主张标记（ADR-003）"},
+                "exhaustion_level": {"type": "string", "enum": ["已主张", "可能未主张", "极低概率"], "description": "穷举分级（ADR-003）"}
               }
             }
           }
-        }
+        },
+        "exhaustion_mode": {"type": "string", "enum": ["被动提取", "全谱系穷举"], "description": "穷举模式（ADR-003）"}
       }
     },
     "s4_elements_analysis": {
@@ -184,7 +209,8 @@
                       "article": {"type": "string"},
                       "current_equivalent": {"type": "string"},
                       "element_covered": {"type": "string"},
-                      "note": {"type": "string"}
+                      "note": {"type": "string"},
+                      "element_qualitative_risk": {"type": "string", "description": "要件定性风险（ADR-004）"}
                     }
                   }
                 },
@@ -200,7 +226,8 @@
               }
             }
           }
-        }
+        },
+        "dual_layer_note": {"type": "string", "enum": ["要件作底争点为主"], "description": "双层结构（ADR-004），要件底层原子↔争点聚合层，related_element作桥"}
       }
     },
     "s5_assertions": {
@@ -249,7 +276,8 @@
                   "issue_id": {"type": "string"},
                   "issue": {"type": "string"},
                   "related_element": {"type": "string"},
-                  "rights_basis": {"type": "string"}
+                  "rights_basis": {"type": "string"},
+                  "decisive_rank": {"type": "string", "description": "决定性争点排序（ADR-006），S9数据齐后排"}
                 }
               }
             },
@@ -260,7 +288,8 @@
               }
             }
           }
-        }
+        },
+        "opponent_attack_line": {"type": "string", "description": "对手主攻线预判（ADR-006），基于S3抗辩+S4要件"}
       }
     },
     "s7_proof_matrix": {
@@ -285,7 +314,9 @@
                 "evidence_law_basis": {"type": "string"},
                 "current_equivalent": {"type": "string"},
                 "burden_allocated_to": {"type": "string"},
-                "proof_requirement": {"type": "string"}
+                "proof_requirement": {"type": "string"},
+                "preliminary_prospect": {"type": "string", "enum": ["高", "中", "低", "待定"], "description": "初步前景（ADR-007），基于材料成熟度+责任归属"},
+                "proof_standard": {"type": "string", "enum": ["本证", "反证", "排除合理怀疑"], "description": "证明标准细化（ADR-007）"}
               }
             }
           }
@@ -319,7 +350,11 @@
               "review_status": {"type": "string"},
               "finding_basis": {"type": "string"},
               "evidence_support": {"type": "array"},
-              "related_issue": {"type": "string"}
+              "related_issue": {"type": "string"},
+              "prospect_level": {"type": "string", "enum": ["高", "中", "低", "存疑"], "description": "前景标准化四档（ADR-008）"},
+              "dispute_status": {"type": "string", "enum": ["有争议", "无争议"], "description": "争议状态（ADR-008）"},
+              "corrective_factor": {"type": "string", "description": "修正因素（ADR-008），让前景可追溯"},
+              "decisive_flag": {"type": "boolean", "description": "决定性标记（ADR-008），喂S9排序"}
             }
           }
         },
@@ -431,9 +466,12 @@
             "plaintiff_claim": {"type": "object"},
             "defendant_defense": {"type": "object"},
             "amount_recommendation": {"type": "object"},
-            "predict_marker": {"type": "string"}
+            "predict_marker": {"type": "string"},
+            "outcome_range": {"type": "object", "properties": {"upper": {"type": "string"}, "median": {"type": "string"}, "lower": {"type": "string"}}, "description": "结果区间（ADR-009），替代单点，单点作中位保留"},
+            "worst_case": {"type": "string", "description": "最坏情形（ADR-009）"}
           }
         },
+        "opponent_behavior_pred": {"type": "array", "items": {"type": "string"}, "description": "对手行为预判（ADR-009），上诉/鉴定/新证据"},
         "handoff_to_s10": {
           "type": "object",
           "properties": {
@@ -447,7 +485,7 @@
       }
     },
     "s10_consistency_check": {
-      "description": "S10幻觉校验和八个一致",
+      "description": "S10幻觉校验和八个一致。权威校验schema（核验纪律：类案占位/连号→CRITICAL阻断、法条+关联解释全谱、语义约束if-then）见 case-s10-hallucination/schema/s10_output_schema.json",
       "type": "object",
       "required_fields": [
         "step_id",
@@ -498,6 +536,7 @@
             "blocking_level": {"type": ["string", "null"]},
             "blocking_reasons": {"type": "array"},
             "statute_hallucination_blocked": {"type": "boolean"},
+            "case_hallucination_blocked": {"type": "boolean", "description": "类案占位/连号/案号不存在阻断（ADR-010 核验纪律，v11.2）"},
             "s9_unresolved_blocked": {"type": "boolean"},
             "s9_finalization_blocked": {"type": "boolean"},
             "ec_critical_failures": {"type": "array"},

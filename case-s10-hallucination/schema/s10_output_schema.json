@@ -237,6 +237,74 @@
         },
         "required": ["blocking_result"]
       }
+    },
+    {
+      "description": "语义约束8：类案连号指纹检出(case_consistency 含 serial_pattern_detected=true) 必须阻断：case_hallucination_blocked=true AND is_blocked=true AND can_enter_final=false。肖永吉案实证：12345/67890 连号=AI 编造",
+      "if": {
+        "properties": {
+          "hallucination_check": {
+            "properties": {
+              "case_consistency": {
+                "contains": {
+                  "properties": {
+                    "serial_pattern_detected": { "const": true }
+                  },
+                  "required": ["serial_pattern_detected"]
+                }
+              }
+            },
+            "required": ["case_consistency"]
+          }
+        },
+        "required": ["hallucination_check"]
+      },
+      "then": {
+        "properties": {
+          "blocking_result": {
+            "properties": {
+              "is_blocked": { "const": true },
+              "case_hallucination_blocked": { "const": true },
+              "can_enter_final": { "const": false }
+            },
+            "required": ["is_blocked", "case_hallucination_blocked", "can_enter_final"]
+          }
+        },
+        "required": ["blocking_result"]
+      }
+    },
+    {
+      "description": "语义约束9：类案案号反查不存在(case_consistency 含 case_number_exists=false) 必须阻断：case_hallucination_blocked=true AND is_blocked=true AND can_enter_final=false",
+      "if": {
+        "properties": {
+          "hallucination_check": {
+            "properties": {
+              "case_consistency": {
+                "contains": {
+                  "properties": {
+                    "case_number_exists": { "const": false }
+                  },
+                  "required": ["case_number_exists"]
+                }
+              }
+            },
+            "required": ["case_consistency"]
+          }
+        },
+        "required": ["hallucination_check"]
+      },
+      "then": {
+        "properties": {
+          "blocking_result": {
+            "properties": {
+              "is_blocked": { "const": true },
+              "case_hallucination_blocked": { "const": true },
+              "can_enter_final": { "const": false }
+            },
+            "required": ["is_blocked", "case_hallucination_blocked", "can_enter_final"]
+          }
+        },
+        "required": ["blocking_result"]
+      }
     }
   ],
 
@@ -299,28 +367,37 @@
       "properties": {
         "statute_accuracy": {
           "type": "array",
-          "description": "法条准确性检查结果列表",
+          "description": "法条准确性检查结果列表（含关联解释覆盖检查）。肖永吉案实证：引1191条漏侵权解释(一)第15条，致抗辩路径错误",
           "items": {
             "type": "object",
-            "required": ["statute_reference", "exists", "content_match", "risk_level"],
+            "required": ["statute_reference", "exists", "content_match", "related_interpretations_checked", "risk_level"],
             "properties": {
               "statute_reference": {"type": "string"},
               "exists": {"type": "boolean"},
               "content_match": {"type": "boolean"},
+              "related_interpretations_checked": {"type": "boolean", "description": "是否检索关联司法解释（查1191条连带查侵权解释(一)，查188条连带查时效规定等）"},
+              "missing_related_interpretations": {
+                "type": "array",
+                "items": {"type": "string"},
+                "description": "漏引的关联解释（如'侵权责任编解释(一)第15条'）。空数组=无漏引；非空=HIGH 风险预警（律师确认是否影响论证）"
+              },
               "risk_level": {"type": "string", "enum": ["低", "中", "高", "CRITICAL"]}
             }
           }
         },
         "case_consistency": {
           "type": "array",
-          "description": "案例一致性检查结果列表",
+          "description": "案例真实性+一致性检查结果列表（含案号反查元典库、连号指纹检测）。肖永吉案实证：AI 编造类案(12345/67890 连号)若不拦，上庭穿帮",
           "items": {
             "type": "object",
-            "required": ["case_reference", "relevance", "applicability"],
+            "required": ["case_reference", "case_number_exists", "serial_pattern_detected", "relevance", "applicability", "risk_level"],
             "properties": {
-              "case_reference": {"type": "string"},
+              "case_reference": {"type": "string", "description": "案号引用，如 (2021)京03民终12345号"},
+              "case_number_exists": {"type": "boolean", "description": "案号反查元典库是否存在（false=疑似编造）"},
+              "serial_pattern_detected": {"type": "boolean", "description": "是否检出连号指纹（12345/67890/23456/45678/11111/99999 等 AI 编造典型，true=高度疑似占位）"},
               "relevance": {"type": "string"},
-              "applicability": {"type": "string"}
+              "applicability": {"type": "string"},
+              "risk_level": {"type": "string", "enum": ["低", "中", "高", "CRITICAL"], "description": "CRITICAL=连号检出或案号不存在"}
             }
           }
         },
@@ -604,6 +681,7 @@
         "is_blocked",
         "blocking_reasons",
         "statute_hallucination_blocked",
+        "case_hallucination_blocked",
         "s9_unresolved_blocked",
         "s9_finalization_blocked",
         "ec_critical_failures",
@@ -627,6 +705,10 @@
         "statute_hallucination_blocked": {
           "type": "boolean",
           "description": "是否因法条幻觉被阻断"
+        },
+        "case_hallucination_blocked": {
+          "type": "boolean",
+          "description": "是否因类案占位/连号指纹/案号不存在被阻断"
         },
         "s9_unresolved_blocked": {
           "type": "boolean",

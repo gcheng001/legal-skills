@@ -3,17 +3,62 @@
   "created_at": "2026-05-21",
   "description": "九步法各步骤输入输出数据结构定义（S1-S10，每步完整字段）",
   "data_flow": {
-    "sequence": ["S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9", "S10"],
+    "sequence": [
+      "S1",
+      "S2",
+      "S3",
+      "S4",
+      "S5",
+      "S6",
+      "S7",
+      "S8",
+      "S9",
+      "S10"
+    ],
     "dependencies": {
-      "S2": ["S1.output.fixed_claims", "S1.output.claim_completeness"],
-      "S3": ["S1.output.fixed_claims", "S2.output.legal_relationship"],
-      "S4": ["S2.output.claim_basis_statutes", "S3.output.defense_basis_statutes"],
-      "S5": ["S4.output.claim_basis_analysis"],
-      "S6": ["S5.output.claim_completeness_check"],
-      "S7": ["S6.output.fact_disputes", "S6.output.law_disputes"],
-      "S8": ["S7.output.burden_allocation", "S7.output.heart_proof_disclosure"],
-      "S9": ["S4.output.claim_basis_analysis", "S8.output.fact_findings", "S8.output.evidence_evaluation", "S8.output.burden_result"],
-      "S10": ["S1.output.fixed_claims", "S2.output.legal_relationship", "S8.output.fact_findings", "S8.output.evidence_evaluation", "S9.output.element_imputation", "S9.output.judgment_conclusion", "S9.output.rationale", "S9.output.syllogistic_reasoning", "S9.output.handoff_to_s10"]
+      "S2": [
+        "S1.output.fixed_claims",
+        "S1.output.claim_completeness"
+      ],
+      "S3": [
+        "S1.output.fixed_claims",
+        "S2.output.legal_relationship"
+      ],
+      "S4": [
+        "S2.output.claim_basis_statutes",
+        "S3.output.defense_basis_statutes"
+      ],
+      "S5": [
+        "S4.output.claim_basis_analysis"
+      ],
+      "S6": [
+        "S5.output.claim_completeness_check"
+      ],
+      "S7": [
+        "S6.output.fact_disputes",
+        "S6.output.law_disputes"
+      ],
+      "S8": [
+        "S7.output.burden_allocation",
+        "S7.output.heart_proof_disclosure"
+      ],
+      "S9": [
+        "S4.output.claim_basis_analysis",
+        "S8.output.fact_findings",
+        "S8.output.evidence_evaluation",
+        "S8.output.burden_result"
+      ],
+      "S10": [
+        "S1.output.fixed_claims",
+        "S2.output.legal_relationship",
+        "S8.output.fact_findings",
+        "S8.output.evidence_evaluation",
+        "S9.output.element_imputation",
+        "S9.output.judgment_conclusion",
+        "S9.output.rationale",
+        "S9.output.syllogistic_reasoning",
+        "S9.output.handoff_to_s10"
+      ]
     }
   },
   "steps": {
@@ -82,7 +127,10 @@
       },
       "handoff_to_next": {
         "condition": "诉请固定完成且完整性验证通过",
-        "output_to_pass": ["fixed_claims", "claim_completeness.is_complete"],
+        "output_to_pass": [
+          "fixed_claims",
+          "claim_completeness.is_complete"
+        ],
         "next_step": "S2"
       },
       "blocking_conditions": [
@@ -98,13 +146,18 @@
         "fixed_claims": {
           "type": "array",
           "description": "S1输出的固定诉请",
-          "items": {"claim_id": "string", "claim_content": "string"},
+          "items": {
+            "claim_id": "string",
+            "claim_content": "string"
+          },
           "required": true
         },
         "claim_completeness": {
           "type": "object",
           "description": "S1输出的诉请完整性",
-          "properties": {"is_complete": "boolean"},
+          "properties": {
+            "is_complete": "boolean"
+          },
           "required": true
         }
       },
@@ -144,7 +197,10 @@
       },
       "handoff_to_next": {
         "condition": "法律关系认定完成，请求权基础规范确定",
-        "output_to_pass": ["legal_relationship", "claim_basis_statutes"],
+        "output_to_pass": [
+          "legal_relationship",
+          "claim_basis_statutes"
+        ],
         "next_step": "S3"
       },
       "blocking_conditions": [
@@ -160,13 +216,18 @@
         "fixed_claims": {
           "type": "array",
           "description": "S1输出的固定诉请",
-          "items": {"claim_id": "string", "claim_content": "string"},
+          "items": {
+            "claim_id": "string",
+            "claim_content": "string"
+          },
           "required": true
         },
         "legal_relationship": {
           "type": "object",
           "description": "S2输出的法律关系",
-          "properties": {"relationship_type": "string"},
+          "properties": {
+            "relationship_type": "string"
+          },
           "required": true
         },
         "defense_statement": {
@@ -209,7 +270,10 @@
       },
       "handoff_to_next": {
         "condition": "抗辩权基础规范确定完成，反诉识别完成",
-        "output_to_pass": ["defense_basis_statutes", "counterclaim_identification"],
+        "output_to_pass": [
+          "defense_basis_statutes",
+          "counterclaim_identification"
+        ],
         "next_step": "S4"
       },
       "blocking_conditions": [
@@ -225,13 +289,19 @@
         "claim_basis_statutes": {
           "type": "array",
           "description": "S2输出的请求权基础法条",
-          "items": {"statute_id": "string", "article_number": "string"},
+          "items": {
+            "statute_id": "string",
+            "article_number": "string"
+          },
           "required": true
         },
         "defense_basis_statutes": {
           "type": "array",
           "description": "S3输出的抗辩权基础法条",
-          "items": {"statute_id": "string", "article_number": "string"},
+          "items": {
+            "statute_id": "string",
+            "article_number": "string"
+          },
           "required": true
         }
       },
@@ -273,7 +343,10 @@
       },
       "handoff_to_next": {
         "condition": "构成要件分析完成，法条性质鉴别完成",
-        "output_to_pass": ["claim_basis_analysis.constitutive_elements", "defense_basis_analysis.constitutive_elements"],
+        "output_to_pass": [
+          "claim_basis_analysis.constitutive_elements",
+          "defense_basis_analysis.constitutive_elements"
+        ],
         "next_step": "S5"
       },
       "blocking_conditions": [
@@ -289,7 +362,10 @@
         "fixed_claims": {
           "type": "array",
           "description": "S1输出的固定诉请",
-          "items": {"claim_id": "string", "claim_content": "string"},
+          "items": {
+            "claim_id": "string",
+            "claim_content": "string"
+          },
           "required": true
         },
         "claim_basis_analysis": {
@@ -298,7 +374,10 @@
           "properties": {
             "constitutive_elements": {
               "type": "array",
-              "items": {"element_id": "string", "element_description": "string"}
+              "items": {
+                "element_id": "string",
+                "element_description": "string"
+              }
             }
           },
           "required": true
@@ -328,7 +407,9 @@
       },
       "handoff_to_next": {
         "condition": "诉讼主张完备性检查完成，无遗漏或矛盾",
-        "output_to_pass": ["claim_completeness_check.corresponds_to_basis"],
+        "output_to_pass": [
+          "claim_completeness_check.corresponds_to_basis"
+        ],
         "next_step": "S6"
       },
       "blocking_conditions": [
@@ -344,19 +425,27 @@
         "fixed_claims": {
           "type": "array",
           "description": "S1输出的固定诉请",
-          "items": {"claim_id": "string", "claim_content": "string"},
+          "items": {
+            "claim_id": "string",
+            "claim_content": "string"
+          },
           "required": true
         },
         "defense_claims": {
           "type": "array",
           "description": "S3输出的抗辩主张",
-          "items": {"defense_id": "string", "defense_content": "string"},
+          "items": {
+            "defense_id": "string",
+            "defense_content": "string"
+          },
           "required": true
         },
         "claim_completeness_check": {
           "type": "object",
           "description": "S5输出的完备性检查",
-          "properties": {"corresponds_to_basis": "boolean"},
+          "properties": {
+            "corresponds_to_basis": "boolean"
+          },
           "required": true
         }
       },
@@ -387,7 +476,10 @@
       },
       "handoff_to_next": {
         "condition": "争点归纳完成，事实争点和法律争点已区分",
-        "output_to_pass": ["fact_disputes", "law_disputes"],
+        "output_to_pass": [
+          "fact_disputes",
+          "law_disputes"
+        ],
         "next_step": "S7"
       },
       "blocking_conditions": [
@@ -403,13 +495,19 @@
         "fact_disputes": {
           "type": "array",
           "description": "S6输出的事实争点",
-          "items": {"dispute_id": "string", "related_element": "string"},
+          "items": {
+            "dispute_id": "string",
+            "related_element": "string"
+          },
           "required": true
         },
         "constitutive_elements": {
           "type": "array",
           "description": "S4输出的构成要件列表",
-          "items": {"element_id": "string", "element_description": "string"},
+          "items": {
+            "element_id": "string",
+            "element_description": "string"
+          },
           "required": true
         }
       },
@@ -446,7 +544,10 @@
       },
       "handoff_to_next": {
         "condition": "举证责任分配完成，心证公开完成",
-        "output_to_pass": ["burden_allocation", "proof_resource_review.resources_exhausted"],
+        "output_to_pass": [
+          "burden_allocation",
+          "proof_resource_review.resources_exhausted"
+        ],
         "next_step": "S8"
       },
       "blocking_conditions": [
@@ -462,19 +563,27 @@
         "burden_allocation": {
           "type": "array",
           "description": "S7输出的举证责任分配",
-          "items": {"element_id": "string", "burden_bearer": "string"},
+          "items": {
+            "element_id": "string",
+            "burden_bearer": "string"
+          },
           "required": true
         },
         "heart_proof_disclosure": {
           "type": "array",
           "description": "S7输出的心证公开记录",
-          "items": {"timestamp": "datetime", "preliminary_view": "string"},
+          "items": {
+            "timestamp": "datetime",
+            "preliminary_view": "string"
+          },
           "required": true
         },
         "proof_resource_review": {
           "type": "object",
           "description": "S7输出的证明资源审查",
-          "properties": {"resources_exhausted": "boolean"},
+          "properties": {
+            "resources_exhausted": "boolean"
+          },
           "required": true
         }
       },
@@ -537,7 +646,11 @@
       },
       "handoff_to_next": {
         "condition": "事实认定完成，真伪不明情况已处理",
-        "output_to_pass": ["fact_findings", "evidence_evaluation", "burden_result"],
+        "output_to_pass": [
+          "fact_findings",
+          "evidence_evaluation",
+          "burden_result"
+        ],
         "next_step": "S9"
       },
       "blocking_conditions": [
@@ -553,7 +666,10 @@
         "fact_findings": {
           "type": "array",
           "description": "S8输出的认定事实",
-          "items": {"fact_id": "string", "fact_content": "string"},
+          "items": {
+            "fact_id": "string",
+            "fact_content": "string"
+          },
           "required": true
         },
         "claim_basis_analysis": {
@@ -562,7 +678,10 @@
           "properties": {
             "constitutive_elements": {
               "type": "array",
-              "items": {"element_id": "string", "element_description": "string"}
+              "items": {
+                "element_id": "string",
+                "element_description": "string"
+              }
             }
           },
           "required": true
@@ -573,7 +692,10 @@
           "properties": {
             "constitutive_elements": {
               "type": "array",
-              "items": {"element_id": "string", "element_description": "string"}
+              "items": {
+                "element_id": "string",
+                "element_description": "string"
+              }
             }
           },
           "required": false
@@ -600,11 +722,21 @@
           "type": "object",
           "description": "裁判结论（对象化，pending_review）",
           "properties": {
-            "judgment_type": {"const": "preliminary"},
-            "plaintiff_claim": {"type": "object"},
-            "defendant_defense": {"type": "object"},
-            "amount_recommendation": {"type": "object"},
-            "predict_marker": {"const": "predict"}
+            "judgment_type": {
+              "const": "preliminary"
+            },
+            "plaintiff_claim": {
+              "type": "object"
+            },
+            "defendant_defense": {
+              "type": "object"
+            },
+            "amount_recommendation": {
+              "type": "object"
+            },
+            "predict_marker": {
+              "const": "predict"
+            }
           }
         },
         "syllogistic_reasoning": {
@@ -632,7 +764,13 @@
       },
       "handoff_to_next": {
         "condition": "要件归入完成，裁判结论已作出",
-        "output_to_pass": ["element_imputation", "judgment_conclusion", "syllogistic_reasoning", "handoff_to_s10", "rationale"],
+        "output_to_pass": [
+          "element_imputation",
+          "judgment_conclusion",
+          "syllogistic_reasoning",
+          "handoff_to_s10",
+          "rationale"
+        ],
         "next_step": "S10"
       },
       "blocking_conditions": [
@@ -648,19 +786,27 @@
         "fixed_claims": {
           "type": "array",
           "description": "S1输出的固定诉请",
-          "items": {"claim_id": "string", "claim_content": "string"},
+          "items": {
+            "claim_id": "string",
+            "claim_content": "string"
+          },
           "required": true
         },
         "legal_relationship": {
           "type": "object",
           "description": "S2输出的法律关系",
-          "properties": {"relationship_type": "string"},
+          "properties": {
+            "relationship_type": "string"
+          },
           "required": true
         },
         "fact_findings": {
           "type": "array",
           "description": "S8输出的认定事实",
-          "items": {"fact_id": "string", "fact_content": "string"},
+          "items": {
+            "fact_id": "string",
+            "fact_content": "string"
+          },
           "required": true
         },
         "judgment_conclusion": {
@@ -688,7 +834,7 @@
           "properties": {
             "statute_accuracy": {
               "type": "array",
-              "description": "法条准确性检查",
+              "description": "法条准确性（含关联解释覆盖检查；完整字段见 case-s10-hallucination/schema/s10_output_schema.json）",
               "items": {
                 "statute_reference": "string",
                 "exists": "boolean",
@@ -698,7 +844,7 @@
             },
             "case_consistency": {
               "type": "array",
-              "description": "案例一致性检查",
+              "description": "案例真实性+一致性（含案号反查元典库/连号指纹检测→CRITICAL阻断；完整字段见 case-s10-hallucination/schema/s10_output_schema.json）",
               "items": {
                 "case_reference": "string",
                 "relevance": "string",
@@ -720,26 +866,71 @@
           "type": "object",
           "description": "S9消费状态检查",
           "properties": {
-            "s9_read_status": {"type": "string", "enum": ["resolved", "partial", "unresolved"]},
-            "s9_json_parse": {"type": "boolean"},
-            "pending_review_status": {"type": "string"},
-            "predict_marker_present": {"type": "boolean"},
-            "finalization_language_detected": {"type": "boolean"},
-            "ec_critical_failures": {"type": "array", "items": {"type": "string"}}
+            "s9_read_status": {
+              "type": "string",
+              "enum": [
+                "resolved",
+                "partial",
+                "unresolved"
+              ]
+            },
+            "s9_json_parse": {
+              "type": "boolean"
+            },
+            "pending_review_status": {
+              "type": "string"
+            },
+            "predict_marker_present": {
+              "type": "boolean"
+            },
+            "finalization_language_detected": {
+              "type": "boolean"
+            },
+            "ec_critical_failures": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
           }
         },
         "blocking_result": {
           "type": "object",
           "description": "S10守门员阻断结果",
           "properties": {
-            "is_blocked": {"type": "boolean"},
-            "blocking_level": {"type": ["string", "null"]},
-            "blocking_reasons": {"type": "array", "items": {"type": "string"}},
-            "statute_hallucination_blocked": {"type": "boolean"},
-            "s9_unresolved_blocked": {"type": "boolean"},
-            "s9_finalization_blocked": {"type": "boolean"},
-            "ec_critical_failures": {"type": "array", "items": {"type": "string"}},
-            "can_enter_final": {"type": "boolean"}
+            "is_blocked": {
+              "type": "boolean"
+            },
+            "blocking_level": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "blocking_reasons": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "statute_hallucination_blocked": {
+              "type": "boolean"
+            },
+            "s9_unresolved_blocked": {
+              "type": "boolean"
+            },
+            "s9_finalization_blocked": {
+              "type": "boolean"
+            },
+            "ec_critical_failures": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "can_enter_final": {
+              "type": "boolean"
+            }
           }
         },
         "eight_consistency_check": {
@@ -801,7 +992,10 @@
       },
       "handoff_to_next": {
         "condition": "S10守门员阻断检查：blocking_result.can_enter_final=true 且 is_blocked=false 时方可进入FINAL",
-        "output_to_pass": ["blocking_result.can_enter_final", "quality_score"],
+        "output_to_pass": [
+          "blocking_result.can_enter_final",
+          "quality_score"
+        ],
         "next_step": "FINAL"
       },
       "blocking_conditions": [

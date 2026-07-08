@@ -123,6 +123,7 @@ metadata:
 
 | 事件 | 独立Skill | 触发条件 |
 |------|----------|----------|
+| **立场出口** | `case-stance-exit` | **S10通过后、对客交付前**：出立场打法清单（六类+根据可追溯）+ 客户摘要五维（ADR-013~017，承mqc） |
 | 写起诉状/答辩状 | `case-filing-gen` | S10通过后，律师确认 |
 | 法院短信 | `case-court-sms` | 收到法院短信 |
 | 案件讨论 | `case-discussion` | 随时发起 |
@@ -242,6 +243,7 @@ case-post-step.sh <案件路径> [步骤名称]
 | `/争点矩阵` | case-s6-dispute-matrix | 单独执行S6 |
 | `/裁判预测` | case-s9-judgment-predict | 单独执行S9 |
 | `/幻觉校验` | case-s10-hallucination | 手动触发S10 |
+| `/立场出口` | case-stance-exit | S10通过后出立场打法+客户摘要五维 |
 | `/工商查询 <企业名>` | case-cc-query | 企查查查询 |
 | `/风险查询 <企业名>` | case-cc-query | 企查查风险查询 |
 | `/状态` | civil-case-os | 查看本地权威状态与九步法进度 |
@@ -305,6 +307,7 @@ case-os/
 
 ## 版本历史
 
+- v11.2 - **九步法融合（case-os × mqc）**：①S10核验纪律强化（类案占位/连号→CRITICAL阻断，法条+关联解释全谱，语义约束7→9，肖永吉案实证）②字段层扩展（ADR-001~009，case_basic_info+S2-S9 optional字段，required未动向后兼容）③末端立场出口层（新子skill `case-stance-exit`，承mqc stance-playbook+deliverable-client）④融合ADR写入 `references/adr-0003`。主链法官中性零侵入，立场只在末端出口
 - v11.1 - **改名民事案件OS**：name改为civil-case-os，启动指令改为"民事OS"，消除与刑事OS的歧义
 - v11.0 - **四件套改造**：按DEV/HANDOFF/ORCHESTRATION/EVALUATION规范重构，SKILL.md从758行精简到约350行，外迁6个references文件，新增handoff_package_schema.json和evaluation-guide.md
 - v10.1-codex-20260604-sync-enhanced - **同步脚本增强**：sync-claude-md-to-feishu.py 新增自动计算举证期限、上诉期截止
