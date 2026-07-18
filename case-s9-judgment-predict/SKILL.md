@@ -1,6 +1,6 @@
 ---
 name: case-s9-judgment-predict
-description: 九步法S9-要件归入与裁判预测。将事实归入构成要件，预测裁判结果和金额。TRIGGER when: 用户输入"裁判预测"或由case-os总控调度。
+description: 九步法S9-要件归入与裁判预测。将事实归入构成要件，预测裁判结果和金额。TRIGGER when: 由case-os总控调度，或在案件目录内使用命令"/裁判预测"。案件流程外裸说"裁判预测/胜负预判/判决前预判"→ 走 mqc-claim-basis-nine-step 快速预判引擎，不触发本skill。
 ---
 
 # case-s9-judgment-predict（S9）要件归入与裁判预测
@@ -15,6 +15,14 @@ description: 九步法S9-要件归入与裁判预测。将事实归入构成要�
 **执行后**：调用Hook脚本更新状态
 
 ---
+
+## 方法论真源（引用 live mqc 引擎，不复制）
+
+结果区间/最坏情形/对手行为预判/类案效力等级的**方法论以 mqc 引擎为唯一真源**（ADR-0003 融合，2026-07-18 收敛）：
+- `../mqc-claim-basis-nine-step/references/engine/03-adversarial-and-outcome.md` — 对手行为预判（抗辩危险度排序）+ 焦点合成 + 结果区间（主文站 Tenorierung：全部/部分支持/驳回诉请/裁定驳回起诉 + 最坏情形，只定性区间不数值承诺）
+- `../mqc-claim-basis-nine-step/references/retrieval-spec.md` — 类案效力等级（指导性案例→最高法典型→省高院参考→上级本院，法发〔2020〕24号）
+- `../mqc-claim-basis-nine-step/references/epistemics.md` — 三标出厂（置信度·来源·立场方向）+ 真伪不明标准句
+case-os 自有 `nine_step_*.json` 只管流程契约与门禁，不再作为方法论来源维护。
 
 ## 九步法资源接入（强制）
 

@@ -10,7 +10,7 @@ metadata:
     - civil-case-os
 ---
 
-# civil-case-os 民事案件操作系统（总控）v11.1
+# civil-case-os 民事案件操作系统（总控）v11.3
 
 ## 工作定位
 
@@ -66,6 +66,18 @@ metadata:
 - `case-os` / `case os`
 
 > 兼容规则：历史触发词"案件OS"默认指向本民事案件OS；刑事案件专项流程必须使用 `criminal-case-os` 或"刑事案件OS"触发。
+
+### 九步法双入口分流（ADR-0003 融合收敛，2026-07-18）
+
+同一套方法论（邹碧华九步 + 请求权基础 + 规范说），两个门，按场景分流：
+
+| 场景 | 入口 | 说明 |
+|------|------|------|
+| 案件目录内全流程办案 | 本总控调度 S1-S10 | 法官中性主链 + S10门禁 + 末端 `case-stance-exit` 立场出口 |
+| 案件流程外快速预判（"请求权基础/胜负预判/判决前预判/证明前景"等裸触发词） | `mqc-claim-basis-nine-step` | 两闸确认后直出 Word 研判报告，不建案件目录 |
+| S10 通过后要对客 Word 研判报告 | `mqc-claim-basis-nine-step`（吃主链产物） | 主链 S2/S4/S8/S9 结论作为其闸一/闸二预填输入 |
+
+**法律知识唯一真源**：案由→请求权基础查表统一用 `mqc-claim-basis-nine-step/references/claim-basis-table.md`（验真数据）；case-os 自有 `nine_step_*.json` 只管流程契约与门禁。S2/S9 的 SKILL.md 已落此规则。
 
 ### 双端独立运行与跨端断点接续（2026-05-24）
 
@@ -124,6 +136,7 @@ metadata:
 | 事件 | 独立Skill | 触发条件 |
 |------|----------|----------|
 | **立场出口** | `case-stance-exit` | **S10通过后、对客交付前**：出立场打法清单（六类+根据可追溯）+ 客户摘要五维（ADR-013~017，承mqc） |
+| **Word研判报告** | `mqc-claim-basis-nine-step` | S10通过后律师要对客决策件：主链产物预填两闸，直出Word研判报告（结论先行三层+三图） |
 | 写起诉状/答辩状 | `case-filing-gen` | S10通过后，律师确认 |
 | 法院短信 | `case-court-sms` | 收到法院短信 |
 | 案件讨论 | `case-discussion` | 随时发起 |
@@ -307,6 +320,7 @@ case-os/
 
 ## 版本历史
 
+- v11.3 - **九步法融合收尾（合并成一套方法论、保留两个入口）**：①触发词分流——裸说"请求权基础/裁判预测/胜负预判"走 mqc 快速预判引擎，案件流程内 S2/S9 只由总控调度或案件目录内命令触发（撞车消除）②法律知识唯一真源——案由→请求权基础查表统一收敛到 mqc `claim-basis-table.md`（验真数据），case-os 自有 nine_step_*.json 降为纯流程契约与门禁③S10 通过后新增 Word 研判报告出口（mqc 引擎吃主链产物）④对齐 mqc v1.2.0（两闸/立场五值/中立模式/能力槽/分层核验）
 - v11.2 - **九步法融合（case-os × mqc）**：①S10核验纪律强化（类案占位/连号→CRITICAL阻断，法条+关联解释全谱，语义约束7→9，肖永吉案实证）②字段层扩展（ADR-001~009，case_basic_info+S2-S9 optional字段，required未动向后兼容）③末端立场出口层（新子skill `case-stance-exit`，承mqc stance-playbook+deliverable-client）④融合ADR写入 `references/adr-0003`。主链法官中性零侵入，立场只在末端出口
 - v11.1 - **改名民事案件OS**：name改为civil-case-os，启动指令改为"民事OS"，消除与刑事OS的歧义
 - v11.0 - **四件套改造**：按DEV/HANDOFF/ORCHESTRATION/EVALUATION规范重构，SKILL.md从758行精简到约350行，外迁6个references文件，新增handoff_package_schema.json和evaluation-guide.md

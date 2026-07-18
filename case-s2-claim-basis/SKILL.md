@@ -1,6 +1,6 @@
 ---
 name: case-s2-claim-basis
-description: '九步法S2-请求权基础。确定每项请求权所依据的法律规范，鉴别法条性质（完全性vs倡导性），拆解构成要件。TRIGGER when: 用户输入"请求权基础"或由case-os总控调度。'
+description: '九步法S2-请求权基础。确定每项请求权所依据的法律规范，鉴别法条性质（完全性vs倡导性），拆解构成要件。TRIGGER when: 由case-os总控调度，或在案件目录内使用命令"/请求权基础"。案件流程外裸说"请求权基础/胜负预判"→ 走 mqc-claim-basis-nine-step 快速预判引擎，不触发本skill。'
 ---
 
 # case-s2-claim-basis（S2）请求权基础
@@ -40,6 +40,13 @@ description: '九步法S2-请求权基础。确定每项请求权所依据的法
 ### 第二步：确定法律规范
 
 **红线**：针对每项请求权，都必须确定所依据的法律规范，全部录入 `legal_articles` 数组。
+
+**法律知识唯一真源（九步法融合收敛，2026-07-18）**：
+案由→请求权基础的查表，**先查** `../mqc-claim-basis-nine-step/references/claim-basis-table.md`
+（缪奇川引擎数据表，已对官方原文验真，含证明责任分配/典型抗辩/决定性要件提示 11 字段）。
+- 表内命中案由 → 以该表条目为基准展开（条号带 `[✓核验]` 标签的可直接用；`【待核验】` 的仍须元典复验）；
+- 表外案由 → 照旧走五步找法 + 元典复验，并在输出中记 `claim_basis_table_hit: false`（供数据驱动扩表）。
+case-os 自有的 `nine_step_*.json` 只管**流程契约与门禁**（schema/检查清单/失败模式），不再作为法律知识来源维护。
 
 **操作步骤**：
 1. 读取 S1 的所有诉讼请求
@@ -245,6 +252,10 @@ mcp__pkulaw-law-search__get_article(title="中华人民共和国民法典", numb
 **备用选项**（需手动启用）：
 - `mcp__pkulaw-law-search__search_article` — 法条检索（北大法宝MCP，当前已禁用）
 - `mcp__pkulaw-law-search__get_article` — 法条内容获取（北大法宝MCP，当前已禁用）
+
+**法律知识真源**（引用 live mqc 引擎，不复制）：
+- `../mqc-claim-basis-nine-step/references/claim-basis-table.md` — 案由→请求权基础对照表（验真数据，先查表后找法）
+- `../mqc-claim-basis-nine-step/references/engine/01-claim-and-defense.md` — 找法方法（五步找法+抗辩/抗辩权二分），表外案由时参照
 
 **法条性质鉴别**（引用 live case-os 资源，不复制）：
 - `../case-os/references/nine_step_checklist.json` — 法条性质鉴别依据（第 16、17 项）

@@ -67,6 +67,16 @@
 |---|---|---|
 | 核验纪律 | ✅ 已落（2026-07-08） | `case-s10-hallucination/schema/s10_output_schema.json` + `SKILL.md` |
 | 融合 ADR 写入 | ✅ 本 ADR | `case-os/references/adr-0003-nine-step-fusion.md` |
-| 字段层扩展 | 🔵 待做 | `case-os/schema/nine_step_core_schema.json` + `references/nine_step_output_schemas.json` |
-| 末端出口层 | 🔵 待做 | 立场打法子 skill（新建） |
+| 字段层扩展 | ✅ 已落（v11.2） | `case-os/schema/nine_step_core_schema.json` + `references/nine_step_output_schemas.json`（ADR-001~009，optional 向后兼容） |
+| 末端出口层 | ✅ 已落（v11.2） | `case-stance-exit`（引用 mqc 表达层不复制） |
 | 详细 17 ADR | ✅ 已成 | `~/Codepilot/skill-merge-nine-step/融合-ADR与术语表.md` |
+| 触发词分流（撞车消除） | ✅ 已落（2026-07-18，v11.3） | case-s2/s9 description：裸触发词让位 mqc 快速引擎，案件流程内只由总控调度 |
+| 法律知识唯一真源 | ✅ 已落（2026-07-18，v11.3） | S2 先查 mqc `claim-basis-table.md`（验真数据），S9 方法论锚 mqc engine/03 + retrieval-spec + epistemics；case-os `nine_step_*.json` 降为纯流程契约与门禁 |
+| 对齐 mqc v1.2.0 + 管道桥 | ✅ 已落（2026-07-18） | mqc SKILL.md §3.3 新增"桥（case-os 管道 → 九步法）"：主链产物预填两闸，S10 后出 Word 研判报告 |
+
+## 融合终态（2026-07-18 收敛，主人拍板"合并成一套、保留两个入口"）
+
+**一套方法论、一处法律知识真源（mqc 验真表）、两个门**：
+- 门一：案件目录内全流程办案（case-os 主链，法官中性，S10 门禁，末端立场出口）
+- 门二：案件流程外快速预判（mqc 两闸引擎，Word 研判报告，不建案件目录）
+- 桥：S10 通过后主链产物可直接喂 mqc 出对客决策件（预填两闸，闸二仍停）
