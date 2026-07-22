@@ -67,9 +67,30 @@
 | `criminal-meeting` | 刑事会见笔录（基于阅卷笔录生成发问清单） | 阅卷完成 | **是** |
 | `criminal-trial-examination` | 庭前会议提纲+排非申请、庭审发问+举证质证提纲（含质证指令卡、三板斧、总分总质证法） | 阅卷/辩护方案 | **是** |
 | `criminal-defense-statement` | 辩护词+庭审辩论口袋版+最后陈述辅导（含模块化A/B方案） | 辩护方案 | **是**（"可以出了"才生成） |
+| **`criminal-sentencing-defense`**（v3.3 新增） | 一审量刑辩护专项：量刑计算表(工作底稿)+ 量刑辩护意见(正式文书,可独立提交);面向法院 | 辩护方案 | **是** |
 | `criminal-case-visualization` | 刑事可视化图表（全套8张图，任意阶段可用） | 阅卷完成 | 否（生成后审阅） |
 
 **红线**：辩护词适用最严确认红线——律师明确说"可以出了"之后才生成。
+
+**v3.3 受众划界(ADR 0005)**:`criminal-plea-bargain` 面向检察院(审查起诉阶段,具结前);`criminal-sentencing-defense` 面向法院(一审阶段,具结后)。两者按"受众+阶段"严格划界,不得混用。
+
+---
+
+## 救济阶段(v3.3,OS 不调度)
+
+| 独立Skill | 职责 | 触发方式 |
+|----------|------|----------|
+| `criminal-appeal` | 上诉状、申诉状、再审申请书(三程序合一) | **律师手动触发**,OS 不调度;触发时加载全局规则 |
+
+**ADR 0001 与 0004 安排**:救济阶段不在 OS 一期边界内,由独立 skill 承载,律师手动触发;触发时加载全局规则等同 OS 调度。详见 `docs/adr/0004-appeal-standalone.md`。
+
+---
+
+## 结案归档(v3.3 新增)
+
+| Skill | 职责 | 触发 |
+|-------|------|------|
+| `case-archive` | 卷宗归档、经验沉淀 | 结案后律师手动触发,材料清单见 `references/刑事归档清单.md` |
 
 ---
 
@@ -97,10 +118,13 @@
 | 文件 | 用途 |
 |------|------|
 | `references/庭审当日时间线.md` | 庭审当天律师标准动作时间线 |
-| `references/非法证据排除速查.md` | 按证据类型的排非规则速查 |
-| `references/刑事文书格式规范.md` | 全系统刑事文书统一Word格式基准 |
+| `references/非法证据排除速查.md` | 按证据类型的排非规则速查（v3.3 与外部并集更新） |
+| `references/刑事文书格式规范.md` | 全系统刑事文书统一Word格式基准（v3.3 新增两层目录/Word版/落款规则） |
 | `references/刑事法律依据索引.md` | 各阶段法条映射（引用前须元典验证） |
 | `references/全流程风险速查.md` | 全流程风险自查清单（非考核工具） |
+| `references/刑事归档清单.md` | v3.3 新增,case-archive 归档材料清单与装订顺序 |
+| `references/crime-elements/*.md` | v3.3 新增,5 份罪名要件库(经济/职务/财产/暴力/毒品),按状态头加载 |
+| `references/cross-disciplinary/*.md` | v3.3 新增,3 份跨专业知识库(法医学/司法会计/司法精神病),按状态头加载,仅供审查/质证/发问 |
 
 ---
 
@@ -122,5 +146,6 @@
 
 | 版本 | 日期 | 更新内容 |
 |------|------|----------|
+| v1.2.0 | 2026-07-22 | v3.3 融合 criminal-defense-workflow:一审阶段新增 criminal-sentencing-defense(ADR 0005 受众划界);新增救济阶段(criminal-appeal,ADR 0004 不进调度)与结案归档(case-archive);共享资源新增 8 份知识库 + 归档清单 |
 | v1.1.0 | 2026-07-04 | 准备组新增 criminal-dossier-processor（卷宗PDF拆解）为阅卷前可选前置；criminal-case-review 标注可选前置 |
 | v1.0.0 | 2026-06-07 | 从SKILL.md外迁，独立为workflow.md |

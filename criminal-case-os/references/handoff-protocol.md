@@ -131,12 +131,14 @@ use_mode: primary
 | criminal-dossier-processor | criminal-case-review | 拆解后的12类目独立PDF + 00_索引目录.md（可选前置；律师须复核索引分类） |
 | case-info-extract | criminal-case-review | 案件基础信息、案号、罪名、当事人信息 |
 | criminal-case-review | criminal-defense-strategy | 阅卷笔录、证据分析、疑点清单 |
-| criminal-defense-strategy | criminal-defense-statement | 辩护方案、辩点矩阵、主攻方向 |
-| criminal-defense-strategy | criminal-non-prosecution | 辩护方案、不起诉理由 |
+| criminal-defense-strategy | criminal-defense-statement | 辩护方案、辩点矩阵、主攻方向 + **辩点处置清单(v3.3 必填)** |
+| criminal-defense-strategy | criminal-non-prosecution | 辩护方案、不起诉理由 + **辩点处置清单(v3.3 必填)** |
+| criminal-defense-strategy | criminal-sentencing-defense | 辩护方案、量刑情节 + **辩点处置清单(v3.3 必填)** |
 | criminal-case-review | criminal-meeting | 阅卷笔录、待核实问题清单 |
 | criminal-case-review | criminal-trial-examination | 阅卷笔录、证据清单、质证要点 |
 | criminal-defense-strategy | criminal-trial-examination | 辩护方案、发问策略 |
-| criminal-defense-strategy | criminal-defense-statement | 辩护方案、辩点强度评估 |
+| criminal-defense-strategy | criminal-defense-statement | 辩护方案、辩点强度评估 + **辩点处置清单(v3.3 必填)** |
+| criminal-defense-strategy | criminal-appeal | 辩护方案 + 一审文书 + **辩点处置清单(确保上诉理由不与一审辩护矛盾)** |
 | criminal-case-review ↔ gutachten-criminal-case | （正交·双向） | 阅卷成果 ↔ 鉴定式全要件检视底稿（分析增强轨道，非诉讼文书，不替代阅卷/辩护词） |
 
 ---
@@ -163,6 +165,47 @@ use_mode: primary
 - 判断精度会受影响
 - 哪些信息是推定的
 - 哪些结论缺少原文支撑
+
+---
+
+## 辩点处置清单（v3.3 必填字段）
+
+> **所有从 `criminal-defense-strategy` 出发的交接包,必须在标准结构之外追加「辩点处置清单」区块,作为下游 skill(尤其是 `criminal-defense-statement`、`criminal-sentencing-defense`、`criminal-appeal`)的强制依据。**
+
+### 必填字段
+
+每条辩点须填写以下五项,缺一即视为**弱交接**:
+
+| 字段 | 说明 |
+|------|------|
+| **辩点 ID** | 唯一标识(如 `D-01`、`D-02`) |
+| **辩点内容** | 简短陈述(一句话) |
+| **上游处置** | 采用 / 放弃 / 降级 |
+| **理由** | 选择该处置的具体理由(证据/风险/当事人意愿) |
+| **风险揭示** | 该处置可能带来的不利后果与补救路径 |
+
+### 模板
+
+```yaml
+disposition_list:
+  - id: D-01
+    content: 主张汪欣仅领取工资,13439 元系劳动报酬而非违法所得
+    upstream_decision: 采用(主攻)
+    reason: MTT 小费收入缺乏"以营利为目的"的主观故意支撑
+    risk: 若法院不采纳,需准备"退赃退赔"备选主张
+
+  - id: D-02
+    content: 主张案件应定性为智力竞技而非开设赌场
+    upstream_decision: 放弃
+    reason: 已具结,翻供风险高
+    risk: 若不写入"放弃辩点论证",违反 soul.md §2.1 独立立场条款
+```
+
+### 验证规则
+
+- 下游 skill(尤其是 `criminal-defense-statement`)生成正式文书前,必须**逐辩点核对上游处置**,禁止矛盾表述
+- 若发现矛盾,立即回退上游 `criminal-defense-strategy` 复核,**不得跳步继续**
+- 验证脚本:可扩展 `scripts/validate_handoff.py` 增加 `disposition_list` 必填校验
 
 ---
 
@@ -211,5 +254,6 @@ python3 scripts/validate_handoff.py 案件备忘录.md
 
 | 版本 | 日期 | 更新内容 |
 |------|------|----------|
+| v1.2.0 | 2026-07-22 | v3.3 新增「辩点处置清单」必填字段(治 T2 与 T5 流水线矛盾);交接映射补 sentencing-defense 与 appeal |
 | v1.1.0 | 2026-07-04 | 新增 validate_handoff.py 校验脚本与用法；步骤映射补 dossier/gutachten；加历史编号映射 |
 | v1.0.0 | 2026-06-07 | 初始版本，定义步骤间交接契约规范 |

@@ -359,3 +359,17 @@ Step 6  生成正式《认罪认罚协商策略意见书》
 - **推演方案及任何让步底线，须经当事人知情确认后方可执行协商**；不得在当事人未授权的情况下向检方做出实质让步承诺。
 
 ---
+
+---
+
+## v3.3 增量:边界说明——一审量刑文书移交 criminal-sentencing-defense
+
+> 本 skill 的工作止于审查起诉阶段的认罪认罚具结。**进入一审阶段后,所有量刑辩护工作(含量刑意见、缓刑论证、罚金测算、类案同判表)由 `criminal-sentencing-defense` 独立承载**(详见 ADR 0005 受众划界)。
+
+具体边界:
+
+- ✅ 本 skill 输出:与检察官的协商策略、底线条款、交换筹码、推演方案
+- ❌ 不再输出:呈交法院的《量刑辩护意见》(由 `criminal-sentencing-defense` 生成)
+- ❌ 不再输出:类案同判表(由 `criminal-sentencing-defense` 生成,需元典逐号核验)
+
+handoff 衔接:本 skill 输出的「认罪认罚协商策略意见书」中已确认的量刑建议,可作为 `criminal-sentencing-defense` 的输入之一(详见 handoff-protocol.md 步骤映射)。

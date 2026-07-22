@@ -1,5 +1,7 @@
 # 刑事案件OS体系总览
 
+> **v3.3 备注(2026-07-22)**:融合 criminal-defense-workflow v3.1.0(license: private)。新增 `criminal-sentencing-defense`(一审量刑辩护,ADR 0005 受众划界)、`criminal-appeal`(救济阶段,ADR 0004 不进调度);新增 8 份知识库(罪名要件 5 + 跨专业 3)按状态头强制加载;`references/redlines.md` 新增三条铁律(案内时间锚定 / 正式文书出厂闸门 / 量刑主张不损当事人利益);`references/handoff-protocol.md` 新增「辩点处置清单」必填字段;`references/soul.md` §2.1 强化定性争点独立检视;`references/evaluation-guide.md` 新增评估维度;`references/刑事文书格式规范.md` 新增两层目录与 Word 版与落款规则;`references/刑事归档清单.md` 与 `case-archive` 接入。详见 `CONTEXT.md` 与 `docs/adr/0004-appeal-standalone.md`、`docs/adr/0005-sentencing-audience-boundary.md`。
+
 ## 概述
 
 刑事案件OS（criminal-case-os）是刑事案件办理的完整操作系统，包含总控调度器和多个子技能模块，以**刑事诉讼真实阶段**为主线，覆盖从侦查（拘留→批捕）、审查起诉到一审的全流程辩护工作。

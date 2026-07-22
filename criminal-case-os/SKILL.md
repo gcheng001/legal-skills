@@ -10,7 +10,7 @@ metadata:
     - criminal-case-os
 ---
 
-# criminal-case-os 刑事案件操作系统（总控）v3.2
+# criminal-case-os 刑事案件操作系统（总控）v3.3
 
 ## 工作定位
 
@@ -55,6 +55,10 @@ metadata:
 - **阅卷笔录专属红线**：逐部分确认，禁止一次性生成
 - **辩护词专属红线**：律师明确说"可以出了"之后才生成
 - **客户沟通专属红线**：脱敏，不泄底牌
+- **案内时间锚定铁律（v3.3 新增）**：以卷内最新日期为案件现在时，禁止用系统真实日期推导程序状态
+- **正式文书出厂闸门（v3.3 新增）**：无内部标签/emoji/勾选、落款从状态头读取、必须生成 Word 版
+- **量刑主张不得损害当事人利益（v3.3 新增）**：缓刑考验期取法定最低，罚金取法定下限
+- **辩点处置清单（v3.3 新增）**：`criminal-defense-strategy` 出发交接包必填 `disposition_list`，下游逐辩点核对禁止矛盾
 
 ---
 
@@ -86,6 +90,26 @@ B. 委托类（委托人、当事人/家属委托）
 
 **重要**：类型选择后，所有后续步骤中的称谓、模板、流程必须严格对应所选类型。
 
+### 状态头字段定义（v3.3 扩展）
+
+> 案件目录 `CLAUDE.md` 是全系统唯一状态源。所有子 skill 启动时必须先读状态头,缺失字段须立即提示律师补充。
+
+| 字段 | 必填 | 说明 | 典型来源 |
+|------|------|------|----------|
+| `case_type` | 是 | 案件类型 A/B | 律师首次确认 |
+| `罪名` | 是 | 涉嫌罪名 | 起诉书 |
+| `罪名类型` | 是(v3.3) | 用于加载对应要件库(经济/职务/财产/暴力/毒品) | 阅卷阶段 criminal-case-review 识别 |
+| `涉及专业领域` | 是(v3.3) | 法医学/司法会计/司法精神病/无,用于加载跨专业知识库 | 阅卷阶段 criminal-case-review 识别 |
+| `关键日期` | 是(v3.3) | 起诉书签收日/出庭通知日/最后讯问日/阅卷基准日 | 卷宗 |
+| `案内现在时` | 是(v3.3) | 以卷内最新日期为案件推理的"现在时",禁止用系统真实日期 | 卷内最新日期 |
+| `承办律师` | 是(v3.3) | 落款从状态头读取,禁止硬编码 | 委托书 |
+| `律师事务所` | 是(v3.3) | 同上 | 委托书 |
+| `执业证号` | 是(v3.3) | 同上 | 律师证 |
+| `联系电话` | 是(v3.3) | 同上 | 律所登记 |
+| `当事人姓名` | 是(v3.3) | 同上 | 起诉书 |
+| `当事人身份证号` | 否 | 同上 | 起诉书 |
+| `当事人住址` | 否 | 同上 | 起诉书 |
+
 ### 双端独立运行与跨端断点接续
 
 1. 刑事案件OS可在当前调用端独立完整执行
@@ -105,6 +129,8 @@ B. 委托类（委托人、当事人/家属委托）
 | `case-git-init` | 案件初始化 | 否 |
 | `case-info-extract` | 案件基础信息提取 | **是** |
 | `criminal-dossier-processor` | 卷宗PDF拆解（阅卷前物料准备，可选） | **是**（律师复核索引） |
+
+> **v3.3 起准备组承接归档复盘**:案件结案后由 `case-archive` 触发归档(材料清单见 `references/刑事归档清单.md`),并联动 `case-experience-card` 沉淀经验。
 
 ### 一、侦查阶段（拘留→批捕，无卷阶段）
 
@@ -129,14 +155,28 @@ B. 委托类（委托人、当事人/家属委托）
 |----------|------|----------|
 | `criminal-meeting` | 刑事会见笔录（基于阅卷笔录生成发问清单） | **是** |
 | `criminal-trial-examination` | 庭前会议提纲+排非申请、庭审发问+举证质证提纲 | **是** |
-| `criminal-defense-statement` | 辩护词+庭审辩论口袋版+最后陈述辅导 | **是**（"可以出了"才生成） |
+| `criminal-defense-strategy` → `criminal-defense-statement` | 辩护方案 → 辩护词+庭审辩论口袋版+最后陈述辅导 | **是**（"可以出了"才生成） |
+| **`criminal-sentencing-defense`**（v3.3 新增） | 一审量刑辩护专项:量刑计算表(工作底稿)+ 量刑辩护意见(正式文书,可独立提交) | **是** |
 | `criminal-case-visualization` | 刑事可视化图表（全套8张图，任意阶段可用） | 否（生成后审阅） |
+
+**v3.3 受众划界（ADR 0005）**:
+- `criminal-plea-bargain`(认罪认罚协商)面向**检察院**,在审查起诉阶段、具结前运行
+- `criminal-sentencing-defense`(量刑辩护)面向**法院**,在一审阶段、具结后运行
+- 两者按"受众+阶段"严格划界,不得混用
 
 ### 贯穿全程·对外轨道
 
 | 独立Skill | 职责 | 最高红线 |
 |----------|------|----------|
 | `criminal-client-comm` | 客户沟通与服务可视化 | **脱敏**——对外材料不得泄露辩护策略底牌 |
+
+### 救济阶段（不进 OS 调度，详见 ADR 0001 与 ADR 0004）
+
+| 独立Skill | 职责 | 触发方式 |
+|----------|------|----------|
+| `criminal-appeal`（v3.3 新增） | 上诉状、申诉状、再审申请书(三程序合一) | **律师手动触发**,OS 不调度;触发时加载全局规则 |
+
+> **不在 OS 一期边界内**:救济阶段(一审判决后的上诉/申诉/再审)由独立 skill `criminal-appeal` 承载,律师手动触发;OS 总控不调度此阶段。详见 ADR 0001(OS 一期边界)与 ADR 0004(救济阶段独立安排)。
 
 ### 贯穿全程·分析增强轨道
 
@@ -209,17 +249,24 @@ B. 委托类（委托人、当事人/家属委托）
 6. 刑事会见 — 基于阅卷笔录的会见发问清单
 7. 庭审质证 — 庭前会议+排非申请、庭审发问+举证质证提纲
 8. 辩护词 — 辩护词+辩论口袋版+最后陈述辅导（"可以出了"才生成）
-9. 刑事可视化 — 全套8张图表（任意阶段可用）
+9. 量刑辩护(v3.3) — 量刑计算表+量刑辩护意见(可独立提交);面向法院,具结后使用
+10. 刑事可视化 — 全套8张图表（任意阶段可用）
 
 【贯穿全程·对外】
-10. 客户沟通 — 服务计划书、工作通报、可视化时间轴、决策辅助、庭审简报（脱敏）
+11. 客户沟通 — 服务计划书、工作通报、可视化时间轴、决策辅助、庭审简报（脱敏）
 
 【贯穿全程·分析增强】
-11. 鉴定式全要件检视（gutachten） — 三阶层+鉴定式学术研习/理论底稿；非诉讼文书，正交于阅卷与辩护词
+12. 鉴定式全要件检视（gutachten） — 三阶层+鉴定式学术研习/理论底稿；非诉讼文书，正交于阅卷与辩护词
+
+【结案归档(v3.3)】
+13. 归档复盘 — `case-archive`(材料清单见 references/刑事归档清单.md),结案后由律师手动触发
+
+【救济阶段(v3.3, OS 不调度)】
+14. 上诉 / 申诉 / 再审 — `criminal-appeal`(独立 skill,律师手动触发,加载全局规则)
 
 【持续辅助】
-12. 法律检索 / 案例查询（元典MCP）
-13. 续办案件 — 读共享状态恢复断点
+15. 法律检索 / 案例查询（元典MCP）
+16. 续办案件 — 读共享状态恢复断点
 
 请输入序号或描述你的需求：
 ```
@@ -231,22 +278,38 @@ B. 委托类（委托人、当事人/家属委托）
 ```
 criminal-case-os/
 ├── SKILL.md                          # 总控（本文件）
+├── CONTEXT.md                        # 术语表（v3.3 新增）
 ├── references/                       # 按需加载
-│   ├── soul.md                       # 灵魂文件（六大核心原则）
-│   ├── redlines.md                   # 全局红线
+│   ├── soul.md                       # 灵魂文件（六大核心原则 + v3.3 独立立场强化）
+│   ├── redlines.md                   # 全局红线（含 v3.3 三条新铁律）
 │   ├── workflow.md                   # 编排流程（四阶段结构）
-│   ├── handoff-protocol.md           # 交接契约协议
+│   ├── handoff-protocol.md           # 交接契约协议（含 v3.3 辩点处置清单）
 │   ├── de-ai-checklist.md            # 去AI味自检清单
-│   ├── evaluation-guide.md           # 评估指南
+│   ├── evaluation-guide.md           # 评估指南（含 v3.3 新评估项）
 │   ├── review-structure.md           # 阅卷笔录标准结构（12部分）
 │   ├── common-errors.md              # 常见错误清单
 │   ├── 庭审当日时间线.md              # 共享资源
-│   ├── 非法证据排除速查.md            # 共享资源
-│   ├── 刑事文书格式规范.md            # 共享资源
+│   ├── 非法证据排除速查.md            # 共享资源（v3.3 与外部并集更新）
+│   ├── 刑事文书格式规范.md            # 共享资源（v3.3 新增两层目录/Word版/落款规则）
 │   ├── 刑事法律依据索引.md            # 共享资源
-│   └── 全流程风险速查.md              # 共享资源
+│   ├── 全流程风险速查.md              # 共享资源
+│   ├── 刑事归档清单.md                # v3.3 新增,case-archive 引用
+│   ├── crime-elements/               # v3.3 新增,罪名要件库（5 份）
+│   │   ├── 经济犯罪.md
+│   │   ├── 职务犯罪.md
+│   │   ├── 财产犯罪.md
+│   │   ├── 暴力犯罪.md
+│   │   └── 毒品犯罪.md
+│   └── cross-disciplinary/           # v3.3 新增,跨专业知识库（3 份,仅供审查质证发问）
+│       ├── 法医学.md
+│       ├── 司法会计与财务.md
+│       └── 司法精神病与心理学.md
 ├── schema/                           # 数据结构定义
-│   └── handoff_package_schema.json   # 交接包Schema
+│   └── handoff_package_schema.json   # 交接包Schema（v3.3 加 disposition_list）
+├── docs/adr/                         # 架构决策记录
+│   ├── 0001-second-trial-excluded.md # 二审/再审排除边界
+│   ├── 0004-appeal-standalone.md     # v3.3 新增:救济阶段独立承载
+│   └── 0005-sentencing-audience-boundary.md  # v3.3 新增:量刑辩护与认罪认罚按受众划界
 ├── system-overview.md                # 系统概览
 └── SKILL.md.backup                   # 原版备份
 ```
@@ -262,20 +325,36 @@ criminal-case-os/
 - `criminal-dossier-processor`：卷宗PDF拆解（阅卷前物料准备，外部引入 2026-05-29）
 - `criminal-investigation`：侦查阶段文书
 - `criminal-case-review`：刑事阅卷笔录制作
-- `criminal-defense-strategy`：辩护方案与策略路径
+- `criminal-defense-strategy`：辩护方案与策略路径（含 v3.3 「辩点处置清单」输出）
 - `criminal-non-prosecution`：不起诉法律意见书
-- `criminal-plea-bargain`：认罪认罚协商策略
+- `criminal-plea-bargain`：认罪认罚协商策略（面向检察院；ADR 0005 与 criminal-sentencing-defense 严格划界）
 - `criminal-meeting`：刑事会见笔录制作
-- `criminal-trial-examination`：庭审发问与举证质证
-- `criminal-defense-statement`：辩护词与最后陈述辅导
+- `criminal-trial-examination`：庭审发问与举证质证（v3.3 执行前按状态头加载跨专业知识库）
+- `criminal-defense-statement`：辩护词与最后陈述辅导（v3.3 出厂闸门+辩点处置清单核对）
+- **`criminal-sentencing-defense`：一审量刑辩护专项（v3.3 新建,面向法院,双产物：量刑计算表+量刑辩护意见）**
 - `criminal-case-visualization`：刑事案件可视化图表生成
 - `criminal-client-comm`：客户沟通与服务可视化（对外轨道）
 - `gutachten-criminal-case`：鉴定式刑法案例研习（分析增强轨道；第三方 skill，作者游初，Apache-2.0，源自 ailaw.cn；本机配置见其 `.user-config.md` 的元典五能力槽映射）
+- **`criminal-appeal`：上诉/申诉/再审（v3.3 新建,独立 skill,律师手动触发,OS 不调度；详见 ADR 0001/0004）**
+
+### v3.3 引入的外部素材
+
+| 素材 | 来源 | 授权 | 用途 |
+|------|------|------|------|
+| 罪名要件库 5 份 | criminal-defense-workflow v3.1.0 references/crime-elements/ | **private,仅限内部使用** | 阅卷/策略/辩护阶段按罪名类型加载 |
+| 跨专业知识库 3 份 | criminal-defense-workflow v3.1.0 references/cross-disciplinary/ | **private,仅限内部使用** | 仅供审查/质证/发问使用,不替代鉴定 |
+| 量刑辩护方法论 | criminal-defense-workflow v3.1.0 sub-skills/10_量刑辩护专项 | **private,仅限内部使用** | criminal-sentencing-defense 底稿 |
+| 上诉/申诉方法论 | criminal-defense-workflow v3.1.0 sub-skills/11/12 | **private,仅限内部使用** | criminal-appeal 底稿 |
+| 归档材料清单 | criminal-defense-workflow v3.1.0 sub-skills/13 | **private,仅限内部使用** | references/刑事归档清单.md |
+
+> **不得对外发布**:含上述引入素材的所有 skill 与文件,排除在任何 `skill-repo-publish` 流程之外。
 
 ---
 
 ## 版本历史
 
+- **v3.3.1 - 汪欣案回归验收修复(2026-07-22)**:回归 4/5 硬标准通过,唯一不通过项(正式文书 3 处内部痕迹泄漏)定位为规则措辞缺陷并修复——出厂闸门禁词清单扩充(技能/模块名、MCP、CLAUDE.md、内部底稿名等)、占位符禁注来源、落款日期取状态头开庭日;defense-statement「援引」改「采纳」;缓刑考验期法定最低修正为《刑法》73 条通用规则(剔除个案硬编码);新增两条质量规则(量刑测算算术自洽、不利事实入正式文书须律师确认)。验收记录:`刑事OS/对比测试/验收-v3.3.md`。
+- **v3.3 - 融合 criminal-defense-workflow(v3.1.0,private)**：新建 `criminal-sentencing-defense` 一审量刑辩护专项与 `criminal-appeal` 救济阶段独立 skill;引入 8 份知识库(罪名要件 5 + 跨专业 3)+ 归档清单,头部标注来源;redlines 新增三条铁律(案内时间锚定/正式文书出厂闸门/量刑主张不损当事人利益);handoff 加「辩点处置清单」必填;刑事文书格式规范加两层目录与 Word 版;评估加新维度;菜单/调度/依赖/状态头同步;新增 ADR 0004 与 ADR 0005。
 - v3.2 - **接入卷宗拆解前置**：准备组新增 criminal-dossier-processor（外部引入 2026-05-29），作为阅卷前可选物料准备；交互菜单新增「0.5 卷宗拆解」；workflow.md 同步登记为可选前置；律师复核索引为强制确认点。
 - v3.1 - **归入分析增强轨道**：接入第三方 skill `gutachten-criminal-case`（鉴定式刑法案例研习，作者游初 Apache-2.0）为"贯穿全程·分析增强轨道"，交互菜单新增第 11 项（原 11/12 顺延为 12/13），依赖清单登记；明确其与诉讼文书子 skill 正交、不替代辩护词/阅卷，经本 OS 调度时叠加全局规则。
 - v3.0 - **四件套改造**：按DEV/HANDOFF/ORCHESTRATION/EVALUATION规范重构，外迁7个references文件，新增handoff_package_schema.json和evaluation-guide.md
