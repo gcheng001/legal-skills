@@ -1,6 +1,6 @@
 ---
 name: case-filing-gen
-description: 起诉状/答辩状生成。基于九步法分析结果生成立案材料，必须律师确认后才生成。TRIGGER when: 用户输入"立案材料"或"起诉状"。
+description: "起诉状/答辩状生成。基于九步法分析结果生成立案材料，必须律师确认后才生成。TRIGGER when: 用户输入\"立案材料\"或\"起诉状\"。"
 ---
 
 # case-filing-gen 起诉状/答辩状生成

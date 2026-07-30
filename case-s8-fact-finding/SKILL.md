@@ -1,6 +1,6 @@
 ---
 name: case-s8-fact-finding
-description: 九步法S8-事实认定。结合证据和举证责任，预判法院认定结果。TRIGGER when: 用户输入"事实认定"或由case-os总控调度。
+description: "九步法S8-事实认定。结合证据和举证责任，预判法院认定结果。TRIGGER when: 用户输入\"事实认定\"或由case-os总控调度。"
 ---
 
 # case-s8-fact-finding（S8）事实认定

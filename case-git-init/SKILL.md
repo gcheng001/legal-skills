@@ -1,4 +1,6 @@
 ---
+name: skill
+description: "skill"
 author: Legal Skills Project
 
 # case-git-init（A1）案件初始化

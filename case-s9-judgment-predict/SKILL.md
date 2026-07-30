@@ -1,6 +1,6 @@
 ---
 name: case-s9-judgment-predict
-description: 九步法S9-要件归入与裁判预测。将事实归入构成要件，预测裁判结果和金额。TRIGGER when: 由case-os总控调度，或在案件目录内使用命令"/裁判预测"。案件流程外裸说"裁判预测/胜负预判/判决前预判"→ 走 mqc-claim-basis-nine-step 快速预判引擎，不触发本skill。
+description: "九步法S9-要件归入与裁判预测。将事实归入构成要件，预测裁判结果和金额。TRIGGER when: 由case-os总控调度，或在案件目录内使用命令\"/裁判预测\"。案件流程外裸说\"裁判预测/胜负预判/判决前预判\"→ 走 mqc-claim-basis-nine-step 快速预判引擎，不触发本skill。"
 ---
 
 # case-s9-judgment-predict（S9）要件归入与裁判预测

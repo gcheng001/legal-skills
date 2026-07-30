@@ -1,6 +1,6 @@
 ---
 name: case-evidence-cards
-description: 证据卡片提取。从markdown材料中提取结构化证据卡片，双视图输出（按来源+按目的）。TRIGGER when: 用户输入"证据提取"或由case-os总控调度。
+description: "证据卡片提取。从markdown材料中提取结构化证据卡片，双视图输出（按来源+按目的）。TRIGGER when: 用户输入\"证据提取\"或由case-os总控调度。"
 ---
 
 # case-evidence-cards（A5）证据卡片与关系复核

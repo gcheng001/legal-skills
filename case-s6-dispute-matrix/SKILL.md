@@ -1,6 +1,6 @@
 ---
 name: case-s6-dispute-matrix
-description: 九步法S6-争点矩阵。对比原告与被告主张，形成事实争点和法律争点，排序优先级。TRIGGER when: 用户输入"争点矩阵"或由case-os总控调度。
+description: "九步法S6-争点矩阵。对比原告与被告主张，形成事实争点和法律争点，排序优先级。TRIGGER when: 用户输入\"争点矩阵\"或由case-os总控调度。"
 ---
 
 # case-s6-dispute-matrix（S6）争点矩阵

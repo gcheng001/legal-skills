@@ -1,4 +1,6 @@
 ---
+name: skill
+description: "skill"
 author: Legal Skills Project
 
 # case-ocr（A2）材料扫描+OCR转换

@@ -1,6 +1,6 @@
 ---
 name: case-s5-case-search
-description: 九步法S5-主张检索。审查诉讼主张与基础规范/构成要件的对应性，检索法规、类案、学理并输出完备性检查。TRIGGER when: 用户输入"主张检索"或由case-os总控调度。
+description: "九步法S5-主张检索。审查诉讼主张与基础规范/构成要件的对应性，检索法规、类案、学理并输出完备性检查。TRIGGER when: 用户输入\"主张检索\"或由case-os总控调度。"
 ---
 
 # case-s5-case-search（S5）主张检索
