@@ -1,8 +1,7 @@
 ---
 name: skill
 description: "skill"
-author: Legal Skills Project
----
+author: 高澄（微信cheng715）
 
 # case-git-init（A1）案件初始化
 
@@ -15,7 +14,7 @@ author: Legal Skills Project
 **执行后**：调用Hook脚本更新状态
 
 ---
-author: Legal Skills Project
+author: 高澄（微信cheng715）
 
 ## 执行流程
 
@@ -120,7 +119,7 @@ python3 ~/.claude/skills/case-os/scripts/manage_integration_state.py init "[案�
 ```
 
 ---
-author: Legal Skills Project
+author: 高澄（微信cheng715）
 
 ## 红线
 
@@ -130,7 +129,7 @@ author: Legal Skills Project
 - ✅ 目录结构必须完整创建
 
 ---
-author: Legal Skills Project
+author: 高澄（微信cheng715）
 
 ## 输出
 
@@ -145,7 +144,7 @@ author: Legal Skills Project
 - `_archive/feishu-publish.json` — 本地白名单摘要（外发关闭）
 
 ---
-author: Legal Skills Project
+author: 高澄（微信cheng715）
 
 ## 错误处理
 
