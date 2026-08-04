@@ -1,7 +1,7 @@
 ---
-name: case-ocr
-description: 扫描案件目录的 PDF/图片/音频/视频，批量转 Markdown：文档走 MinerU OCR，音频走 whisper 转逐字稿，视频需人工提取截图后转 OCR。前置条件：case-git-init 完成。律师说「OCR」「扫描案件」「转文字」「A2」时用。**不**处理视频内嵌字幕或已经转好的 markdown。
-author: Legal Skills Project
+name: skill
+description: "skill"
+author: 高澄（微信cheng715）
 ---
 
 # case-ocr（A2）材料扫描+OCR转换
@@ -15,7 +15,7 @@ author: Legal Skills Project
 **执行后**：调用Hook脚本更新状态
 
 ---
-author: Legal Skills Project
+author: 高澄（微信cheng715）
 
 ## 执行流程
 
@@ -278,7 +278,7 @@ git commit -m "feat: A2 材料OCR转换完成"
 ```
 
 ---
-author: Legal Skills Project
+author: 高澄（微信cheng715）
 
 ## 红线
 
@@ -287,7 +287,7 @@ author: Legal Skills Project
 - ✅ 步骤8-9必须由AI自动连续执行完成，禁止提示用户手动操作
 
 ---
-author: Legal Skills Project
+author: 高澄（微信cheng715）
 
 ## 工具依赖
 
@@ -318,7 +318,7 @@ fi
 ```
 
 ---
-author: Legal Skills Project
+author: 高澄（微信cheng715）
 
 ## 输出
 
@@ -326,7 +326,7 @@ author: Legal Skills Project
 - `截图证据/` — 视频截图PDF原件（审阅后）
 
 ---
-author: Legal Skills Project
+author: 高澄（微信cheng715）
 
 ## 错误处理
 
@@ -346,7 +346,7 @@ author: Legal Skills Project
 **错误示例（禁止）**：
 ```bash
 # ❌ 错误：直接硬编码文件路径
-mineru-pro ~/Desktop/TestOCR.pdf --upload --ocr --model vlm
+mineru-pro /Users/Apple/Desktop/TestOCR.pdf --upload --ocr --model vlm
 
 # ❌ 错误：使用不存在的占位符
 mineru-pro <PDF文件1> --upload --ocr --model vlm
