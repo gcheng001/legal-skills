@@ -106,7 +106,7 @@ case-os 自有的 `nine_step_*.json` 只管**流程契约与门禁**（schema/�
 **优先使用元典Skill**：
 
 ```bash
-cd ~/.claude/skills/law-search
+cd ~/.claude/skills/yuandian-law-search
 python3 scripts/yd_search.py search "民法典 第577条" --sxx 现行有效
 python3 scripts/yd_search.py detail "民法典" --ft-name "第577条"
 ```
@@ -243,7 +243,7 @@ mcp__pkulaw-law-search__get_article(title="中华人民共和国民法典", numb
 ## 工具依赖
 
 **法条检索与复验**：
-- **元典Skill**（law-search）— 法条检索与内容获取
+- **元典Skill**（yuandian-law-search）— 法条检索与内容获取
   ```bash
   python3 scripts/yd_search.py search "检索词"
   python3 scripts/yd_search.py detail "法律名" --ft-name "条号"

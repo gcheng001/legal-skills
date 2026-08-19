@@ -140,7 +140,7 @@ description: '九步法S7-举证责任。分配每个争点的举证责任，评
 **优先使用元典Skill**：
 
 ```bash
-cd ~/.claude/skills/law-search
+cd ~/.claude/skills/yuandian-law-search
 python3 scripts/yd_search.py search "举证责任倒置 建设工程" --sxx 现行有效
 ```
 
@@ -240,7 +240,7 @@ mcp__pkulaw-law-search__search_article(text="举证责任倒置 建设工程")
 ## 工具依赖
 
 **法条检索与复验**：
-- **元典Skill**（law-search）— 法条检索与内容获取
+- **元典Skill**（yuandian-law-search）— 法条检索与内容获取
   ```bash
   python3 scripts/yd_search.py search "检索词"
   python3 scripts/yd_search.py detail "法律名" --ft-name "条号"

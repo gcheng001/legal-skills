@@ -85,7 +85,7 @@ S10 执行前需读取 S9 输出，按以下优先级尝试：
 #### 第一层：元典平台复验（优先）
 
 ```bash
-cd ~/.claude/skills/law-search
+cd ~/.claude/skills/yuandian-law-search
 python3 scripts/yd_search.py search "民法典 第577条" --sxx 现行有效
 python3 scripts/yd_search.py detail "民法典" --ft-name "第577条"
 ```
@@ -403,7 +403,7 @@ case-os v10.0 自动生成的深度分析报告引用 6 个类案（(2021)京03�
 ## 工具依赖
 
 **法条幻觉校验**：
-- **元典Skill**（law-search）— 法条检索与内容获取
+- **元典Skill**（yuandian-law-search）— 法条检索与内容获取
   ```bash
   python3 scripts/yd_search.py search "检索词"
   python3 scripts/yd_search.py detail "法律名" --ft-name "条号"

@@ -90,7 +90,7 @@ description: '九步法S4-要件拆解。将构成要件转化为需证明的具
 **优先使用元典Skill**：
 
 ```bash
-cd ~/.claude/skills/law-search
+cd ~/.claude/skills/yuandian-law-search
 python3 scripts/yd_search.py search "民法典 第577条 违约责任构成要件" --sxx 现行有效
 ```
 
@@ -200,7 +200,7 @@ mcp__pkulaw-law-search__search_article(text="民法典 第577条 违约责任构
 ## 工具依赖
 
 **法条检索与复验**：
-- **元典Skill**（law-search）— 法条检索与内容获取
+- **元典Skill**（yuandian-law-search）— 法条检索与内容获取
   ```bash
   python3 scripts/yd_search.py search "检索词"
   python3 scripts/yd_search.py detail "法律名" --ft-name "条号"

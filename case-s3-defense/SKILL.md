@@ -71,7 +71,7 @@ description: '九步法S3-抗辩规范和反诉识别。梳理三类抗辩（权
 **优先使用元典Skill**：
 
 ```bash
-cd ~/.claude/skills/law-search
+cd ~/.claude/skills/yuandian-law-search
 python3 scripts/yd_search.py search "同时履行抗辩权" --sxx 现行有效
 ```
 
@@ -179,7 +179,7 @@ mcp__pkulaw-law-search__search_article(text="同时履行抗辩权")
 ## 工具依赖
 
 **法条检索与复验**：
-- **元典Skill**（law-search）— 法条检索与内容获取
+- **元典Skill**（yuandian-law-search）— 法条检索与内容获取
   ```bash
   python3 scripts/yd_search.py search "检索词"
   python3 scripts/yd_search.py detail "法律名" --ft-name "条号"

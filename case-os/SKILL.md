@@ -10,7 +10,7 @@ metadata:
     - civil-case-os
 ---
 
-# civil-case-os 民事案件操作系统（总控）v11.3
+# civil-case-os 民事案件操作系统（总控）v11.4
 
 ## 工作定位
 
@@ -24,10 +24,32 @@ metadata:
 ```
 用户 → civil-case-os（总控：全局规则 + 调度）
          ↓
-    民事独立Skill（具体执行逻辑）
+    专职师傅（subagent，专人专岗执行动脑环节，见 references/specialist-dispatch.md）
+         ↓
+    民事独立Skill（流程契约与门禁）
          ↓
     Hook（后置脚本自动触发）
 ```
+
+## 专人派发体制（ADR-0004，2026-08-19）
+
+> 完整协议见 `references/specialist-dispatch.md`，派发任何师傅前必读。
+
+**派发边界**：A1建档/A2扫描OCR/A3归档/A5飞书同步/A7状态汇总/Hook 为机器活，总控直接执行**不派师傅**；**A4起所有动脑环节一律派专职师傅**（subagent）。
+
+**师傅来源两路**：
+- **SuitAgent 借调**（岗位说明书只读引用，原件永不修改）：A4→DocAnalyzer，A6→EvidenceAnalyzer，S5→Researcher，S6→IssueIdentifier，立场出口→Strategist，文书起草→Writer，交付前质检→Reviewer；
+- **内部提拔**（说明书 `references/promoted-specialists.md`）：S1诉请固定师、S2请求权基础师、S3抗辩分析师、S4要件拆解师、S7举证责任师、S8事实认定师、S9裁判预测师。
+
+**派发 prompt 四段结构**：岗位说明书全文 + 本环节流程规则与门禁 + 案件上下文（不整卷重读）+ 输出契约（Handoff Package）。
+
+**质检双闸**：S10 管法条真假（沿用，总控执行）；Reviewer 管文书成品质量——**对外文书（起诉状/答辩状/上诉状/代理词/质证意见/法律意见书）质检不过一票否决打回重写**，内部分析只提意见。闸位：文书生成 → Reviewer质检 → 律师最终确认 → 交付。
+
+**策略师傅双轨**：正轨=立场出口（S10后才上场）；召见轨=办案中随时可单独召唤答疑，产物必须标注【立场参考】，严禁作为 S1-S9 任何步骤输入。
+
+**报告整合（Reporter，2026-08-19 复议采纳）**：S10通过后/开庭前/结案时派 Reporter 师傅整合全链产物出**案件分析报告**（深研报告）、庭前报告、结案报告；律师点名要报告随时派。产出写 `分析材料/`，属整合件不改动各步结论。
+
+**派发硬闸（2026-08-19 验证缺陷修复）**：动脑活产物（A4确认表、证据卡片、九步法各步、质证意见、起诉状/答辩状、庭前策略手册等）**未经师傅派发，总控不得直接写入案件目录**。唯一豁免：subagent 工具不可用或律师明示跳过——此时必须在 LOG.md 记录「未派发原因」一行，否则视为绕闸（Hard Fail）。机器活（核对表/状态同步/LOG/CLAUDE.md）不受此闸约束。
 
 ---
 
@@ -135,11 +157,11 @@ metadata:
 
 | 事件 | 独立Skill | 触发条件 |
 |------|----------|----------|
-| **立场出口** | `case-stance-exit` | **S10通过后、对客交付前**：出立场打法清单（六类+根据可追溯）+ 客户摘要五维（ADR-013~017，承mqc） |
+| **立场出口** | `case-stance-exit`（Strategist 师傅执行） | **S10通过后、对客交付前**：出立场打法清单（六类+根据可追溯）+ 客户摘要五维（ADR-013~017，承mqc） |
 | **Word研判报告** | `mqc-claim-basis-nine-step` | S10通过后律师要对客决策件：主链产物预填两闸，直出Word研判报告（结论先行三层+三图） |
-| 写起诉状/答辩状 | `case-filing-gen` | S10通过后，律师确认 |
+| 写起诉状/答辩状 | `case-filing-gen`（Writer 师傅执行，**产物必过 Reviewer 质检闸**） | S10通过后，律师确认 |
 | 法院短信 | `case-court-sms` | 收到法院短信 |
-| 案件讨论 | `case-discussion` | 随时发起 |
+| 案件讨论 | `case-discussion` | 随时发起（召见 Strategist 时产物标【立场参考】） |
 | 定期扫描 | `case-scan` | 每周自动/手动触发 |
 | 经验卡 | `case-experience-card` | S9完成/开庭后/判决后 |
 
@@ -278,6 +300,8 @@ case-os/
 │   ├── soul.md                       # 灵魂文件（六大核心原则）
 │   ├── redlines.md                   # 全局红线
 │   ├── workflow.md                   # 编排流程（Phase A/B/B之后）
+│   ├── specialist-dispatch.md        # 专人派发协议（ADR-0004，师傅总表/质检闸/策略双轨）
+│   ├── promoted-specialists.md       # 内部提拔七师傅岗位说明书（S1-S4/S7-S9）
 │   ├── handoff-protocol.md           # 交接契约协议
 │   ├── de-ai-checklist.md            # 去AI味自检清单
 │   └── evaluation-guide.md           # 评估指南
@@ -320,6 +344,7 @@ case-os/
 
 ## 版本历史
 
+- v11.4 - **专人派发体制（ADR-0004，case-os × SuitAgent 融合）**：①干活方式改为专人专岗——A4起所有动脑环节派专职师傅（subagent），A1-A3机器活不派（与SuitAgent架构决策#047一致）②师傅两路来源——SuitAgent借调七位（DocAnalyzer/EvidenceAnalyzer/Researcher/IssueIdentifier/Strategist/Writer/Reviewer，原件只读引用永不修改）＋内部提拔七位（S1-S4/S7-S9，自有九步法文档立岗）③质检双闸——Reviewer 对外文书一票否决（闸位：文书生成→Reviewer→律师确认→交付），与 S10（法条真假）一横一竖④策略师傅双轨——正轨立场出口（S10后），召见轨随时可召但产物必标【立场参考】且禁入 S1-S9⑤新增 references/specialist-dispatch.md 与 promoted-specialists.md。门禁、S10、北大法宝复验、状态契约全部原样保留
 - v11.3 - **九步法融合收尾（合并成一套方法论、保留两个入口）**：①触发词分流——裸说"请求权基础/裁判预测/胜负预判"走 mqc 快速预判引擎，案件流程内 S2/S9 只由总控调度或案件目录内命令触发（撞车消除）②法律知识唯一真源——案由→请求权基础查表统一收敛到 mqc `claim-basis-table.md`（验真数据），case-os 自有 nine_step_*.json 降为纯流程契约与门禁③S10 通过后新增 Word 研判报告出口（mqc 引擎吃主链产物）④对齐 mqc v1.2.0（两闸/立场五值/中立模式/能力槽/分层核验）
 - v11.2 - **九步法融合（case-os × mqc）**：①S10核验纪律强化（类案占位/连号→CRITICAL阻断，法条+关联解释全谱，语义约束7→9，肖永吉案实证）②字段层扩展（ADR-001~009，case_basic_info+S2-S9 optional字段，required未动向后兼容）③末端立场出口层（新子skill `case-stance-exit`，承mqc stance-playbook+deliverable-client）④融合ADR写入 `references/adr-0003`。主链法官中性零侵入，立场只在末端出口
 - v11.1 - **改名民事案件OS**：name改为civil-case-os，启动指令改为"民事OS"，消除与刑事OS的歧义

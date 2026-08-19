@@ -4,9 +4,20 @@ description: 扫描案件目录的 PDF/图片/音频/视频，批量转 Markdown
 author: Legal Skills Project
 ---
 
-# case-ocr（A2）材料扫描+OCR转换
-
-## 工作定位
+# --- 安全删除约定(替换 rm,移废纸篓可恢复) ---
+# 本机安全规则:禁止 rm 直接删除;删除一律移到废纸篓(osascript),可恢复。
+# 兼容 ~/、/绝对路径、相对路径;软链断链对象也可处理。
+safe_remove() { for p in "$@"; do
+  [ -e "$p" ] || [ -L "$p" ] || continue
+  local a; a="${p/#~/$HOME}"
+  case "$a" in /*) ;; *) a="$PWD/$a" ;; esac
+  osascript -e 'tell app "Finder" to delete POSIX file "'"'"$a"'"'"' >/dev/null 2>&1 || true
+done; }
+# 批量删除(目录树):把 find 出的路径逐项移废纸篓,可恢复
+safe_remove_tree() { while IFS= read -r p; do
+  [ -e "$p" ] || [ -L "$p" ] || continue
+  osascript -e 'tell app "Finder" to delete POSIX file "'"'"$p"'"'"' >/dev/null 2>&1 || true
+done; }
 
 扫描案件目录中的所有材料文件，批量转换为Markdown格式，供后续分析使用。
 
@@ -246,19 +257,19 @@ mv ~/Desktop/录屏取证输出/*.pdf "[案件根目录]/截图证据/"
 ### 第九步：清理残留文件
 
 ```bash
-rm -rf "$OCR_TMP_DIR"
-rm -rf ~/Desktop/录屏取证输出
+safe_remove "$OCR_TMP_DIR"
+safe_remove ~/Desktop/录屏取证输出
 
 # 清理MinerU OCR过程中产生的残留目录（无用的图片碎片）
 # MinerU从PDF提取图片时会在当前工作目录生成images/，内容为文档中的图标、水印等装饰元素，无案件分析价值
 if [ -d "[案件根目录]/images" ]; then
-    rm -rf "[案件根目录]/images"
+    safe_remove "[案件根目录]/images"
     echo "✅ 已清理MinerU残留目录: images/"
 fi
 
 # 同时清理MinerU可能在工作目录产生的其他残留
 if [ -d "[案件根目录]/output" ]; then
-    rm -rf "[案件根目录]/output"
+    safe_remove "[案件根目录]/output"
     echo "✅ 已清理MinerU残留目录: output/"
 fi
 ```
