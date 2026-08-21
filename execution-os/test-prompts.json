@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "type": "cross_stage",
+    "prompt": "终本了还能追加股东吗",
+    "expected": "识别跨阶段（程序状态+主体追加），先读 execution-case-status-triage 再读 shareholder-addition-four-paths / execution-addition-statutory-principle，给四段式输出含当地核实提醒"
+  },
+  {
+    "id": 2,
+    "type": "happy_path",
+    "prompt": "对方名下有银行存款、一套房、一份保单，我起诉时先申请冻结哪个",
+    "expected": "路由到阶段1保全策略，读 liangbian-asset-ordering 按两便原则排序，保单涉及 insurance-cash-value-three-steps 提示，给排序结论+核实提醒+下一步"
+  },
+  {
+    "id": 3,
+    "type": "boundary",
+    "prompt": "帮我起草一份强制执行申请书",
+    "expected": "识别为文书起草请求，不在知识路由范围；明确告知 execution-os 是判断层不产出文书，指出该用文书工作流 skill，不虚构调用"
+  }
+]

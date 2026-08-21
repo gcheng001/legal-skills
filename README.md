@@ -2,7 +2,7 @@
 
 [中文文档](#中文) | English
 
-A comprehensive collection of **27 Claude Code skills** for Chinese legal professionals, covering civil litigation analysis, criminal defense workflows, and document automation.
+A comprehensive collection of **29 Claude Code skills** for Chinese legal professionals, covering civil litigation analysis, criminal defense workflows, and document automation.
 
 ## Why This Matters
 
@@ -51,9 +51,13 @@ legal-skills/
 ├── criminal-client-comm/         # Client communication
 ├── criminal-trial-examination/   # Trial questioning & evidence review
 │
-└── court-sms/                    # Court SMS document downloader
-    ├── scripts/                  # Python download automation
-    └── references/               # SMS parsing patterns
+├── court-sms/                    # Court SMS document downloader
+│   ├── scripts/                  # Python download automation
+│   └── references/               # SMS parsing patterns
+│
+└── execution-os/                 # Enforcement law knowledge router
+    ├── references/               # 30 methodology cards + glossary
+    └── test-prompts.json         # Stress test cases
 ```
 
 ## Civil Case OS — The Nine-Step Method
@@ -100,6 +104,16 @@ Automates processing of Chinese court delivery notifications:
 - Extracts key dates from summons and hearing notices
 - Optional: writes to Feishu/Lark bitable
 
+## Execution OS — Enforcement Knowledge Router
+
+A single-entry knowledge router for **preservation and enforcement practice**, distilled from a practicing enforcement judge's course (2024):
+
+- **9-stage lifecycle routing**: preservation strategy, case status, asset investigation, asset control, party addition, auction, fund distribution, remedies, global strategy
+- **30 methodology cards** loaded on demand (1-3 per query, context-friendly)
+- **Anti-hallucination gates**: statute citation discipline (missing article numbers must be flagged), local practice verification, 2024-source staleness warnings
+- **Four-part output contract**: stage judgment, methodology application, local verification checklist, next actions (person/task/deadline)
+- Runtime-neutral: works in Claude Code, Codex, and DeepSeek Harness
+
 ## Quick Start
 
 ```bash
@@ -129,7 +143,7 @@ claude
 
 This project is a demonstration of what's possible when agentic coding tools are applied to **domain-specific professional workflows**. Key metrics:
 
-- **27 skills** covering the full lifecycle of Chinese civil and criminal legal work
+- **29 skills** covering the full lifecycle of Chinese civil and criminal legal work
 - **100,000+ lines** of structured legal workflow instructions
 - **25+ Python scripts** for automation (document download, analysis, report generation)
 - **12 defense knowledge bases** covering major Chinese civil case types
@@ -152,7 +166,7 @@ MIT License — see [LICENSE](LICENSE) for details.
 
 ### 项目概述
 
-一套为律师和法律从业者设计的 Claude Code 技能集合，共 27 个技能，覆盖：
+一套为律师和法律从业者设计的 Claude Code 技能集合，共 29 个技能，覆盖：
 
 **民事案件OS（16个技能）**：
 - 总控调度器（case-os）+ 九步法分析流水线（S1-S10）
@@ -165,6 +179,7 @@ MIT License — see [LICENSE](LICENSE) for details.
 
 **独立技能**：
 - 法院短信文书自动下载（court-sms）
+- 执行案件知识路由器（execution-os）：保全与执行实务 9 阶段路由 + 30 张方法论卡片按需加载，含法条引用纪律与当地核实闸门
 
 ### 核心设计理念
 
