@@ -1,0 +1,4 @@
+interface:
+  display_name: "庭前准备与庭审记录"
+  short_description: "从案件材料生成可导入 WPS 的庭审记录、质证提纲与庭审准备导图"
+  default_prompt: "使用 $prepare-hearing-record 根据本案材料生成可导入 WPS 思维导图的庭审记录。"
