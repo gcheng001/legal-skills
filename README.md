@@ -2,7 +2,7 @@
 
 [中文文档](#中文) | English
 
-A comprehensive collection of **29 Claude Code skills** for Chinese legal professionals, covering civil litigation analysis, criminal defense workflows, and document automation.
+A comprehensive collection of **39 Claude Code skills** for Chinese legal professionals, covering civil litigation analysis, criminal defense workflows, labor law practice, and document automation.
 
 ## Why This Matters
 
@@ -55,9 +55,21 @@ legal-skills/
 │   ├── scripts/                  # Python download automation
 │   └── references/               # SMS parsing patterns
 │
-└── execution-os/                 # Enforcement law knowledge router
-    ├── references/               # 30 methodology cards + glossary
-    └── test-prompts.json         # Stress test cases
+├── execution-os/                 # Enforcement law knowledge router
+│   ├── references/               # 30 methodology cards + glossary
+│   └── test-prompts.json         # Stress test cases
+│
+├── labor-os/                     # Labor Law OS (orchestrator)
+├── labor-intake/                 # Dispute-track intake review
+├── labor-arbitration/            # Arbitration filings & strategy
+├── labor-bridge/                 # Arbitration-to-litigation linkage
+├── labor-execution/              # Judgment enforcement
+├── labor-contract-design/        # Employment contract design/review
+├── labor-policy-design/          # HR policy design/review
+├── labor-audit/                  # Six-module employment audit
+├── labor-exit-plan/              # Employee exit optimization
+│
+└── prepare-hearing-record/       # Hearing prep & in-court note template
 ```
 
 ## Civil Case OS — The Nine-Step Method
@@ -114,11 +126,19 @@ A single-entry knowledge router for **preservation and enforcement practice**, d
 - **Four-part output contract**: stage judgment, methodology application, local verification checklist, next actions (person/task/deadline)
 - Runtime-neutral: works in Claude Code, Codex, and DeepSeek Harness
 
+## Labor Law OS
+
+A complete dual-track system for employment law practice:
+
+- **Advisory track**: employment contract design, HR policy design, six-module employment audit, employee exit optimization
+- **Dispute track**: intake review (standing/limitation/jurisdiction), arbitration filings, arbitration-to-litigation linkage, enforcement
+- Dual-stance support (employer / employee / adjudicator perspective with conflict-of-interest red lines)
+
 ## Quick Start
 
 ```bash
 # Clone the collection
-git clone https://github.com/goacheng001/legal-skills.git
+git clone https://github.com/gcheng001/legal-skills.git
 
 # Copy a skill to your Claude Code skills directory
 cp -r legal-skills/case-os ~/.claude/skills/
@@ -143,7 +163,7 @@ claude
 
 This project is a demonstration of what's possible when agentic coding tools are applied to **domain-specific professional workflows**. Key metrics:
 
-- **29 skills** covering the full lifecycle of Chinese civil and criminal legal work
+- **39 skills** covering the full lifecycle of Chinese civil, criminal, and labor legal work
 - **100,000+ lines** of structured legal workflow instructions
 - **25+ Python scripts** for automation (document download, analysis, report generation)
 - **12 defense knowledge bases** covering major Chinese civil case types
@@ -166,7 +186,7 @@ MIT License — see [LICENSE](LICENSE) for details.
 
 ### 项目概述
 
-一套为律师和法律从业者设计的 Claude Code 技能集合，共 29 个技能，覆盖：
+一套为律师和法律从业者设计的 Claude Code 技能集合，共 39 个技能，覆盖：
 
 **民事案件OS（16个技能）**：
 - 总控调度器（case-os）+ 九步法分析流水线（S1-S10）
@@ -181,6 +201,13 @@ MIT License — see [LICENSE](LICENSE) for details.
 - 法院短信文书自动下载（court-sms）
 - 执行案件知识路由器（execution-os）：保全与执行实务 9 阶段路由 + 30 张方法论卡片按需加载，含法条引用纪律与当地核实闸门
 
+**劳动法OS（9个技能）**：
+- 双轨制：顾问轨（合同设计/制度设计/用工体检/离职优化）+ 争议轨（接案审查/仲裁/裁审衔接/执行）
+- 三立场支持（用人单位/劳动者/裁判者），含利益冲突红线检查
+
+**程序文书**：
+- 庭前准备与庭审补记模板（prepare-hearing-record）
+
 ### 核心设计理念
 
 1. **前置条件依赖链**：不可跳跃执行，确保分析完整性
@@ -191,6 +218,6 @@ MIT License — see [LICENSE](LICENSE) for details.
 ### 安装
 
 ```bash
-git clone https://github.com/goacheng001/legal-skills.git
+git clone https://github.com/gcheng001/legal-skills.git
 cp -r legal-skills/case-os ~/.claude/skills/
 ```
