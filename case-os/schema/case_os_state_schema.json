@@ -43,6 +43,10 @@
       "properties": {
         "current_phase": {"type": ["string", "null"], "enum": ["A", "B", "FINAL", null]},
         "current_step": {"type": ["string", "null"]},
+        "lane": {"type": "string", "enum": ["light", "full"]},
+        "view": {"type": "string", "enum": ["agent", "dual"]},
+        "agent_side": {"type": ["string", "null"], "enum": ["plaintiff", "defendant", null]},
+        "nine_step_package": {"$ref": "#/$defs/packageState"},
         "phase_a": {
           "type": "object",
           "additionalProperties": false,
@@ -169,6 +173,15 @@
         "feishu_doc_title": {"type": ["string", "null"]},
         "bitable_record_id": {"type": ["string", "null"]},
         "sync_errors": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "packageState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "confirmed"],
+      "properties": {
+        "status": {"enum": ["pending", "in_progress", "pending_review", "completed", "blocked"]},
+        "confirmed": {"type": "boolean"}
       }
     }
   }

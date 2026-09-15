@@ -1,6 +1,6 @@
 ---
 name: case-git-init
-description: 一次性初始化案件目录：建本地 git 仓库（**永不推送云端**）、建四个标准文件夹与 intermediate/、生成 CLAUDE.md 案件大脑与 LOG.md 工作日志。律师说「新建案件」「A1」「案件初始化」时用。**只用于 Phase A 第一步**，已有 .git 的目录会跳过初始化。
+description: 一次性初始化案件目录：建本地 git 仓库（**永不推送云端**）、按用途四区制建标准文件夹（交付/材料夹/分析材料/_archive）、生成 CLAUDE.md 案件大脑（含《在哪找什么》表）与 LOG.md 工作日志。律师说「新建案件」「A1」「案件初始化」时用。**只用于 Phase A 第一步**，已有 .git 的目录会跳过初始化。
 author: Legal Skills Project
 ---
 
@@ -34,14 +34,16 @@ else
 fi
 ```
 
-### 第二步：创建目录结构
+### 第二步：创建目录结构（用途四区制，CaseOsLayout v2.0）
 
 ```bash
-mkdir -p ISSUES/open ISSUES/closed _archive
-mkdir -p 原告材料 被告材料 法院文书 分析材料 截图证据
-mkdir -p intermediate/原告九步法 intermediate/被告九步法 intermediate/FINAL
-mkdir -p _archive/markdown
+# 一句话规则：成品→交付；原件→材料夹；过程→分析材料；机器件→_archive
+mkdir -p 交付 原告材料 被告材料 法院文书 分析材料/文书草稿
+mkdir -p ISSUES/open ISSUES/closed
+mkdir -p _archive/源材料OCR _archive/中间件 _archive/markdown
 ```
+
+**不预建**（用到再建，避免空夹噪音）：`截图证据/`（证据截图按来源归材料夹）、`intermediate/`（已废止；九步法索引等系统件如需写入由对应步骤按需自建，语义归机器区）。
 
 ### 第三步：生成 CLAUDE.md
 
@@ -65,6 +67,15 @@ mkdir -p _archive/markdown
 
 ## 材料清单
 （待A3归档后自动更新）
+
+## 在哪找什么（落盘后必刷）
+| 我要… | 去哪 |
+|---|---|
+| 开庭带的东西 | `交付/开庭包/` |
+| 交法院/交客户的定稿文书 | `交付/` |
+| 当事人原件 / 法院送达件 | `原告材料/` `被告材料/` `法院文书/` |
+| 分析报告、法律研究、草稿 | `分析材料/` |
+| OCR 文本、过程件（人不用看） | `_archive/` |
 
 ## 任务面板
 - [ ] A1 案件初始化
@@ -135,11 +146,12 @@ author: Legal Skills Project
 ## 输出
 
 - `.git/` + `.gitignore` — 本地版本管理
+- `交付/` — 成品区：定稿文书、庭审用品、开庭包
+- `原告材料/` `被告材料/` `法院文书/` — 原件区（仅 PDF/DOCX/图片）
+- `分析材料/`（含 `文书草稿/`）— 过程区：分析、研究、草稿
 - `ISSUES/open/`、`ISSUES/closed/` — 问题追踪
-- `_archive/` — 归档目录
-- `原告材料/` `被告材料/` `法院文书/` `分析材料/` `截图证据/` — 材料分类
-- `intermediate/` — 中间产物（含九步法双视图目录）
-- `CLAUDE.md` — 案件大脑
+- `_archive/`（含 `源材料OCR/` `中间件/`）— 机器区：OCR、过程件、状态
+- `CLAUDE.md` — 案件大脑（含《在哪找什么》表）
 - `LOG.md` — 工作日志
 - `_archive/case-os-state.json` — 本地机器权威状态
 - `_archive/feishu-publish.json` — 本地白名单摘要（外发关闭）
