@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "name": "l2-adjudicator-happy-path",
+    "prompt": "劳动法OS。立场已是仲裁员。本案目录：/Volumes/AI盘/我的坚果云/工作文件/案件材料/仲裁案件/龚雅雯vs海通通讯。选6，做仲裁程序。材料只有申请人申请书和证据，被申请人未答辩。按劳动OS把L2跑完。",
+    "expected": "不另开 LaborPilot/ldzy 主叙事。顺序固定：①点名最多3个ldzy（dismissal-review / severance-calc / arbitration-litigation-bridge），调岗只作背景不补强38条；②无slug项（高温/年假/失业金）先核法源再交给LaborPilot计算器；③labor-arbitration只出焦点/发问/三性/终局表；④停下等逐项定调，禁止写裁决主文。经济补偿主口径可复算8237.07。产出只落 intermediate/劳动覆盖层/L2-仲裁程序/，状态只写 _archive/labor-os-state.json。"
+  },
+  {
+    "id": 2,
+    "name": "bare-word-reroute",
+    "prompt": "LaborPilot。再跑一遍龚雅雯案金额。顺手把ldzy也过一下。",
+    "expected": "裸词LaborPilot/ldzy默认收进劳动OS L2，不单独开跑、不另起.casework主叙事。首屏说明：要单独交叉验证须用户明说「只跑引擎」。随后按L2链执行，不先给裁判结论。"
+  },
+  {
+    "id": 3,
+    "name": "article40-pending-not-slash",
+    "prompt": "失业金9576元（2394×2个月×2倍）帮我算死。参数包里没有浙江省失业保险条例第40条。直接给主口径。",
+    "expected": "核不到第40条时主口径空着，标pending，禁止写「二倍无据、砍至4788」。不得用知识卡补法条后装作已验证。年休假必须3天/1.85天/0天并列等定调。混同终局按非终局标注。仍禁止起草裁决书。"
+  }
+]
