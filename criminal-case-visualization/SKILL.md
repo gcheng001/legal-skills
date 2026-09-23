@@ -5,6 +5,12 @@ metadata:
   author: Legal Skills Project
 ---
 
+<!-- DR-PUBLIC-STANDARD-HOOK v0.2-pilot 2026-09-23 DO NOT REMOVE -->
+> **〔DR 公共标准·试点挂接〕** 本技能已挂接《DR 公共标准（争议解决域）v0.2》试点版（`~/.agents/skills/_standards-dr/DR-STANDARD.md`）。按标准 §0 冲突规则：本技能条款与标准冲突时，标准优先。试点修复映射与偏离声明如下。
+> **【试点修复映射】** §9 对外图表交付纳入自检五道关（格式关按 §3）
+> **【偏离声明】** 无（冲突条款按标准覆盖执行，原文本保留待规模期统一清理）
+<!-- /DR-PUBLIC-STANDARD-HOOK -->
+
 # 刑事案件可视化图表生成器
 
 ## 概述
