@@ -377,3 +377,21 @@ criminal-case-os/
 - v3.0 - **四件套改造**：按DEV/HANDOFF/ORCHESTRATION/EVALUATION规范重构，外迁7个references文件，新增handoff_package_schema.json和evaluation-guide.md
 - v2.0 - **四阶段结构**：按诉讼阶段+交付物组织，不再用C1-C8串联
 - v1.0 - 初始版本
+
+---
+
+## v3.2/v3.3 增量（2026-09-24 合并）
+
+> 来源:criminal-defense-workflow v3.3.0(private,章超凡刑事辩护全流程 Pro)。本机已于 2026-07-22 吸收其 v3.1.0 资产(罪名要件库 5 份/跨专业 3 份/归档清单,见上「v3.3 引入的外部素材」);本次补齐 v3.2.0(2026-08-10)与 v3.3.0(2026-08-14)两轮迭代的净增量,全部落盘 `references/zhangchaofan-v3.3/`(保留源相对结构,文件头标注来源与授权,private,不得对外发布):
+
+| 增量文件(zhangchaofan-v3.3/ 下) | 性质 | 核心内容 |
+|---|---|---|
+| `SKILL.md` | 增量主载体 | 5.5 中文全角标点强制自检(直引号 U+0022/U+0027 必须为 0,开合配对;原始案卷摘录保持原貌);5.6 庭审发问「先开放、后封闭」口径(开放有边界/明知故问/版本管理,汇总式开放问题绝对禁止);「异常与错误处理」八类异常统一处置表(停止→告知→等指示,禁止静默跳过/编造填补);「不适用场景(能力边界)」与「模糊输入与匹配失败处理」;5.2 辩方审查报告命名示例 |
+| `sub-skills/05_证据分析与质证意见_SKILL.md` | v3.3 重构 | 以起诉书指控事实(起数)为纲四段式:检察机关指控→相关证据(逐份摘录)→质证意见→辩方分析论证;笔录来源行+言词证据问答式摘录;跨事实证据「节录」引用与全案性问题归附录的分节归属规则;主产出《辩方审查报告(整合质证意见)》;报告全文禁用表格 |
+| `references/evidence-analysis-guide.md` | v3.3 同步重构 | 上述新报告模板与禁表规则的指引版 |
+| `sub-skills/09_辩护词撰写_SKILL.md` | v3.3 联动小更 | 前置材料名称改为《辩方审查报告(整合质证意见)》 |
+| `references/defense-brief-writing-guide.md` | v3.3 联动小更 | 同上 |
+| `references/FAQ.md` | v3.2 新增 | 18 条常见问题与反模式清单(适用范围/调用方式/材料产出/红线四组) |
+| `references/完整案例演示.md` | v3.2 新增 | 虚构案件从 01 接案到 13 归档的端到端操作演示 |
+
+未合并项:源内文件夹编号重排(04_参考资料→05_参考资料)与 README/使用指引/_skillhub_meta.json(源包元数据,与本 OS 无关);sub-skills/01 建档模板补目录(本 OS 用自身 intake 流程);crime-elements 5 份与 cross-disciplinary 3 份经逐行比对源侧零新增(本库副本含 cangjie 索引附录为本地增强,维持不动)。调度约定:证据分析/质证任务可按需叠加 `zhangchaofan-v3.3/sub-skills/05` 与 `references/evidence-analysis-guide.md` 的四段式报告结构;发问提纲任务叠加 `zhangchaofan-v3.3/SKILL.md` 5.6「先开放、后封闭」口径;文书交付前可参照 5.5 全角标点自检。
