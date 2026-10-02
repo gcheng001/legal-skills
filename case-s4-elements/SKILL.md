@@ -130,8 +130,8 @@ mcp__pkulaw-law-search__search_article(text="民法典 第577条 违约责任构
       "rights_basis": "违约责任请求权",
       "legal_articles": [
         {
-          "article": "《合同法》第107条",
-          "current_equivalent": "《民法典》第577条",
+          "article": "《民法典》第577条",
+          "current_equivalent": "原《合同法》第107条（已废止；争议事实发生于2021-01-01之前的仍适用原条文）",
           "element_covered": "义务未履行",
           "note": "完全性法条（从S2读取statute_nature）",
           "statute_nature": "完全性法条"

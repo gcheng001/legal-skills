@@ -246,7 +246,12 @@ safe_remove() { for p in "$@"; do
   [ -e "$p" ] || [ -L "$p" ] || continue
   local a; a="${p/#~/$HOME}"
   case "$a" in /*) ;; *) a="$PWD/$a" ;; esac
-  osascript -e 'tell app "Finder" to delete POSIX file "'"'"$a"'"'"' >/dev/null 2>&1 || true
+  # 移废纸篓（可恢复）；成败必须回显，禁止静默吞掉
+  if osascript -e 'tell app "Finder" to delete POSIX file "'"'"$a"'"'"' 2>/dev/null; then
+    echo "🗑️ 已移入废纸篓（可恢复）: $a"
+  else
+    echo "⚠️ 移入废纸篓失败（文件保留原处）: $a"
+  fi
 done; }
 safe_remove "$OCR_TMP_DIR"
 safe_remove ~/Desktop/录屏取证输出
@@ -254,14 +259,16 @@ safe_remove ~/Desktop/录屏取证输出
 # 清理MinerU OCR过程中产生的残留目录（无用的图片碎片）
 # MinerU从PDF提取图片时会在当前工作目录生成images/，内容为文档中的图标、水印等装饰元素，无案件分析价值
 if [ -d "[案件根目录]/images" ]; then
+    echo "待清理MinerU残留目录 images/ 内容清单（仅限案件根目录下该固定名称目录）："
+    ls "[案件根目录]/images" | head -20
     safe_remove "[案件根目录]/images"
-    echo "✅ 已清理MinerU残留目录: images/"
 fi
 
 # 同时清理MinerU可能在工作目录产生的其他残留
 if [ -d "[案件根目录]/output" ]; then
+    echo "待清理MinerU残留目录 output/ 内容清单（仅限案件根目录下该固定名称目录）："
+    ls "[案件根目录]/output" | head -20
     safe_remove "[案件根目录]/output"
-    echo "✅ 已清理MinerU残留目录: output/"
 fi
 ```
 

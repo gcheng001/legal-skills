@@ -109,7 +109,7 @@
                 "properties": {
                   "article": {
                     "type": "string",
-                    "description": "法条（如《合同法》第107条）"
+                    "description": "法条（如《民法典》第577条）"
                   },
                   "current_equivalent": {
                     "type": "string",
