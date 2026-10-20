@@ -306,7 +306,7 @@ criminal-case-os/
 │   ├── 刑事法律依据索引.md            # 共享资源
 │   ├── 全流程风险速查.md              # 共享资源
 │   ├── 刑事归档清单.md                # v3.3 新增,case-archive 引用
-│   ├── defense-creativity.md          # v3.4 新增,辩点创意六路径底稿(khazix-creativity 跨界改写)
+│   ├── defense-creativity.md          # v3.4 新增,辩点创意六路径底稿(laoshimu-creativity 跨界改写)
 │   ├── skill-map.md                   # v3.4 新增,cangjie 方法论路由表(限载铁律合计≤3)
 │   ├── cangjie-skills/                # v3.4 新增,刑事审判方法论 28 包(统编教材蒸馏,仅限内部使用)
 │   ├── crime-elements/               # v3.3 新增,罪名要件库（5 份）
@@ -369,7 +369,7 @@ criminal-case-os/
 
 ## 版本历史
 
-- **v3.4 - 接入 cangjie 审判方法论库与辩点创意模块(2026-09-08)**:新增 `references/cangjie-skills/`(28 包,统编教材《刑事审判实务》上下册蒸馏,达尔文独立盲测 98.2%)与 `references/skill-map.md` 路由表(四类节点+辩护转化提示+限载铁律每节点合计≤3);新增 `references/defense-creativity.md` 辩点创意六路径(khazix-creativity 跨界改写);criminal-defense-strategy 新增可选工具 1.5 辩点发散(产物经 disposition_list 律师确认);归档清单新增难受点种子;调度表挂方法论增强钩子;新增 ADR 0006。
+- **v3.4 - 接入 cangjie 审判方法论库与辩点创意模块(2026-09-08)**:新增 `references/cangjie-skills/`(28 包,统编教材《刑事审判实务》上下册蒸馏,达尔文独立盲测 98.2%)与 `references/skill-map.md` 路由表(四类节点+辩护转化提示+限载铁律每节点合计≤3);新增 `references/defense-creativity.md` 辩点创意六路径(laoshimu-creativity 跨界改写);criminal-defense-strategy 新增可选工具 1.5 辩点发散(产物经 disposition_list 律师确认);归档清单新增难受点种子;调度表挂方法论增强钩子;新增 ADR 0006。
 - **v3.3.1 - 汪欣案回归验收修复(2026-07-22)**:回归 4/5 硬标准通过,唯一不通过项(正式文书 3 处内部痕迹泄漏)定位为规则措辞缺陷并修复——出厂闸门禁词清单扩充(技能/模块名、MCP、CLAUDE.md、内部底稿名等)、占位符禁注来源、落款日期取状态头开庭日;defense-statement「援引」改「采纳」;缓刑考验期法定最低修正为《刑法》73 条通用规则(剔除个案硬编码);新增两条质量规则(量刑测算算术自洽、不利事实入正式文书须律师确认)。验收记录:`刑事OS/对比测试/验收-v3.3.md`。
 - **v3.3 - 融合 criminal-defense-workflow(v3.1.0,private)**：新建 `criminal-sentencing-defense` 一审量刑辩护专项与 `criminal-appeal` 救济阶段独立 skill;引入 8 份知识库(罪名要件 5 + 跨专业 3)+ 归档清单,头部标注来源;redlines 新增三条铁律(案内时间锚定/正式文书出厂闸门/量刑主张不损当事人利益);handoff 加「辩点处置清单」必填;刑事文书格式规范加两层目录与 Word 版;评估加新维度;菜单/调度/依赖/状态头同步;新增 ADR 0004 与 ADR 0005。
 - v3.2 - **接入卷宗拆解前置**：准备组新增 criminal-dossier-processor（外部引入 2026-05-29），作为阅卷前可选物料准备；交互菜单新增「0.5 卷宗拆解」；workflow.md 同步登记为可选前置；律师复核索引为强制确认点。

@@ -1,6 +1,6 @@
 # 辩点创意六路径（defense-creativity）
 
-> 来源：跨界改写自 `khazix-creativity`（创造力六路径起跑线协议，composes-with）。本文件不复制其正文，仅将其思维算子迁移到刑事辩护语境。
+> 来源：跨界改写自 `laoshimu-creativity`（创造力六路径起跑线协议，composes-with）。本文件不复制其正文，仅将其思维算子迁移到刑事辩护语境。
 > 定位：`criminal-defense-strategy` 工具 1.5（辩点发散）的方法论底稿。
 > 🔴 检查点：**发散产物一律不直接进入文书**——须经《辩护策略分析与路径选择报告》"待核实线索"附表与 handoff 辩点处置清单（disposition_list），由律师确认后方可进入任何下游文书。🛑
 > 红线对齐：去AI味、确认机制、系统独立立场（不迎合）全部适用于本模块。
